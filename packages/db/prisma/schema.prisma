@@ -1,0 +1,1074 @@
+// myvisa — PostgreSQL schema
+//
+// Conventions
+// - Money is integer halalas (1 SAR = 100). Never Float/Decimal for money.
+// - Bilingual content uses paired *Ar / *En columns (only two locales; avoids join-heavy translation tables).
+// - PII marked "encrypted" is AES-256-GCM ciphertext produced by the API (envelope encryption, KMS-managed key).
+//   Searchable PII gets a companion *Hash column (HMAC-SHA256 blind index) for exact-match lookups.
+// - Soft delete via deletedAt where records must survive for audit/ZATCA retention.
+// - Enums mirrored in packages/shared for the frontend — keep in sync.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────────
+// Identity, auth & consent
+// ─────────────────────────────────────────────────────────────
+
+enum UserRole {
+  CUSTOMER
+  AGENT
+  ACCOUNTANT
+  MANAGER
+  SUPER_ADMIN
+}
+
+enum Locale {
+  ar
+  en
+}
+
+model User {
+  id            String    @id @default(cuid(2))
+  phone         String    @unique // E.164, e.g. +966501234567
+  phoneVerified DateTime?
+  email         String?   @unique
+  emailVerified DateTime?
+  fullNameAr    String?
+  fullNameEn    String?
+  locale        Locale    @default(ar)
+  role          UserRole  @default(CUSTOMER)
+  isActive      Boolean   @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  accounts       Account[]
+  sessions       Session[]
+  consents       Consent[]
+  travelers      Traveler[]
+  addresses      Address[]
+  documents      Document[]         @relation("DocumentOwner")
+  orders         Order[]            @relation("OrderCustomer")
+  assignedOrders Order[]            @relation("OrderAssignee")
+  messages       Message[]
+  notifications  Notification[]
+  internalNotes  InternalNote[]
+  statusChanges  OrderStatusEvent[]
+  reviewedDocs   OrderDocument[]    @relation("DocumentReviewer")
+  redemptions    CouponRedemption[]
+  auditLogs      AuditLog[]
+  blogPosts      BlogPost[]
+  refundsIssued  Refund[]
+
+  @@index([role])
+}
+
+/// Optional secondary sign-in methods (Google, email magic link). Phone OTP is primary and lives on User.
+model Account {
+  id                String   @id @default(cuid(2))
+  userId            String
+  provider          String // "google" | "email"
+  providerAccountId String
+  createdAt         DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+enum OtpPurpose {
+  LOGIN
+  TRACK_ORDER
+  CHANGE_PHONE
+}
+
+/// One-time codes. Only a hash is stored; rate limiting lives in Redis, this table is the audit trail.
+model OtpChallenge {
+  id         String     @id @default(cuid(2))
+  phone      String
+  purpose    OtpPurpose
+  codeHash   String
+  attempts   Int        @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  ip         String?
+  createdAt  DateTime   @default(now())
+
+  @@index([phone, purpose, createdAt])
+}
+
+/// Refresh-token sessions with rotation. `familyId` lets us revoke a whole chain on token reuse.
+model Session {
+  id               String    @id @default(cuid(2))
+  userId           String
+  familyId         String
+  refreshTokenHash String    @unique
+  userAgent        String?
+  ip               String?
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  replacedById     String?
+  createdAt        DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+}
+
+enum ConsentType {
+  TERMS
+  PRIVACY_POLICY
+  DATA_PROCESSING // PDPL: processing of identity documents
+  CROSS_BORDER_TRANSFER // PDPL: sharing with foreign embassies / visa centres
+  MARKETING
+}
+
+/// Append-only PDPL consent ledger. A withdrawal is a new row with granted = false.
+model Consent {
+  id            String      @id @default(cuid(2))
+  userId        String?
+  phone         String? // for consent captured before account creation (e.g. public track-order)
+  type          ConsentType
+  policyVersion String
+  granted       Boolean
+  ip            String?
+  userAgent     String?
+  createdAt     DateTime    @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, type, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Catalog: countries, services, pricing, requirements
+// ─────────────────────────────────────────────────────────────
+
+enum Region {
+  GCC
+  MIDDLE_EAST
+  EUROPE
+  ASIA
+  AFRICA
+  NORTH_AMERICA
+  SOUTH_AMERICA
+  OCEANIA
+}
+
+/// Every country — used both as destination and as traveler nationality.
+model Country {
+  id              String   @id @default(cuid(2))
+  iso2            String   @unique @db.Char(2)
+  iso3            String   @unique @db.Char(3)
+  slug            String   @unique
+  nameAr          String
+  nameEn          String
+  nationalityAr   String
+  nationalityEn   String
+  region          Region
+  isDestination   Boolean  @default(false)
+  isPopular       Boolean  @default(false)
+  sortOrder       Int      @default(0)
+  heroImageUrl    String?
+  heroImageAlt    String?
+  /// IATA code of the main hub, used for route visuals (e.g. "IST").
+  mainAirportIata String?  @db.Char(3)
+  overviewAr      String?
+  overviewEn      String?
+  seoTitleAr      String?
+  seoTitleEn      String?
+  seoDescAr       String?
+  seoDescEn       String?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  services       Service[]
+  priceRules     PriceRule[]     @relation("PriceRuleNationality")
+  orders         Order[]         @relation("OrderDestination")
+  travelers      Traveler[]
+  orderTravelers OrderTraveler[]
+  faqs           Faq[]
+
+  @@index([isDestination, isActive, sortOrder])
+}
+
+enum ServiceCategory {
+  VISA
+  TRAVEL_INSURANCE
+  DRIVING_LICENSE
+  TRANSLATION
+  DOCUMENT_SHIPPING
+}
+
+enum TravelPurpose {
+  TOURISM
+  BUSINESS
+  STUDY
+  MEDICAL
+  FAMILY_VISIT
+  TRANSIT
+  WORK
+  DOMESTIC_WORKER
+}
+
+enum VisaKind {
+  E_VISA
+  STICKER // embassy / visa-centre submission
+  VISA_ON_ARRIVAL
+  ETA // electronic travel authorisation (e.g. UK ETA, US ESTA)
+}
+
+enum EntryType {
+  SINGLE
+  DOUBLE
+  MULTIPLE
+}
+
+model Service {
+  id                  String          @id @default(cuid(2))
+  category            ServiceCategory
+  slug                String          @unique
+  nameAr              String
+  nameEn              String
+  summaryAr           String?
+  summaryEn           String?
+  descriptionAr       String? // MDX
+  descriptionEn       String? // MDX
+  /// Destination for visas / regional scope for insurance. Null for country-agnostic services (translation, IDL).
+  countryId           String?
+  purpose             TravelPurpose?
+  visaKind            VisaKind?
+  entryType           EntryType?
+  validityDays        Int?
+  maxStayDays         Int?
+  processingDaysMin   Int
+  processingDaysMax   Int
+  requiresAppointment Boolean         @default(false)
+  appointmentNoteAr   String?
+  appointmentNoteEn   String?
+  /// Category-specific attributes (insurance coverage limits, translation languages, etc.). Validated by Zod in the API.
+  attributes          Json?
+  isActive            Boolean         @default(true)
+  sortOrder           Int             @default(0)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  country        Country?          @relation(fields: [countryId], references: [id])
+  priceRules     PriceRule[]
+  requirements   Requirement[]
+  faqs           Faq[]
+  orders         Order[]
+  testimonials   Testimonial[]
+  relatedFrom    ServiceRelation[] @relation("RelatedFrom")
+  relatedTo      ServiceRelation[] @relation("RelatedTo")
+  couponServices CouponService[]
+
+  @@index([category, isActive])
+  @@index([countryId, purpose])
+}
+
+/// e.g. Schengen visa → Schengen insurance cross-sell.
+model ServiceRelation {
+  fromId    String
+  toId      String
+  sortOrder Int    @default(0)
+
+  from Service @relation("RelatedFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  to   Service @relation("RelatedTo", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@id([fromId, toId])
+}
+
+enum ApplicantType {
+  SAUDI_CITIZEN
+  RESIDENT // Iqama holder; nationality matters
+  GCC_CITIZEN
+}
+
+/// Eligibility + price for a service given who is applying.
+/// Resolution order: (applicantType + nationality) → (applicantType, nationality null) → none = not offered.
+model PriceRule {
+  id                   String        @id @default(cuid(2))
+  serviceId            String
+  applicantType        ApplicantType
+  nationalityId        String?
+  isEligible           Boolean       @default(true)
+  governmentFeeHalalas Int
+  serviceFeeHalalas    Int
+  /// Shown next to the government fee: embassy fees are often set in a foreign currency.
+  governmentFeeNoteAr  String?
+  governmentFeeNoteEn  String?
+  ineligibleReasonAr   String?
+  ineligibleReasonEn   String?
+  validFrom            DateTime      @default(now())
+  validTo              DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  nationality Country? @relation("PriceRuleNationality", fields: [nationalityId], references: [id])
+
+  @@index([serviceId, applicantType, nationalityId])
+}
+
+enum DocumentType {
+  PASSPORT
+  PERSONAL_PHOTO
+  NATIONAL_ID
+  IQAMA
+  BANK_STATEMENT
+  SALARY_CERTIFICATE
+  EMPLOYMENT_LETTER
+  COMMERCIAL_REGISTRATION
+  HOTEL_BOOKING
+  FLIGHT_BOOKING
+  TRAVEL_INSURANCE
+  UNIVERSITY_ACCEPTANCE
+  MEDICAL_REPORT
+  INVITATION_LETTER
+  FAMILY_RECORD
+  BIRTH_CERTIFICATE
+  DRIVING_LICENSE
+  SOURCE_DOCUMENT // for translation orders
+  OTHER
+}
+
+model Requirement {
+  id            String         @id @default(cuid(2))
+  serviceId     String
+  /// Null = applies to every applicant type.
+  applicantType ApplicantType?
+  documentType  DocumentType
+  titleAr       String
+  titleEn       String
+  detailsAr     String?
+  detailsEn     String?
+  isRequired    Boolean        @default(true)
+  /// Per-traveler (passport) vs once per order (hotel booking for the group).
+  perTraveler   Boolean        @default(true)
+  acceptedMime  String[]       @default(["application/pdf", "image/jpeg", "image/png"])
+  maxSizeMb     Int            @default(10)
+  sortOrder     Int            @default(0)
+
+  service        Service         @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  orderDocuments OrderDocument[]
+
+  @@index([serviceId, sortOrder])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Customers: travelers, addresses, document vault
+// ─────────────────────────────────────────────────────────────
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Relationship {
+  SELF
+  SPOUSE
+  CHILD
+  PARENT
+  SIBLING
+  DOMESTIC_WORKER
+  OTHER
+}
+
+/// Saved traveler profile (family members). Passport/ID numbers are encrypted.
+model Traveler {
+  id                 String        @id @default(cuid(2))
+  userId             String
+  relationship       Relationship
+  givenNameEn        String // as printed in the passport MRZ
+  surnameEn          String
+  fullNameAr         String?
+  gender             Gender
+  dateOfBirth        DateTime      @db.Date
+  nationalityId      String
+  applicantType      ApplicantType
+  passportNumberEnc  String // encrypted
+  passportNumberHash String // blind index
+  passportExpiry     DateTime      @db.Date
+  nationalIdEnc      String? // encrypted — National ID or Iqama number
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  deletedAt          DateTime?
+
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nationality  Country         @relation(fields: [nationalityId], references: [id])
+  documents    Document[]
+  orderEntries OrderTraveler[]
+
+  @@index([userId])
+  @@index([passportNumberHash])
+}
+
+model Address {
+  id         String   @id @default(cuid(2))
+  userId     String
+  label      String?
+  recipient  String
+  phone      String
+  city       String
+  district   String?
+  street     String?
+  buildingNo String?
+  postalCode String?
+  /// Saudi National Address short code (e.g. RRRD2929).
+  shortCode  String?
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shipments Shipment[]
+
+  @@index([userId])
+}
+
+enum ScanStatus {
+  PENDING
+  CLEAN
+  INFECTED
+  FAILED
+}
+
+/// A stored file. Lives in S3/R2 with SSE; served only via short-lived signed URLs.
+/// Vault documents have no order; the same file can be attached to many orders through OrderDocument.
+model Document {
+  id           String       @id @default(cuid(2))
+  ownerId      String
+  travelerId   String?
+  type         DocumentType
+  storageKey   String       @unique
+  originalName String
+  mimeType     String
+  sizeBytes    Int
+  sha256       String
+  scanStatus   ScanStatus   @default(PENDING)
+  inVault      Boolean      @default(false)
+  /// e.g. passport expiry — drives "renew soon" reminders.
+  expiresOn    DateTime?    @db.Date
+  createdAt    DateTime     @default(now())
+  deletedAt    DateTime?
+
+  owner      User            @relation("DocumentOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  traveler   Traveler?       @relation(fields: [travelerId], references: [id], onDelete: SetNull)
+  orderLinks OrderDocument[]
+  messages   Message[]
+
+  @@index([ownerId, inVault])
+  @@index([travelerId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Orders & fulfilment
+// ─────────────────────────────────────────────────────────────
+
+enum OrderStatus {
+  DRAFT
+  PENDING_PAYMENT
+  RECEIVED
+  DOCUMENTS_REVIEW
+  ACTION_REQUIRED
+  APPOINTMENT_BOOKED
+  SUBMITTED_TO_EMBASSY
+  DECISION_ISSUED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum Decision {
+  APPROVED
+  REJECTED
+  PARTIAL // group order where some travelers were refused
+}
+
+model Order {
+  id            String         @id @default(cuid(2))
+  /// Human-friendly reference shown on the boarding pass, e.g. "MV-26-4F7K2Q".
+  number        String         @unique
+  customerId    String
+  serviceId     String
+  destinationId String?
+  status        OrderStatus    @default(DRAFT)
+  decision      Decision?
+  purpose       TravelPurpose?
+  travelFrom    DateTime?      @db.Date
+  travelTo      DateTime?      @db.Date
+  contactPhone  String
+  locale        Locale         @default(ar)
+
+  // Price snapshot at checkout (catalog prices can change later). Halalas.
+  governmentFeesHalalas Int     @default(0)
+  serviceFeesHalalas    Int     @default(0)
+  discountHalalas       Int     @default(0)
+  vatHalalas            Int     @default(0)
+  totalHalalas          Int     @default(0)
+  vatRate               Float   @default(0.15)
+  /// Version of the refund policy the customer accepted before paying.
+  refundPolicyVersion   String?
+
+  // Appointment preference captured in the wizard.
+  preferredCity     String?
+  preferredDateFrom DateTime? @db.Date
+  preferredDateTo   DateTime? @db.Date
+  appointmentNotes  String?
+
+  assigneeId  String?
+  couponId    String?
+  slaDueAt    DateTime?
+  submittedAt DateTime? // left draft / paid
+  closedAt    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  customer    User               @relation("OrderCustomer", fields: [customerId], references: [id])
+  assignee    User?              @relation("OrderAssignee", fields: [assigneeId], references: [id])
+  service     Service            @relation(fields: [serviceId], references: [id])
+  destination Country?           @relation("OrderDestination", fields: [destinationId], references: [id])
+  coupon      Coupon?            @relation(fields: [couponId], references: [id])
+  travelers   OrderTraveler[]
+  documents   OrderDocument[]
+  events      OrderStatusEvent[]
+  notes       InternalNote[]
+  messages    Message[]
+  payments    Payment[]
+  invoices    Invoice[]
+  appointment Appointment?
+  shipments   Shipment[]
+  redemption  CouponRedemption?
+
+  @@index([customerId, createdAt])
+  @@index([status, slaDueAt])
+  @@index([assigneeId, status])
+  @@index([createdAt])
+}
+
+/// Immutable snapshot of each traveler on an order, with their own price line.
+model OrderTraveler {
+  id                   String        @id @default(cuid(2))
+  orderId              String
+  travelerId           String?
+  givenNameEn          String
+  surnameEn            String
+  fullNameAr           String?
+  gender               Gender
+  dateOfBirth          DateTime      @db.Date
+  nationalityId        String
+  applicantType        ApplicantType
+  passportNumberEnc    String
+  passportExpiry       DateTime      @db.Date
+  governmentFeeHalalas Int
+  serviceFeeHalalas    Int
+  decision             Decision?
+  sortOrder            Int           @default(0)
+
+  order       Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  traveler    Traveler?       @relation(fields: [travelerId], references: [id], onDelete: SetNull)
+  nationality Country         @relation(fields: [nationalityId], references: [id])
+  documents   OrderDocument[]
+
+  @@index([orderId])
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+/// Attaches a Document to an order requirement, with per-order review state.
+model OrderDocument {
+  id              String       @id @default(cuid(2))
+  orderId         String
+  documentId      String
+  requirementId   String?
+  orderTravelerId String?
+  reviewStatus    ReviewStatus @default(PENDING)
+  rejectionReason String? // shown to the customer
+  reviewerId      String?
+  reviewedAt      DateTime?
+  createdAt       DateTime     @default(now())
+
+  order         Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  document      Document       @relation(fields: [documentId], references: [id])
+  requirement   Requirement?   @relation(fields: [requirementId], references: [id], onDelete: SetNull)
+  orderTraveler OrderTraveler? @relation(fields: [orderTravelerId], references: [id], onDelete: Cascade)
+  reviewer      User?          @relation("DocumentReviewer", fields: [reviewerId], references: [id])
+
+  @@unique([orderId, documentId, requirementId])
+  @@index([orderId, reviewStatus])
+}
+
+/// Every status transition. `customerNote` is shown on the tracking timeline; changes trigger notifications.
+model OrderStatusEvent {
+  id           String       @id @default(cuid(2))
+  orderId      String
+  fromStatus   OrderStatus?
+  toStatus     OrderStatus
+  customerNote String?
+  actorId      String? // null = system
+  createdAt    DateTime     @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([orderId, createdAt])
+}
+
+model InternalNote {
+  id        String   @id @default(cuid(2))
+  orderId   String
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+
+  order  Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  author User  @relation(fields: [authorId], references: [id])
+
+  @@index([orderId, createdAt])
+}
+
+enum VisaCenter {
+  EMBASSY
+  VFS_GLOBAL
+  TLS_CONTACT
+  BLS_INTERNATIONAL
+  OTHER
+}
+
+model Appointment {
+  id          String     @id @default(cuid(2))
+  orderId     String     @unique
+  center      VisaCenter
+  city        String
+  scheduledAt DateTime
+  reference   String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+enum ShipmentDirection {
+  PICKUP // collect passports from customer
+  DELIVERY // return passports to customer
+}
+
+enum ShipmentStatus {
+  PENDING
+  IN_TRANSIT
+  DELIVERED
+  FAILED
+}
+
+model Shipment {
+  id             String            @id @default(cuid(2))
+  orderId        String
+  addressId      String?
+  direction      ShipmentDirection
+  carrier        String
+  trackingNumber String?
+  status         ShipmentStatus    @default(PENDING)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  address Address? @relation(fields: [addressId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Messaging & notifications
+// ─────────────────────────────────────────────────────────────
+
+enum SenderKind {
+  CUSTOMER
+  STAFF
+  SYSTEM
+}
+
+model Message {
+  id           String     @id @default(cuid(2))
+  orderId      String
+  senderId     String?
+  senderKind   SenderKind
+  body         String
+  attachmentId String?
+  readAt       DateTime?
+  createdAt    DateTime   @default(now())
+
+  order      Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sender     User?     @relation(fields: [senderId], references: [id])
+  attachment Document? @relation(fields: [attachmentId], references: [id], onDelete: SetNull)
+
+  @@index([orderId, createdAt])
+}
+
+enum NotificationChannel {
+  IN_APP
+  SMS
+  WHATSAPP
+  EMAIL
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+model Notification {
+  id                String              @id @default(cuid(2))
+  userId            String
+  channel           NotificationChannel
+  template          String // e.g. "order.status_changed"
+  payload           Json
+  status            NotificationStatus  @default(QUEUED)
+  providerMessageId String?
+  error             String?
+  sentAt            DateTime?
+  readAt            DateTime?
+  createdAt         DateTime            @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, channel, readAt])
+  @@index([status, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Payments, refunds, invoicing (ZATCA)
+// ─────────────────────────────────────────────────────────────
+
+enum PaymentProvider {
+  MOYASAR
+  TAP
+}
+
+enum PaymentMethod {
+  MADA
+  VISA
+  MASTERCARD
+  APPLE_PAY
+  STC_PAY
+}
+
+enum PaymentStatus {
+  INITIATED
+  AUTHORIZED
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+model Payment {
+  id                String          @id @default(cuid(2))
+  orderId           String
+  provider          PaymentProvider
+  providerPaymentId String?         @unique
+  method            PaymentMethod?
+  amountHalalas     Int
+  status            PaymentStatus   @default(INITIATED)
+  /// Client-generated key; a retried checkout returns the same Payment instead of charging twice.
+  idempotencyKey    String          @unique
+  cardLast4         String?
+  failureReason     String?
+  raw               Json?
+  paidAt            DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  order   Order    @relation(fields: [orderId], references: [id])
+  refunds Refund[]
+
+  @@index([orderId])
+  @@index([status, createdAt])
+}
+
+enum RefundStatus {
+  REQUESTED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model Refund {
+  id               String       @id @default(cuid(2))
+  paymentId        String
+  amountHalalas    Int
+  reason           String
+  status           RefundStatus @default(REQUESTED)
+  providerRefundId String?      @unique
+  issuedById       String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  payment    Payment  @relation(fields: [paymentId], references: [id])
+  issuedBy   User?    @relation(fields: [issuedById], references: [id])
+  creditNote Invoice?
+
+  @@index([paymentId])
+}
+
+/// Inbound provider webhooks, de-duplicated by (provider, eventId) before processing.
+model WebhookEvent {
+  id          String          @id @default(cuid(2))
+  provider    PaymentProvider
+  eventId     String
+  type        String
+  payload     Json
+  processedAt DateTime?
+  error       String?
+  receivedAt  DateTime        @default(now())
+
+  @@unique([provider, eventId])
+}
+
+enum InvoiceType {
+  SIMPLIFIED // B2C — reported to ZATCA within 24h
+  STANDARD // B2B — cleared by ZATCA before issue
+  CREDIT_NOTE
+}
+
+enum ZatcaStatus {
+  PENDING
+  REPORTED
+  CLEARED
+  REJECTED
+}
+
+/// ZATCA Phase 2 e-invoice. Invoices are never edited or deleted; corrections are credit notes.
+model Invoice {
+  id                  String      @id @default(cuid(2))
+  number              String      @unique // sequential, e.g. INV-2026-000001
+  uuid                String      @unique @default(uuid())
+  /// Invoice Counter Value — strictly increasing per EGS unit.
+  icv                 Int
+  type                InvoiceType
+  orderId             String
+  refundId            String?     @unique // set for credit notes
+  issuedAt            DateTime    @default(now())
+  buyerName           String?
+  buyerVatNumber      String?
+  subtotalHalalas     Int // excl. VAT
+  vatHalalas          Int
+  totalHalalas        Int
+  previousInvoiceHash String
+  invoiceHash         String
+  /// Base64 TLV payload rendered as the QR code.
+  qrPayload           String
+  xmlStorageKey       String?
+  pdfStorageKey       String?
+  zatcaStatus         ZatcaStatus @default(PENDING)
+  zatcaResponse       Json?
+  createdAt           DateTime    @default(now())
+
+  order  Order         @relation(fields: [orderId], references: [id])
+  refund Refund?       @relation(fields: [refundId], references: [id])
+  lines  InvoiceLine[]
+
+  @@unique([icv])
+  @@index([orderId])
+  @@index([zatcaStatus])
+}
+
+enum VatCategory {
+  S // standard rated — our service fee
+  O // out of scope — government fees collected on the customer's behalf
+}
+
+model InvoiceLine {
+  id               String      @id @default(cuid(2))
+  invoiceId        String
+  descriptionAr    String
+  descriptionEn    String
+  quantity         Int
+  unitPriceHalalas Int
+  vatCategory      VatCategory
+  vatRate          Float
+  vatHalalas       Int
+  lineTotalHalalas Int
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Promotions
+// ─────────────────────────────────────────────────────────────
+
+enum DiscountKind {
+  PERCENT
+  FIXED
+}
+
+/// Discounts apply to the service fee only (see packages/shared/src/pricing.ts).
+model Coupon {
+  id                 String       @id @default(cuid(2))
+  code               String       @unique
+  kind               DiscountKind
+  value              Int // percent (0–100) or halalas
+  maxDiscountHalalas Int?
+  minOrderHalalas    Int?
+  maxRedemptions     Int?
+  perUserLimit       Int          @default(1)
+  startsAt           DateTime?
+  endsAt             DateTime?
+  isActive           Boolean      @default(true)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  services    CouponService[]
+  redemptions CouponRedemption[]
+  orders      Order[]
+}
+
+/// Empty = coupon valid for all services.
+model CouponService {
+  couponId  String
+  serviceId String
+
+  coupon  Coupon  @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([couponId, serviceId])
+}
+
+model CouponRedemption {
+  id            String   @id @default(cuid(2))
+  couponId      String
+  userId        String
+  orderId       String   @unique
+  amountHalalas Int
+  createdAt     DateTime @default(now())
+
+  coupon Coupon @relation(fields: [couponId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([couponId, userId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Content
+// ─────────────────────────────────────────────────────────────
+
+enum PublishStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model BlogPost {
+  id          String        @id @default(cuid(2))
+  slug        String        @unique
+  titleAr     String
+  titleEn     String?
+  excerptAr   String?
+  excerptEn   String?
+  bodyAr      String // MDX
+  bodyEn      String? // MDX
+  coverUrl    String?
+  coverAlt    String?
+  tags        String[]
+  status      PublishStatus @default(DRAFT)
+  publishedAt DateTime?
+  authorId    String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  author User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([status, publishedAt])
+}
+
+enum FaqScope {
+  GLOBAL
+  PRICING
+  COUNTRY
+  SERVICE
+}
+
+model Faq {
+  id         String        @id @default(cuid(2))
+  scope      FaqScope
+  countryId  String?
+  serviceId  String?
+  questionAr String
+  questionEn String
+  answerAr   String
+  answerEn   String
+  sortOrder  Int           @default(0)
+  status     PublishStatus @default(PUBLISHED)
+
+  country Country? @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  service Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([scope, sortOrder])
+}
+
+model Testimonial {
+  id         String        @id @default(cuid(2))
+  authorName String
+  city       String?
+  rating     Int // 1–5
+  quoteAr    String
+  quoteEn    String?
+  serviceId  String?
+  status     PublishStatus @default(DRAFT)
+  sortOrder  Int           @default(0)
+  createdAt  DateTime      @default(now())
+
+  service Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+}
+
+// ─────────────────────────────────────────────────────────────
+// Platform
+// ─────────────────────────────────────────────────────────────
+
+/// Key/value config editable from the admin: company legal info (CR, VAT no., address), support hours,
+/// WhatsApp ETA, refund-policy version, ZATCA EGS details. Values validated by Zod per key.
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+/// Append-only. Written by an API interceptor for every staff mutation.
+model AuditLog {
+  id         String   @id @default(cuid(2))
+  actorId    String?
+  action     String // e.g. "order.status.update", "price_rule.update"
+  entityType String
+  entityId   String?
+  before     Json?
+  after      Json?
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@index([createdAt])
+}

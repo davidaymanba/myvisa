@@ -1,0 +1,880 @@
+{
+  "meta": {
+    "brand": "myvisa",
+    "title": "myvisa — Visas & travel documents, fully transparent",
+    "description": "Visa and travel-document services for travellers from Saudi Arabia: clear fees, live tracking, and a team that actually answers."
+  },
+  "ui": {
+    "dialog": {
+      "close": "Close"
+    },
+    "theme": {
+      "label": "Appearance",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "locale": {
+      "switchTo": "العربية"
+    },
+    "stepper": {
+      "label": "Application steps",
+      "stepOf": "Step {current} of {total}"
+    },
+    "otp": {
+      "label": "Verification code",
+      "digit": "Digit {n}"
+    },
+    "dropzone": {
+      "title": "Drag files here or",
+      "browse": "browse your device",
+      "hint": "PDF, JPG or PNG — up to {size} MB each",
+      "camera": "Take a photo",
+      "ready": "ready to upload",
+      "remove": "Remove {name}",
+      "errorType": "“{name}” isn’t a supported file type.",
+      "errorSize": "“{name}” is larger than {size} MB."
+    },
+    "destination": {
+      "from": "From",
+      "processing": "{min}–{max} working days"
+    },
+    "price": {
+      "title": "Price breakdown",
+      "travelers": "{count, plural, one {# traveller} other {# travellers}}",
+      "legendGovernment": "Government",
+      "legendOurs": "myvisa",
+      "government": "Embassy / government fee",
+      "governmentNote": "Passed through as-is — zero markup",
+      "service": "myvisa service fee",
+      "discount": "Discount",
+      "vat": "VAT {rate}%",
+      "vatNote": "Charged on the service fee only",
+      "total": "Total",
+      "ourShare": "myvisa’s share incl. VAT: {amount}",
+      "noHidden": "No hidden fees. The amount above is everything you pay, and the refund policy is shown before checkout."
+    },
+    "boardingPass": {
+      "aria": "Tracking card for order {number}",
+      "title": "Boarding pass",
+      "orderNumber": "Order no.",
+      "from": "From",
+      "to": "To",
+      "service": "Service",
+      "travelers": "Travellers",
+      "travelerCount": "{count, plural, one {# traveller} other {# travellers}}",
+      "status": "Status",
+      "pending": "Not started",
+      "inProgress": "In progress",
+      "actionRequired": "Action needed",
+      "footer": "You get a WhatsApp message with every update",
+      "steps": {
+        "RECEIVED": "Received",
+        "DOCUMENTS_REVIEW": "Documents review",
+        "APPOINTMENT_BOOKED": "Appointment booked",
+        "SUBMITTED_TO_EMBASSY": "Submitted to embassy",
+        "DECISION_ISSUED": "Decision",
+        "DELIVERED": "Delivered"
+      },
+      "statuses": {
+        "DRAFT": "Draft",
+        "PENDING_PAYMENT": "Awaiting payment",
+        "RECEIVED": "Received",
+        "DOCUMENTS_REVIEW": "Under review",
+        "ACTION_REQUIRED": "Missing document",
+        "APPOINTMENT_BOOKED": "Appointment booked",
+        "SUBMITTED_TO_EMBASSY": "At the embassy",
+        "DECISION_ISSUED": "Decision issued",
+        "DELIVERED": "Delivered",
+        "CANCELLED": "Cancelled",
+        "REFUNDED": "Refunded"
+      }
+    },
+    "whatsapp": {
+      "label": "Chat on WhatsApp",
+      "eta": "Usually replies in {minutes} min"
+    },
+    "trust": {
+      "cr": "Commercial registration",
+      "vat": "VAT number",
+      "payments": "Secure payments",
+      "paymentsValue": "PCI DSS via licensed gateway",
+      "pdpl": "Data protection",
+      "pdplValue": "PDPL compliant",
+      "paymentMethods": "Accepted payment methods"
+    }
+  },
+  "styleGuide": {
+    "metaTitle": "Design system",
+    "nav": {
+      "color": "Color",
+      "type": "Type",
+      "space": "Space",
+      "motion": "Motion",
+      "components": "Components",
+      "signature": "Signature"
+    },
+    "hero": {
+      "overline": "myvisa design system · v1",
+      "title": "The calm of a private concierge, in a visual language that respects a traveller’s time.",
+      "lead": "Every colour, space and movement here has a job: to earn trust in the first second, and to show the real price with no surprises.",
+      "ctaPrimary": "Start a visa application",
+      "ctaSecondary": "Browse components",
+      "stampTop": "RIYADH · KSA",
+      "stampBottom": "MYVISA",
+      "stampApproved": "APPROVED",
+      "statDestinations": "destinations"
+    },
+    "sections": {
+      "color": {
+        "title": "Color",
+        "desc": "Ink navy for text, warm sand for surfaces, desert gold reserved for moments of decision, deep teal for trust and progress."
+      },
+      "type": {
+        "title": "Typography",
+        "desc": "Arabic first: Alexandria for display, IBM Plex Sans Arabic for text. In English: Instrument Serif and Inter. Fluid sizes with clamp()."
+      },
+      "space": {
+        "title": "Space, radius & depth",
+        "desc": "A 4px grid, soft corners, and layered ink-tinted shadows for real depth instead of hard borders."
+      },
+      "motion": {
+        "title": "Motion",
+        "desc": "Calm, purposeful motion on an exponential ease-out. Switches off automatically for reduced-motion users."
+      },
+      "buttons": {
+        "title": "Buttons & actions",
+        "desc": "Gold is for the single most important action on a screen. Everything else is ink or outline."
+      },
+      "forms": {
+        "title": "Forms",
+        "desc": "Thumb-sized fields, errors right next to the field, and Saudi numbers accepted in any format."
+      },
+      "feedback": {
+        "title": "States & feedback",
+        "desc": "Every screen has a designed loading, empty and error state — never a blank page."
+      },
+      "overlays": {
+        "title": "Overlays & navigation",
+        "desc": "A centred dialog on desktop, a native-feeling bottom sheet on phones."
+      },
+      "signature": {
+        "title": "Signature elements",
+        "desc": "What makes myvisa recognisable: passport stamps, destination cards, the price split, and the boarding-pass tracker."
+      },
+      "icons": {
+        "title": "Iconography",
+        "desc": "Lucide at a constant 2px stroke. Directional icons mirror with the reading direction."
+      }
+    },
+    "color": {
+      "brand": "Brand palette",
+      "semantic": "Semantic tokens (swap in dark mode)",
+      "contrast": "Contrast checks",
+      "contrastNote": "Gold #C8A24A on sand only reaches 2.2:1, so gold is a button fill with navy text, and the deep shade #7A5D1C is used whenever gold is text.",
+      "pass": "AA pass",
+      "largeOnly": "Large text only",
+      "fail": "Not for text",
+      "names": {
+        "ink": "Ink",
+        "sand": "Sand",
+        "gold": "Gold",
+        "teal": "Teal"
+      }
+    },
+    "type": {
+      "displayAr": "رحلتك تبدأ بتأشيرة واضحة",
+      "displayEn": "Every journey begins with a clear visa.",
+      "bodyAr": "نجهّز ملفك، نحجز موعدك، ونتابع مع السفارة نيابةً عنك. ستعرف في كل لحظة أين وصل طلبك، وكم دفعت للسفارة، وكم دفعت لنا.",
+      "bodyEn": "We prepare your file, book your appointment, and follow up with the embassy on your behalf — and you always know where your application stands.",
+      "scale": "Type scale",
+      "sample": "Schengen visa in 10 working days",
+      "arabicFirst": "Arabic rules",
+      "rules": [
+        "Never letter-space Arabic — it breaks the joins between letters.",
+        "Taller line-height (1.85 for body) to make room for dots and diacritics.",
+        "Latin digits (0–9) for prices and order numbers, as Saudi users expect.",
+        "Codes, numbers and phone numbers always render left-to-right."
+      ],
+      "sampleShort": "Visas, made clear."
+    },
+    "space": {
+      "spacing": "Spacing",
+      "radius": "Radius",
+      "elevation": "Elevation"
+    },
+    "motion": {
+      "tokens": "Motion tokens",
+      "stagger": "Staggered reveal",
+      "replay": "Replay",
+      "counters": "Counters",
+      "magnetic": "Magnetic CTA — move your cursor near it",
+      "stats": {
+        "visas": "applications completed",
+        "approval": "approval rate",
+        "rating": "customer rating",
+        "reply": "minutes to reply"
+      },
+      "sampleNote": "Illustrative figures",
+      "cards": [
+        "Received",
+        "Documents review",
+        "Appointment booked",
+        "Submitted to embassy"
+      ],
+      "magneticCta": "Get started"
+    },
+    "buttons": {
+      "primary": "Pay now",
+      "secondary": "Track my order",
+      "ink": "Continue",
+      "outline": "Save as draft",
+      "ghost": "Cancel",
+      "link": "Refund policy",
+      "danger": "Remove traveller",
+      "loading": "Processing",
+      "sizes": "Sizes",
+      "variants": "Variants",
+      "icon": "Add traveller",
+      "states": "States"
+    },
+    "forms": {
+      "fullName": "Name as in passport",
+      "fullNameHint": "In English letters, exactly as printed in the passport",
+      "phone": "Mobile number",
+      "phoneHint": "We’ll send your verification code and order updates here",
+      "nationality": "Nationality",
+      "nationalityPlaceholder": "Select nationality",
+      "nationalities": {
+        "SA": "Saudi",
+        "EG": "Egyptian",
+        "JO": "Jordanian",
+        "IN": "Indian",
+        "PK": "Pakistani"
+      },
+      "purpose": "Purpose of travel",
+      "purposes": {
+        "TOURISM": [
+          "Tourism",
+          "Holiday or short visit"
+        ],
+        "STUDY": [
+          "Study",
+          "University or language course"
+        ],
+        "MEDICAL": [
+          "Medical",
+          "Hospital appointment abroad"
+        ],
+        "BUSINESS": [
+          "Business",
+          "Meetings and exhibitions"
+        ]
+      },
+      "notes": "Notes for our team",
+      "optional": "Optional",
+      "consent": "I agree to my passport data being processed for this application and shared with the embassy.",
+      "whatsappUpdates": "Order updates on WhatsApp",
+      "otp": "Verification code",
+      "otpHint": "Enter the 6-digit code sent to your phone",
+      "documents": "Documents",
+      "submit": "Continue",
+      "submitted": "Details verified",
+      "submittedDesc": "Normalised number: {phone}",
+      "errors": {
+        "name": "Write the name in English letters, as in the passport.",
+        "invalid_saudi_mobile": "That isn’t a valid Saudi mobile. Example: 05XXXXXXXX",
+        "nationality": "Choose a nationality.",
+        "consent": "Consent is required to continue."
+      }
+    },
+    "feedback": {
+      "badges": "Badges",
+      "alerts": "Alerts",
+      "toasts": "Toasts",
+      "toastSuccess": "Success toast",
+      "toastError": "Error toast",
+      "toastInfo": "Toast with action",
+      "toastSuccessTitle": "Documents received",
+      "toastSuccessDesc": "Our team will review them within 2 working hours.",
+      "toastErrorTitle": "Upload failed",
+      "toastErrorDesc": "Check your connection and try again.",
+      "toastInfoTitle": "Traveller removed from order",
+      "undo": "Undo",
+      "progress": "Progress",
+      "uploading": "Uploading passport…",
+      "skeletons": "Loading skeletons",
+      "empty": "Empty state",
+      "emptyTitle": "No applications yet",
+      "emptyDesc": "When you start your first visa application it will appear here with live tracking for every step.",
+      "emptyAction": "Start your first application",
+      "error": "Error state",
+      "errorTitle": "We couldn’t load your orders",
+      "errorDesc": "The problem is on our side, not yours. Your data is safe.",
+      "retry": "Try again",
+      "badgeSamples": {
+        "neutral": "Draft",
+        "gold": "Most popular",
+        "teal": "e-Visa",
+        "success": "Approved",
+        "warning": "Missing document",
+        "danger": "Refused",
+        "info": "Slots available",
+        "outline": "Schengen",
+        "inverse": "New"
+      },
+      "alertInfoTitle": "Appointments available in 7–10 days",
+      "alertInfo": "Riyadh visa-centre slots are busy this season — we recommend applying early.",
+      "alertSuccessTitle": "Visa approved",
+      "alertSuccess": "Your passport is on its way to you by express courier.",
+      "alertWarningTitle": "Passport photo is unclear",
+      "alertWarning": "Retake the data page in good light without reflections.",
+      "alertDangerTitle": "Passport expired",
+      "alertDanger": "Your passport must be valid for at least six months from your travel date.",
+      "fixNow": "Upload a new photo"
+    },
+    "overlays": {
+      "dialog": "Dialog",
+      "openDialog": "Refund policy summary",
+      "dialogTitle": "Before you pay: refund policy",
+      "dialogDesc": "Shown clearly before any payment — transparency isn’t a footnote.",
+      "refundPoints": [
+        "Full service-fee refund if you cancel before document review starts.",
+        "Embassy fees are non-refundable once paid to the government.",
+        "If a visa is refused because of our mistake, we refund the service fee in full."
+      ],
+      "accept": "I’ve read and accept the policy",
+      "continuePay": "Continue to payment",
+      "tooltip": "Tooltip",
+      "tooltipTrigger": "Why is the embassy fee separate?",
+      "tooltipBody": "It’s paid to the government as-is. We show it separately so you know exactly what we charge.",
+      "tabs": "Tabs",
+      "tabItems": {
+        "visas": [
+          "Visas",
+          "Tourist, study, medical, business, domestic-worker and e-visas for 40+ countries."
+        ],
+        "insurance": [
+          "Travel insurance",
+          "Schengen, Turkey, Georgia, USA & Canada, and worldwide cover — embassy-accepted."
+        ],
+        "license": [
+          "International driving licence",
+          "Issued within one working day and delivered to your door."
+        ],
+        "translation": [
+          "Certified translation",
+          "Certified translation of bank statements, employment letters and official documents."
+        ]
+      },
+      "accordion": "FAQ",
+      "faq": [
+        [
+          "Do you guarantee the visa?",
+          "No one can guarantee an embassy’s decision. What we guarantee is a complete, well-prepared file that improves your chances — and full transparency at every step."
+        ],
+        [
+          "When do I pay the embassy fee?",
+          "With your application, shown as its own line on the invoice. We pass it to the authority as-is, with no markup."
+        ],
+        [
+          "Is my data safe?",
+          "Passport numbers and documents are encrypted, and we comply with Saudi Arabia’s Personal Data Protection Law. You can request deletion at any time."
+        ]
+      ]
+    },
+    "signature": {
+      "stamps": "Passport stamps",
+      "stampsDesc": "A recurring motif: on completed steps, empty states and destination cards.",
+      "destinations": "Destination cards",
+      "destinationsDesc": "Hover to reveal the stamp.",
+      "price": "Price breakdown",
+      "priceDesc": "Our competitive edge: embassy fees and our fee, always shown apart.",
+      "boardingPass": "Boarding pass — order tracking",
+      "boardingPassDesc": "Change the status to see how the pass responds.",
+      "stepper": "Wizard stepper",
+      "stepperSteps": [
+        "Service",
+        "Travellers",
+        "Documents",
+        "Appointment",
+        "Review",
+        "Payment"
+      ],
+      "back": "Back",
+      "next": "Next",
+      "trust": "Trust bar",
+      "whatsapp": "WhatsApp button",
+      "sampleService": "Tourist visa · Turkey",
+      "riyadh": "Riyadh",
+      "istanbul": "Istanbul",
+      "countries": {
+        "TR": "Turkey",
+        "GE": "Georgia",
+        "FR": "France",
+        "GB": "United Kingdom",
+        "JP": "Japan",
+        "CH": "Switzerland"
+      },
+      "visaKinds": {
+        "evisa": "e-Visa",
+        "schengen": "Schengen",
+        "sticker": "Sticker visa",
+        "voa": "On arrival"
+      }
+    },
+    "footer": "myvisa design system — Phase 1. Colours and sizes are defined as tokens in globals.css."
+  },
+  "nav": {
+    "label": "Main navigation",
+    "home": "Home",
+    "destinations": "Destinations",
+    "finder": "Visa finder",
+    "services": "Services",
+    "pricing": "Pricing",
+    "about": "About",
+    "contact": "Contact",
+    "cta": "Start your visa",
+    "menu": "Open menu",
+    "close": "Close menu"
+  },
+  "footer": {
+    "label": "Site links",
+    "blurb": "Visas and travel documents, fully transparent: embassy fees always shown apart from ours, and live tracking until your passport is back in your hands.",
+    "destinations": "Popular destinations",
+    "services": "Services",
+    "company": "Company",
+    "legal": "Legal",
+    "terms": "Terms & conditions",
+    "refund": "Refund policy",
+    "privacy": "Privacy policy",
+    "copyright": "© {year} myvisa. All rights reserved."
+  },
+  "common": {
+    "from": "From",
+    "perPerson": "per person",
+    "workingDays": "{min}–{max} working days",
+    "days": "{count} days",
+    "learnMore": "Learn more",
+    "applyNow": "Apply now",
+    "viewDetails": "Details",
+    "backHome": "Back to home",
+    "sar": "SAR",
+    "new": "New",
+    "breadcrumbHome": "Home",
+    "scroll": "Scroll",
+    "purposes": {
+      "TOURISM": "tourism",
+      "BUSINESS": "business",
+      "STUDY": "study",
+      "MEDICAL": "medical care",
+      "FAMILY_VISIT": "family visit"
+    },
+    "applicants": {
+      "SAUDI_CITIZEN": "a Saudi citizen",
+      "RESIDENT": "a KSA resident"
+    },
+    "visaKinds": {
+      "VISA_FREE": "Visa-free",
+      "E_VISA": "e-Visa",
+      "ETA": "ETA",
+      "STICKER": "Sticker visa",
+      "VISA_ON_ARRIVAL": "On arrival"
+    },
+    "entry": {
+      "SINGLE": "Single entry",
+      "DOUBLE": "Double entry",
+      "MULTIPLE": "Multiple entry"
+    },
+    "regions": {
+      "EUROPE": "Europe",
+      "ASIA": "Asia",
+      "AMERICAS": "Americas",
+      "MIDDLE_EAST": "Middle East",
+      "AFRICA": "Africa",
+      "OCEANIA": "Oceania"
+    },
+    "free": "No fee"
+  },
+  "home": {
+    "metaTitle": "myvisa — Visas & travel documents, fully transparent",
+    "hero": {
+      "live": "Online now · replies in 5 min",
+      "line1": "Your visa,",
+      "line2": "crystal clear.",
+      "lead": "We prepare your file, book your appointment and chase the embassy for you — and you see where every riyal goes before you pay.",
+      "rating": "Rated 4.9 by 2,000+ travellers",
+      "drag": "Drag the globe to spin it"
+    },
+    "search": {
+      "label": "Find your visa",
+      "iAm": "I am",
+      "travellingTo": "travelling to",
+      "for": "for",
+      "nationality": "nationality",
+      "result": "Result",
+      "processing": "Processing",
+      "stay": "Stay",
+      "entry": "Entry",
+      "total": "Total incl. VAT",
+      "gov": "Embassy",
+      "ours": "myvisa",
+      "apply": "Start application",
+      "details": "Full details",
+      "notEligible": "Not currently available",
+      "fallback": "No dedicated visa for this purpose — showing the closest match.",
+      "freeTitle": "No visa needed",
+      "freeBody": "You can travel straight away — we can help with insurance and bookings."
+    },
+    "trust": {
+      "orders": "applications completed",
+      "approval": "approval rate",
+      "rating": "customer rating",
+      "reply": "minutes to reply",
+      "note": "Approximate figures to 2026"
+    },
+    "destinations": {
+      "eyebrow": "Destinations",
+      "title": "Where are you going",
+      "titleAccent": "this season?",
+      "lead": "All-in prices and real processing times from real applications.",
+      "all": "All destinations",
+      "drag": "Scroll to explore"
+    },
+    "services": {
+      "eyebrow": "Services",
+      "title": "Everything you need",
+      "titleAccent": "before take-off.",
+      "more": "Explore"
+    },
+    "how": {
+      "eyebrow": "How it works",
+      "title": "Four steps.",
+      "titleAccent": "Zero stress.",
+      "steps": [
+        {
+          "title": "Choose your destination",
+          "body": "Tell us who you are and where you're going — we show the right visa and its full price instantly."
+        },
+        {
+          "title": "Upload your documents",
+          "body": "Snap your passport and papers on your phone. A specialist reviews every page within 2 working hours."
+        },
+        {
+          "title": "We book and submit",
+          "body": "We grab the earliest biometrics slot, submit to the embassy and follow up daily on your behalf."
+        },
+        {
+          "title": "Get your passport back",
+          "body": "Your passport and visa arrive at your door, with a WhatsApp update at every step."
+        }
+      ]
+    },
+    "pricing": {
+      "eyebrow": "Transparency",
+      "title": "We show you where",
+      "titleAccent": "every riyal goes.",
+      "lead": "Most agencies fold their fee into the embassy fee as one number. We always split them — because your trust is worth more than a hidden margin.",
+      "example": "Example: Schengen visa for France",
+      "gov": "Embassy fee",
+      "govNote": "Passed through as-is",
+      "service": "Service fee",
+      "vat": "15% VAT on service only",
+      "total": "Total",
+      "others": "Typical agency",
+      "othersBody": "One number. No idea what went to the embassy and what was margin.",
+      "us": "myvisa",
+      "usBody": "Every line separate and clear, with the refund policy in front of you before you pay.",
+      "cta": "See all prices"
+    },
+    "testimonials": {
+      "eyebrow": "Travellers",
+      "title": "They came back",
+      "titleAccent": "to tell us.",
+      "items": [
+        {
+          "name": "Noura A.",
+          "city": "Riyadh",
+          "service": "Schengen · France",
+          "quote": "For the first time I knew exactly what I paid the embassy. The slot was booked in two days and the visa came early."
+        },
+        {
+          "name": "Abdullah Q.",
+          "city": "Jeddah",
+          "service": "United Kingdom",
+          "quote": "I was worried about a refusal. The team caught an issue in my bank statement before submission. Grateful."
+        },
+        {
+          "name": "Mohammed S.",
+          "city": "Dammam",
+          "service": "Family · Turkey",
+          "quote": "One application for my whole family, and the WhatsApp updates were excellent. I never had to call."
+        },
+        {
+          "name": "Sara D.",
+          "city": "Khobar",
+          "service": "Study · Germany",
+          "quote": "Student files are complicated, but they organised it step by step. I recommend them to any student."
+        },
+        {
+          "name": "Ahmed M.",
+          "city": "Makkah",
+          "service": "USA",
+          "quote": "They found me an interview slot a month earlier than I could. A genuinely premium experience."
+        },
+        {
+          "name": "Reem Z.",
+          "city": "Riyadh",
+          "service": "Japan",
+          "quote": "Simple, clear prices, and my passport came back to my door with a courier."
+        }
+      ]
+    },
+    "faq": {
+      "eyebrow": "FAQ",
+      "title": "Before you ask.",
+      "items": [
+        {
+          "q": "Do you guarantee the visa?",
+          "a": "No one can guarantee an embassy's decision. What we guarantee is a complete, carefully reviewed file that improves your chances — and transparency at every step."
+        },
+        {
+          "q": "Why is the embassy fee shown separately?",
+          "a": "It goes to the government as-is with zero markup. We split it so you know exactly what you pay us for the service."
+        },
+        {
+          "q": "What if my application is refused?",
+          "a": "Embassy fees are non-refundable under embassy rules. If a refusal was caused by our mistake, we refund the service fee in full or re-apply for free."
+        },
+        {
+          "q": "Can I apply for my family in one go?",
+          "a": "Yes — add every traveller to one application and track them together, with a clear price per person."
+        },
+        {
+          "q": "How do I track my application?",
+          "a": "From your dashboard or with your order number, plus a WhatsApp message at every update."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Your next journey",
+      "titleAccent": "starts here.",
+      "lead": "Choose your destination. We'll handle the rest.",
+      "primary": "Start your application",
+      "secondary": "Chat on WhatsApp"
+    }
+  },
+  "destinationsPage": {
+    "metaTitle": "Destinations",
+    "metaDesc": "Visas for 20+ destinations worldwide with clear prices and real processing times.",
+    "eyebrow": "Destinations",
+    "title": "The whole world,",
+    "titleAccent": "priced clearly.",
+    "lead": "Pick a destination to see the visa type, documents and full price — embassy fees always shown apart from ours.",
+    "all": "All",
+    "search": "Search a country",
+    "empty": "No matching destinations",
+    "emptyBody": "Try another name or a different region.",
+    "count": "{count, plural, one {# destination} other {# destinations}}"
+  },
+  "destination": {
+    "visaTypes": "Visa types",
+    "requirements": "Required documents",
+    "fees": "Fees",
+    "timeline": "Expected timeline",
+    "faq": "Questions about {country}",
+    "insurance": "Travel insurance",
+    "insuranceBody": "Embassy-accepted cover, attached to your application automatically.",
+    "applyCta": "Start your {country} visa",
+    "processing": "Processing",
+    "validity": "Visa validity",
+    "stay": "Length of stay",
+    "entry": "Entry",
+    "flight": "Flight time",
+    "bestTime": "Best time to visit",
+    "capital": "Capital",
+    "currency": "Currency",
+    "appointment": "Biometrics appointment required",
+    "noAppointment": "No appointment — fully online",
+    "optional": "Optional",
+    "residentsOnly": "Residents",
+    "applicant": "Applicant",
+    "priceNote": "Price per traveller",
+    "related": "You might also like",
+    "hours": "{count} hours",
+    "timelineSteps": [
+      "You upload documents",
+      "We review within 2 hours",
+      "We submit",
+      "Decision issued"
+    ],
+    "notEligible": "Not available",
+    "schengen": "Schengen area",
+    "visaFree": "No visa needed",
+    "visaFreeBody": "Travel straight on your passport. We recommend travel insurance for the length of your trip.",
+    "insuranceCta": "Choose travel insurance"
+  },
+  "finder": {
+    "metaTitle": "Visa finder",
+    "metaDesc": "Find the right visa, its requirements and full price in seconds.",
+    "eyebrow": "Visa finder",
+    "title": "Answer three questions.",
+    "titleAccent": "We'll tell you everything.",
+    "who": "Who is travelling?",
+    "nationality": "Nationality",
+    "where": "Where to?",
+    "why": "Purpose of travel",
+    "result": "Your visa",
+    "documents": "Required documents ({count})",
+    "processing": "Processing",
+    "stay": "Stay",
+    "validity": "Validity",
+    "appointment": "Appointment",
+    "appointmentYes": "Required — we book it",
+    "appointmentNo": "Not required",
+    "apply": "Start application",
+    "applySoon": "The online application launches soon — message us on WhatsApp and we'll start right away.",
+    "whatsapp": "Start on WhatsApp",
+    "share": "Copy link to result",
+    "copied": "Link copied",
+    "fallback": "There's no dedicated visa for this purpose in {country}; this is the closest option.",
+    "residentNote": "Requirements can vary by nationality — we confirm eligibility before any payment.",
+    "free": "No visa needed",
+    "freeBody": "You can travel straight away. We recommend travel insurance for the length of your trip.",
+    "pickDestination": "Choose a destination",
+    "selected": "Your selection"
+  },
+  "servicesPage": {
+    "metaTitle": "Services",
+    "metaDesc": "Visas, travel insurance, international driving licence, certified translation and document shipping.",
+    "eyebrow": "Services",
+    "title": "One service",
+    "titleAccent": "for every travel document.",
+    "lead": "From visas to insurance, translation and shipping — everything in one place, priced clearly.",
+    "features": "What you get",
+    "steps": "How it works",
+    "plans": "Insurance plans",
+    "perWeek": "/ week",
+    "medical": "Medical cover",
+    "accepted": "Embassy-accepted",
+    "visaTypes": "Visa types",
+    "turnaround": "Turnaround",
+    "start": "Get started",
+    "other": "Other services"
+  },
+  "pricingPage": {
+    "metaTitle": "Pricing",
+    "metaDesc": "Full visa prices: embassy fee, service fee and VAT for every destination.",
+    "eyebrow": "Pricing",
+    "title": "Every price.",
+    "titleAccent": "No small print.",
+    "lead": "These are the actual prices for every destination. Embassy fees go to the authority as-is; VAT applies to our service fee only.",
+    "as": "Show prices for",
+    "destination": "Destination",
+    "visa": "Visa",
+    "gov": "Embassy fee",
+    "service": "Service fee",
+    "vat": "VAT",
+    "total": "Total",
+    "search": "Search a country",
+    "notEligible": "Not available",
+    "principles": [
+      "Embassy fees with zero markup",
+      "VAT on our fee only",
+      "Refund policy shown before you pay",
+      "No extra charges after payment"
+    ],
+    "refundTitle": "Refund policy at a glance",
+    "refundLink": "Read the full policy",
+    "exchangeNote": "Some embassy fees are set in a foreign currency, so the SAR amount can shift slightly with the exchange rate on the day you pay."
+  },
+  "about": {
+    "metaTitle": "About",
+    "metaDesc": "myvisa: a Saudi visa service built on transparency, speed and trust.",
+    "eyebrow": "About us",
+    "title": "We built the service",
+    "titleAccent": "we wished existed.",
+    "lead": "myvisa started from a familiar experience: unclear fees, missed appointments, unanswered questions. We set out to build the exact opposite.",
+    "storyTitle": "Our story",
+    "story": [
+      "Every Saudi traveller knows the anxiety before a trip: are the documents complete? When is the appointment? How much did I actually pay the embassy?",
+      "At myvisa we made the answers clear from the start. We show the full price, split, before you pay; we review your file carefully; and we tell you about every update the moment it happens."
+    ],
+    "valuesTitle": "What we believe",
+    "values": [
+      {
+        "title": "Transparency first",
+        "body": "Embassy fees always shown apart from ours. No surprises, no hidden margins."
+      },
+      {
+        "title": "Fast, never rushed",
+        "body": "We review in two hours and grab the earliest slot — but we never submit a file before it's complete."
+      },
+      {
+        "title": "Real humans",
+        "body": "A team that answers on WhatsApp in minutes, not a bot repeating the same reply."
+      },
+      {
+        "title": "Your privacy is a trust",
+        "body": "Your data is encrypted, we comply with the PDPL, and you can delete it whenever you like."
+      }
+    ],
+    "numbersTitle": "In numbers",
+    "numbers": {
+      "countries": "destinations",
+      "specialists": "visa specialists",
+      "cities": "cities with courier service",
+      "hours": "hours to review"
+    },
+    "cta": "Start your journey with us"
+  },
+  "contact": {
+    "metaTitle": "Contact",
+    "metaDesc": "Reach the myvisa team on WhatsApp, phone or email, or visit us in Riyadh.",
+    "eyebrow": "Contact",
+    "title": "We're here,",
+    "titleAccent": "and we actually reply.",
+    "lead": "WhatsApp is fastest — average reply time is 5 minutes during working hours.",
+    "channels": {
+      "whatsapp": "WhatsApp",
+      "phone": "Phone",
+      "email": "Email",
+      "visit": "Visit us"
+    },
+    "hours": "Working hours",
+    "formTitle": "Send us a message",
+    "name": "Name",
+    "phone": "Mobile number",
+    "topic": "Topic",
+    "topics": {
+      "visa": "Visa question",
+      "order": "Existing order",
+      "insurance": "Travel insurance",
+      "business": "Corporate accounts",
+      "other": "Other"
+    },
+    "message": "Your message",
+    "send": "Send",
+    "sent": "Message received",
+    "sentBody": "We'll reply during working hours.",
+    "errors": {
+      "name": "Please enter your name.",
+      "invalid_saudi_mobile": "That isn't a valid Saudi mobile. Example: 05XXXXXXXX",
+      "message": "Write at least 10 characters."
+    },
+    "directions": "Get directions",
+    "consent": "By sending this message you agree to us contacting you about your enquiry under our privacy policy."
+  },
+  "legal": {
+    "updated": "Last updated",
+    "version": "Version",
+    "summary": "In short",
+    "contents": "Contents",
+    "draft": "Draft — under legal review before launch."
+  },
+  "notFound": {
+    "title": "This page travelled without a visa.",
+    "body": "We couldn't find what you were looking for, but your journey isn't over.",
+    "cta": "Back to home"
+  }
+}

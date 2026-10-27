@@ -1,0 +1,23 @@
+{
+  "name": "myvisa",
+  "private": true,
+  "packageManager": "pnpm@12.15.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "db:validate": "pnpm --filter @myvisa/db validate",
+    "db:generate": "pnpm --filter @myvisa/db generate",
+    "visual-tour": "node scripts/visual-tour.mjs"
+  },
+  "devDependencies": {
+    "turbo": "^2.11.10",
+    "typescript": "^5.9.3",
+    "playwright-core": "^1.64.1"
+  }
+}

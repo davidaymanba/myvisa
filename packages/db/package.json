@@ -1,0 +1,14 @@
+{
+  "name": "@myvisa/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "prisma validate",
+    "format": "prisma format",
+    "generate": "prisma generate"
+  },
+  "devDependencies": {
+    "prisma": "7.10.1"
+  }
+}

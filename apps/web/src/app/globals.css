@@ -1,0 +1,542 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ──────────────────────────────────────────────────────────────
+   1. Raw palette — never use directly in components; use semantic tokens below.
+   Every pair used for text is checked against WCAG AA (see docs/DESIGN.md).
+   ────────────────────────────────────────────────────────────── */
+@theme {
+  --color-ink-50: #f2f5f8;
+  --color-ink-100: #e3e9ef;
+  --color-ink-200: #c6d1dc;
+  --color-ink-300: #9aabbc;
+  --color-ink-400: #6e8399;
+  --color-ink-500: #4f6378;
+  --color-ink-600: #3a4d61;
+  --color-ink-700: #29394b;
+  --color-ink-800: #1a2a3b;
+  --color-ink-900: #0b1b2b;
+  --color-ink-950: #08131f;
+
+  --color-sand-50: #fcfaf6;
+  --color-sand-100: #f7f3ec;
+  --color-sand-200: #efe8dc;
+  --color-sand-300: #e2d7c4;
+  --color-sand-400: #cdbea4;
+  --color-sand-500: #af9c7e;
+  --color-sand-600: #8c7a5e;
+  --color-sand-700: #685a45;
+  --color-sand-800: #463c2e;
+  --color-sand-900: #2a241b;
+
+  --color-gold-50: #fbf7ec;
+  --color-gold-100: #f5ebcf;
+  --color-gold-200: #ebd7a1;
+  --color-gold-300: #ddbf72;
+  --color-gold-400: #c8a24a;
+  --color-gold-500: #b08a35;
+  --color-gold-600: #94722a;
+  --color-gold-700: #7a5d1c;
+  --color-gold-800: #5a4415;
+  --color-gold-900: #3b2c0e;
+
+  --color-teal-50: #eaf4f3;
+  --color-teal-100: #cce5e2;
+  --color-teal-200: #9ccbc6;
+  --color-teal-300: #5fb3ac;
+  --color-teal-400: #2c8780;
+  --color-teal-500: #0f5e5a;
+  --color-teal-600: #0c4f4c;
+  --color-teal-700: #0a403d;
+  --color-teal-800: #07302e;
+  --color-teal-900: #042120;
+
+  /* Typography. Families resolve per-locale in :root / :lang() below. */
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, monospace;
+
+  /* Fluid type scale — 360px → 1440px viewport. Line-height & tracking switch per script. */
+  --text-display-2xl: clamp(2.75rem, 1.92rem + 3.7vw, 5.25rem);
+  --text-display-2xl--line-height: var(--lh-display);
+  --text-display-2xl--letter-spacing: var(--ls-display);
+  --text-display-xl: clamp(2.25rem, 1.7rem + 2.45vw, 4rem);
+  --text-display-xl--line-height: var(--lh-display);
+  --text-display-xl--letter-spacing: var(--ls-display);
+  --text-display-lg: clamp(1.875rem, 1.53rem + 1.55vw, 3rem);
+  --text-display-lg--line-height: var(--lh-heading);
+  --text-display-lg--letter-spacing: var(--ls-display);
+  --text-display-md: clamp(1.5rem, 1.32rem + 0.8vw, 2.125rem);
+  --text-display-md--line-height: var(--lh-heading);
+  --text-heading: clamp(1.25rem, 1.18rem + 0.33vw, 1.5rem);
+  --text-heading--line-height: var(--lh-heading);
+  --text-title: 1.125rem;
+  --text-title--line-height: var(--lh-heading);
+  --text-body-lg: clamp(1.0625rem, 1.02rem + 0.19vw, 1.1875rem);
+  --text-body-lg--line-height: var(--lh-body);
+  --text-body: 1rem;
+  --text-body--line-height: var(--lh-body);
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: var(--lh-body);
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.5;
+  --text-overline: 0.75rem;
+  --text-overline--line-height: 1.4;
+  --text-overline--letter-spacing: var(--ls-overline);
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-3xl: 36px;
+
+  /* Layered, ink-tinted shadows. --shadow-rgb flips in dark mode. */
+  --shadow-xs: 0 1px 2px rgb(var(--shadow-rgb) / 0.06);
+  --shadow-sm: 0 1px 2px rgb(var(--shadow-rgb) / 0.05), 0 2px 8px -2px rgb(var(--shadow-rgb) / 0.06);
+  --shadow-md: 0 1px 2px rgb(var(--shadow-rgb) / 0.04), 0 4px 12px -4px rgb(var(--shadow-rgb) / 0.08),
+    0 16px 32px -12px rgb(var(--shadow-rgb) / 0.1);
+  --shadow-lg: 0 1px 2px rgb(var(--shadow-rgb) / 0.04), 0 8px 20px -6px rgb(var(--shadow-rgb) / 0.1),
+    0 32px 64px -24px rgb(var(--shadow-rgb) / 0.18);
+  --shadow-gold: 0 8px 24px -8px rgb(200 162 74 / 0.55), 0 2px 6px -2px rgb(200 162 74 / 0.35);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --animate-shimmer: shimmer 1.8s var(--ease-in-out-quart) infinite;
+  --animate-route-dash: route-dash 2.4s linear infinite;
+  --animate-pulse-ring: pulse-ring 2.2s var(--ease-out-expo) infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-accordion-down: accordion-down 320ms var(--ease-out-expo);
+  --animate-accordion-up: accordion-up 220ms var(--ease-in-out-quart);
+  --animate-fade-in: fade-in 200ms ease-out;
+  --animate-fade-out: fade-out 150ms ease-in;
+  --animate-dialog-in: dialog-in 320ms var(--ease-out-expo);
+  --animate-dialog-out: dialog-out 160ms ease-in;
+  --animate-sheet-in: sheet-in 420ms var(--ease-out-expo);
+  --animate-sheet-out: sheet-out 220ms var(--ease-in-out-quart);
+  --animate-pop-in: pop-in 180ms var(--ease-out-expo);
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-drift: drift 18s ease-in-out infinite alternate;
+  --animate-spin-slow: spin 24s linear infinite;
+  --animate-scroll-cue: scroll-cue 2.2s var(--ease-in-out-quart) infinite;
+
+  @keyframes shimmer {
+    from {
+      background-position: 150% 0;
+    }
+    to {
+      background-position: -50% 0;
+    }
+  }
+  @keyframes route-dash {
+    to {
+      stroke-dashoffset: -24;
+    }
+  }
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(0.6);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(2.2);
+      opacity: 0;
+    }
+  }
+  @keyframes accordion-down {
+    from {
+      height: 0;
+      opacity: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+      opacity: 1;
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+      opacity: 1;
+    }
+    to {
+      height: 0;
+      opacity: 0;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes dialog-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.97);
+    }
+  }
+  @keyframes dialog-out {
+    to {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+  }
+  @keyframes sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+  }
+  @keyframes sheet-out {
+    to {
+      transform: translateY(100%);
+    }
+  }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(calc(var(--marquee-dir, -1) * 50%));
+    }
+  }
+  @keyframes drift {
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(6%, -4%, 0) scale(1.08);
+    }
+    100% {
+      transform: translate3d(-5%, 5%, 0) scale(0.96);
+    }
+  }
+  @keyframes scroll-cue {
+    0% {
+      transform: scaleY(0);
+      transform-origin: top;
+    }
+    45% {
+      transform: scaleY(1);
+      transform-origin: top;
+    }
+    55% {
+      transform: scaleY(1);
+      transform-origin: bottom;
+    }
+    100% {
+      transform: scaleY(0);
+      transform-origin: bottom;
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   2. Semantic tokens (what components consume)
+   ────────────────────────────────────────────────────────────── */
+:root {
+  --background: var(--color-sand-100);
+  --foreground: var(--color-ink-900);
+  --surface: #fffdf9;
+  --surface-sunken: var(--color-sand-200);
+  --muted: var(--color-sand-200);
+  --muted-foreground: var(--color-ink-500);
+  --border: #e5dccb;
+  --border-strong: var(--color-sand-400);
+
+  --primary: var(--color-gold-400);
+  --primary-hover: var(--color-gold-300);
+  --primary-foreground: var(--color-ink-900);
+  /* Gold used as *text* on light surfaces must be the deep shade (5.6:1). */
+  --accent-text: var(--color-gold-700);
+  --secondary: var(--color-teal-500);
+  --secondary-hover: var(--color-teal-600);
+  --secondary-foreground: #ffffff;
+  --secondary-text: var(--color-teal-500);
+  --inverse: var(--color-ink-900);
+  --inverse-foreground: var(--color-sand-100);
+  --inverse-muted: var(--color-ink-300);
+  --ring: var(--color-teal-400);
+
+  --success: #1b7a4b;
+  --success-soft: #e2f1e8;
+  --warning: #9a5b00;
+  --warning-soft: #faefd9;
+  --danger: #b4261e;
+  --danger-soft: #f9e3e1;
+  --info: #1d5fa6;
+  --info-soft: #e2ecf7;
+
+  --shadow-rgb: 11 27 43;
+  --grain-opacity: 0.035;
+
+  /* Latin defaults; Arabic overrides below. */
+  --font-body: var(--font-inter), var(--font-plex-arabic), system-ui, sans-serif;
+  --font-heading: var(--font-instrument), var(--font-alexandria), Georgia, serif;
+  --lh-display: 1.04;
+  --lh-heading: 1.2;
+  --lh-body: 1.6;
+  --ls-display: -0.02em;
+  --ls-overline: 0.16em;
+
+  color-scheme: light;
+}
+
+.dark {
+  --background: var(--color-ink-950);
+  --foreground: var(--color-sand-100);
+  --surface: #0f2032;
+  --surface-sunken: #0b1826;
+  --muted: #132638;
+  --muted-foreground: var(--color-ink-300);
+  --border: #1f3346;
+  --border-strong: #2d4458;
+
+  --primary: var(--color-gold-400);
+  --primary-hover: var(--color-gold-300);
+  --primary-foreground: var(--color-ink-950);
+  --accent-text: var(--color-gold-300);
+  --secondary: var(--color-teal-300);
+  --secondary-hover: var(--color-teal-200);
+  --secondary-foreground: var(--color-ink-950);
+  --secondary-text: var(--color-teal-300);
+  --inverse: #0d1c2c;
+  --inverse-foreground: var(--color-sand-100);
+  --inverse-muted: var(--color-ink-300);
+  --ring: var(--color-teal-300);
+
+  --success: #5bc08b;
+  --success-soft: rgb(91 192 139 / 0.12);
+  --warning: #e8a944;
+  --warning-soft: rgb(232 169 68 / 0.12);
+  --danger: #f07c72;
+  --danger-soft: rgb(240 124 114 / 0.12);
+  --info: #6fa8e8;
+  --info-soft: rgb(111 168 232 / 0.12);
+
+  --shadow-rgb: 0 0 0;
+  --grain-opacity: 0.05;
+
+  color-scheme: dark;
+}
+
+/* Arabic script: no tracking (it breaks letter joins), roomier leading for ascenders/dots. */
+:root:lang(ar) {
+  --font-body: var(--font-plex-arabic), var(--font-inter), system-ui, sans-serif;
+  --font-heading: var(--font-alexandria), var(--font-plex-arabic), system-ui, sans-serif;
+  --lh-display: 1.3;
+  --lh-heading: 1.45;
+  --lh-body: 1.85;
+  --ls-display: 0;
+  --ls-overline: 0;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent-text: var(--accent-text);
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary-text: var(--secondary-text);
+  --color-inverse: var(--inverse);
+  --color-inverse-foreground: var(--inverse-foreground);
+  --color-inverse-muted: var(--inverse-muted);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   3. Base
+   ────────────────────────────────────────────────────────────── */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+
+  html {
+    --marquee-dir: -1;
+    overflow-x: clip;
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
+
+  [dir="rtl"] {
+    --marquee-dir: 1;
+  }
+
+  body {
+    min-height: 100dvh;
+    overflow-x: clip;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--lh-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+
+  /* Editorial paper grain. Purely decorative; fixed so it costs one composite layer. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Arabic: never letter-space (breaks the cursive joins). */
+  *:lang(ar) {
+    letter-spacing: 0 !important;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background-color: var(--color-gold-200);
+    color: var(--color-ink-900);
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+  }
+
+  /* Radix renders invisible native inputs (for form events) shifted by translateX(-100%).
+     In RTL that shift lands on the scrollable side and widens the page; keep them in place. */
+  input[aria-hidden="true"][style*="translateX(-100%)"] {
+    transform: none !important;
+  }
+
+  /* Mobile Safari zooms into inputs below 16px. */
+  @media (max-width: 640px) {
+    input,
+    textarea,
+    select {
+      font-size: max(16px, 1em);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   4. Utilities
+   ────────────────────────────────────────────────────────────── */
+@utility container-page {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2.5rem);
+}
+
+@utility eyebrow {
+  font-size: var(--text-overline);
+  line-height: var(--text-overline--line-height);
+  letter-spacing: var(--ls-overline);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Boarding-pass tear line: semicircle notches at each end of a dashed rule. */
+@utility perforation {
+  position: relative;
+  background-image: linear-gradient(to right, var(--border-strong) 50%, transparent 0);
+  background-size: 10px 1.5px;
+  background-repeat: repeat-x;
+  background-position: center;
+  height: 1.5px;
+}
+
+@utility skeleton-shimmer {
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    color-mix(in oklab, var(--surface) 70%, transparent) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+/* Directional icons (arrows, chevrons) point the reading direction. */
+@utility flip-rtl {
+  &:where([dir="rtl"], [dir="rtl"] *) {
+    transform: scaleX(-1);
+  }
+}
