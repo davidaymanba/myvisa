@@ -1,4 +1,4 @@
-# Handoff — start of Phase 3 (backend foundation)
+# Handoff — Phase 3 done, waiting for the client's review
 
 Read this first in a new session, then `visa-platform-prompt.md` (the brief), `docs/ARCHITECTURE.md` and `docs/DESIGN.md`.
 
@@ -7,53 +7,49 @@ Read this first in a new session, then `visa-platform-prompt.md` (the brief), `d
 | Phase | Status |
 |---|---|
 | 1 — Design system, Prisma schema, shared logic | ✅ done |
-| 2 — Public website (ar/en), redesigned bold and motion-led at the client's request | ✅ done, approved to move on |
-| **3 — Backend foundation** | **⏭ next** |
-| 4–7 | not started |
+| 2 — Public website (ar/en), bold and motion-led | ✅ done |
+| 3 — Backend foundation + admin CMS | ✅ done, **waiting for client review** |
+| **4 — Apply wizard, uploads, payments, notifications** | ⏭ next (don't start without the go-ahead) |
+| 5–7 | not started |
 
-Green as of handoff: `pnpm typecheck`, `pnpm lint`, `pnpm test` (47 tests), `pnpm build` (every page SSG), `pnpm db:validate`. Not a git repo yet; ask the user before running `git init` or committing.
+Green as of handoff: `pnpm typecheck`, `pnpm lint`, `pnpm test` (59 shared + 20 API unit), `pnpm test:e2e` (30 API e2e on a disposable DB), `pnpm build`, `pnpm db:validate`.
 
-## Working agreements with the client
+Git: the client created a repo with one commit ("add files") during Phase 3. Phase 3 work is **uncommitted**; ask before committing.
 
-- They write in Egyptian Arabic. Reply in Egyptian Arabic and keep code and technical terms in English.
-- **Design is the top priority.** They want a very distinctive, animated design, never generic. Every new screen, including admin, should feel like the public site. Keep reduced-motion support and correct RTL.
-- Stop after each phase for their review. Don't roll into Phase 4.
-- Verify UI with screenshots before reporting: run `pnpm build && pnpm --filter @myvisa/web start`, then `pnpm visual-tour http://localhost:3100/ shot 1440 light 900 20` and read the PNGs. Port 3000 on this machine belongs to another app, so ours uses 3100.
+## Running it locally
 
-## Phase 3 scope (from the brief)
+```bash
+cp -n .env.example .env && cp -n apps/web/.env.example apps/web/.env.local
+pnpm install                # also runs `prisma generate`
+pnpm infra:up               # postgres :5442, redis :6390, mailpit :8035 (ports offset; 5432/6379/4000 are taken on this machine)
+pnpm db:deploy && pnpm db:seed
+pnpm --filter @myvisa/api build && pnpm --filter @myvisa/api start    # API :4100, Swagger at /docs
+pnpm --filter @myvisa/web build && pnpm --filter @myvisa/web start    # web :3100
+```
 
-"DB schema, auth, services/pricing API, admin CMS". Concretely:
+Admin: http://localhost:3100/admin/login with phone `0500000001` (SEED_ADMIN_PHONE) and the dev code `000000` (OTP_DEV_CODE; refused in production).
 
-1. **Infra.** Add a `docker-compose.yml` with Postgres 17, Redis 7, Mailpit, and ClamAV (optional). Add `.env.example` files. Make config typed with Zod.
-2. **`apps/api` (NestJS).** The module layout is already planned in `docs/ARCHITECTURE.md`. Include:
-   - Swagger at `/docs`
-   - helmet and CORS
-   - a global ValidationPipe (or Zod pipes)
-   - problem+json errors
-   - pino logging
-   - health checks
-   - Sentry hook (no-op until a DSN is set)
-3. **Database.** Use Prisma 7 (`packages/db`, `prisma.config.ts`, generator `prisma-client`, which needs a driver adapter such as `@prisma/adapter-pg`). Write the first migration. Write `seed.ts` from the **existing shared catalog** (`DESTINATIONS`, `NATIONALITIES`, `SERVICE_CATEGORIES`, `INSURANCE_PLANS`, `LEGAL_DOCUMENTS`, company settings in `apps/web/src/lib/company.ts`) so the DB and the site start identical.
-4. **Auth.**
-   - Phone OTP with an SMS provider adapter (Unifonic or Taqnyat). Use a console provider in dev.
-   - Store the OTP hashed, with attempt limits and rate limiting in Redis.
-   - JWT access token plus rotating refresh token in httpOnly cookies, with family revocation on reuse (see the `Session` model).
-   - RBAC roles: CUSTOMER, AGENT, ACCOUNTANT, MANAGER, SUPER_ADMIN. Define the permission matrix in code.
-   - CSRF protection for cookie auth.
-5. **Catalog/pricing API.** Public read endpoints for destinations, visas, the finder query (`matchVisa`/`pickVisa` semantics from `packages/shared/src/catalog/helpers.ts`), services and pricing. Admin CRUD for countries, services, price rules, requirements, FAQs and settings.
-6. **Audit.** An interceptor writes `AuditLog` for every staff mutation. Add a PDPL `Consent` ledger endpoint.
-7. **Admin CMS UI** in `apps/web/src/app/[locale]/admin` (protected by middleware):
-   - login with OTP
-   - catalog editor (countries, visas, price rules with a live `PriceBreakdown` preview, requirements)
-   - settings editor (company info, WhatsApp ETA, refund-policy version)
-8. **Wire the website to the API**, falling back to the shared catalog at build time:
-   - destinations, finder and pricing read from the API (ISR / `revalidateTag`)
-   - the contact form posts for real
-   - testimonials come from the `Testimonial` table
-   - the blog (MDX in `BlogPost`) can land here with the CMS
-9. **Tests.** Unit tests for auth, OTP and price rules. E2E for the API with supertest against a disposable DB.
+## What Phase 3 delivered
 
-**Ask the user before starting:** which SMS provider to use (Unifonic or Taqnyat). Assume console/dev mode until they have credentials. Payments (Moyasar or Tap) belong to Phase 4.
+- **Infra:** `docker-compose.yml` (Postgres 17, Redis 7, Mailpit, ClamAV behind `--profile scan`), `.env.example` files, Zod-validated env (`apps/api/src/config/env.ts`) that refuses dev shortcuts in production.
+- **DB:** first migration; schema aligned with the shared catalog (VISA_FREE kind, AMERICAS region, destination fields on `Country`, bilingual `Testimonial`, `ContactMessage`). `pnpm db:seed` loads `packages/shared` into the DB (idempotent: catalog overwritten, settings/testimonials only created when missing). An e2e test proves `GET /api/v1/catalog` deep-equals `DESTINATIONS`.
+- **API (`apps/api`, NestJS 12, bundled by tsup + SWC):** problem+json errors with stable `code`s, pino, helmet, CORS, Zod DTOs from shared schemas (nestjs-zod), Swagger at `/docs`, `/health` + `/health/live`, Sentry (no-op without DSN), Redis-backed rate limiting.
+  - Auth: phone OTP (hashed in Redis, 5 attempts, 60s resend cooldown, hourly cap, per-IP cap; audit row in `OtpChallenge`), SMS adapters for **Unifonic and Taqnyat** chosen by `SMS_PROVIDER` (console in dev), HS256 access JWT (15 min) + rotating refresh token in httpOnly cookies, family revocation on reuse (10 s grace for parallel tabs), CSRF = Origin check + double-submit `mv_csrf` cookie / `x-csrf-token` header.
+  - RBAC matrix in `packages/shared/src/rbac.ts`; role and active flag re-read from the DB on every authenticated call.
+  - Catalog: public `GET /catalog`, `/catalog/finder`, `/catalog/destinations/:slug`; admin CRUD for countries, services, price rules (VISA_FREE ⇒ no service fee, no duplicate live rule), requirements (+ reorder), FAQs; settings; testimonials (publishing needs `consentedAt`); contact inbox; PDPL consent ledger (`POST /consents`, `GET /consents/me`).
+  - `AuditInterceptor` logs every staff mutation with before/after. Edits drop the Redis cache and call the web app's `/api/revalidate` (tags `catalog` · `settings` · `testimonials`).
+- **Website:** reads catalog/settings/testimonials through `apps/web/src/lib/api/server.ts` (ISR 5 min + tags) and falls back to the shared data when the API is down, so builds never depend on it. `/api/v1/*` is proxied to the API by a Next rewrite (cookies stay first-party). Contact form posts for real (honeypot, 5/hour/IP). `lib/company.ts` is gone (values live in `DEFAULT_SETTINGS`).
+- **Admin (`/admin`, `/en/admin`):** middleware gate (staff JWT) → login (RUH→OPS boarding-pass card, silent refresh, stamp on success) · overview (counters, audit feed) · destinations grid · destination editor (cinematic hero; visas as tickets; price rules with live `PriceBreakdown`; document checklist with reorder; FAQs; full profile form with save bar) · inbox · testimonials · settings · audit log. Admin strings live in `apps/web/src/messages/admin/{ar,en}.json` and are only sent to the client under `/admin`.
+
+## Left open on purpose
+
+- Blog/MDX CMS: not built (BlogPost model exists).
+- Service-category marketing pages, legal texts and the hero route arcs are still static from `packages/shared`.
+- Staff management UI (`staff:manage`) — create staff by setting `User.role` in the DB for now.
+
+## Phase 4 starting points
+
+Apply wizard + uploads (S3/R2 presigned, ClamAV), Moyasar or Tap (ask the client), notifications (WhatsApp/SMS/email via queues), price snapshot on `Order` using `calculatePrice` + `resolvePriceRule` (`apps/api/src/modules/catalog/catalog.mapper.ts`), consent capture before payment using the `legal.*Version` settings.
 
 ## Hard-won gotchas (don't rediscover these)
 
@@ -69,6 +65,12 @@ Green as of handoff: `pnpm typecheck`, `pnpm lint`, `pnpm test` (47 tests), `pnp
 - **Arabic copy uses Latin digits.** Prices are formatted with `formatMoney` (`ar-SA-u-nu-latn`).
 - **`VISA_FREE` options carry no service fee.** A test enforces this.
 - **Locale routing:** Arabic is the default at `/`, English at `/en`. `localeDetection` is off on purpose.
+- **API bundling:** workspace packages ship TS source, so the API is bundled by tsup (`noExternal: @myvisa/*`); tsup switches to SWC because `emitDecoratorMetadata` is on — without it Nest DI breaks. Vitest uses `unplugin-swc` for the same reason.
+- **Prisma 7 client** is generated into `packages/db/src/generated` (gitignored) by `postinstall`. The API depends on `@prisma/client`/`@prisma/adapter-pg` directly because the bundled db code resolves them from `apps/api`.
+- **OTP limits bite during QA:** 5 codes per phone per hour. In dev clear them with `docker compose exec redis sh -c "redis-cli --scan --pattern 'otp:*' | xargs -r redis-cli del"`. `scripts/admin-tour.mjs` signs in and screenshots admin pages.
+- **Next layouts must type `params.locale` as `string`** (cast to `Locale` inside), or `next build` fails the LayoutProps check.
+- **Stopping `next start`:** the process is named `next-server`, so `pkill -f "next start"` misses it; kill by port (`lsof -iTCP:3100`).
+- **Cookies:** refresh cookie path is `/api/v1/auth` and `SameSite=Strict`; the web middleware only sees `mv_at`. In production set `COOKIE_DOMAIN` and add every site origin (www, previews) to `CORS_ORIGINS`, or the CSRF Origin check blocks their writes.
 
 ## Open items the client must handle before launch
 
@@ -81,4 +83,6 @@ Green as of handoff: `pnpm typecheck`, `pnpm lint`, `pnpm test` (47 tests), `pnp
   - retention periods
   - the "Arabic prevails" clause
   - when "review started" begins, which decides the 50% refund
-- CR number, VAT number, phone and address are placeholders in `apps/web/src/lib/company.ts`.
+- CR number, VAT number, phone and address are placeholders — edit them in **Admin → Settings**.
+- Testimonials are seeded as placeholders (flagged in the admin). Replace with real, consented reviews or unpublish them.
+- Production secrets: `JWT_ACCESS_SECRET` (same value in API and web), `HASH_PEPPER`, `REVALIDATE_SECRET`, SMS credentials, `SENTRY_DSN`.

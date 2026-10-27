@@ -540,3 +540,13 @@
     transform: scaleX(-1);
   }
 }
+
+/* Slow push-in on admin destination heroes (the global reduced-motion guard stops it). */
+@keyframes kenburns {
+  from {
+    transform: scale(1.04);
+  }
+  to {
+    transform: scale(1.14) translate3d(-1.5%, -1%, 0);
+  }
+}

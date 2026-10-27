@@ -590,45 +590,7 @@
     "testimonials": {
       "eyebrow": "Travellers",
       "title": "They came back",
-      "titleAccent": "to tell us.",
-      "items": [
-        {
-          "name": "Noura A.",
-          "city": "Riyadh",
-          "service": "Schengen · France",
-          "quote": "For the first time I knew exactly what I paid the embassy. The slot was booked in two days and the visa came early."
-        },
-        {
-          "name": "Abdullah Q.",
-          "city": "Jeddah",
-          "service": "United Kingdom",
-          "quote": "I was worried about a refusal. The team caught an issue in my bank statement before submission. Grateful."
-        },
-        {
-          "name": "Mohammed S.",
-          "city": "Dammam",
-          "service": "Family · Turkey",
-          "quote": "One application for my whole family, and the WhatsApp updates were excellent. I never had to call."
-        },
-        {
-          "name": "Sara D.",
-          "city": "Khobar",
-          "service": "Study · Germany",
-          "quote": "Student files are complicated, but they organised it step by step. I recommend them to any student."
-        },
-        {
-          "name": "Ahmed M.",
-          "city": "Makkah",
-          "service": "USA",
-          "quote": "They found me an interview slot a month earlier than I could. A genuinely premium experience."
-        },
-        {
-          "name": "Reem Z.",
-          "city": "Riyadh",
-          "service": "Japan",
-          "quote": "Simple, clear prices, and my passport came back to my door with a courier."
-        }
-      ]
+      "titleAccent": "to tell us."
     },
     "faq": {
       "eyebrow": "FAQ",
@@ -860,7 +822,9 @@
     "errors": {
       "name": "Please enter your name.",
       "invalid_saudi_mobile": "That isn't a valid Saudi mobile. Example: 05XXXXXXXX",
-      "message": "Write at least 10 characters."
+      "message": "Write at least 10 characters.",
+      "server": "We couldn't send your message right now. Try again shortly, or message us on WhatsApp.",
+      "rateLimited": "You've sent several messages in a short time. Try again in an hour, or message us on WhatsApp."
     },
     "directions": "Get directions",
     "consent": "By sending this message you agree to us contacting you about your enquiry under our privacy policy."

@@ -9,8 +9,11 @@
 // - Enums mirrored in packages/shared for the frontend — keep in sync.
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  runtime             = "nodejs"
+  moduleFormat        = "esm"
+  importFileExtension = ""
 }
 
 datasource db {
@@ -154,46 +157,67 @@ model Consent {
 // Catalog: countries, services, pricing, requirements
 // ─────────────────────────────────────────────────────────────
 
+/// Mirrors `Region` in packages/shared (plus GCC for nationality-only rows).
 enum Region {
   GCC
   MIDDLE_EAST
   EUROPE
   ASIA
   AFRICA
-  NORTH_AMERICA
-  SOUTH_AMERICA
+  AMERICAS
   OCEANIA
 }
 
 /// Every country — used both as destination and as traveler nationality.
+/// Destination-only fields are nullable so nationality-only rows stay small; the API requires them when isDestination.
 model Country {
-  id              String   @id @default(cuid(2))
-  iso2            String   @unique @db.Char(2)
-  iso3            String   @unique @db.Char(3)
-  slug            String   @unique
-  nameAr          String
-  nameEn          String
-  nationalityAr   String
-  nationalityEn   String
-  region          Region
-  isDestination   Boolean  @default(false)
-  isPopular       Boolean  @default(false)
-  sortOrder       Int      @default(0)
-  heroImageUrl    String?
-  heroImageAlt    String?
-  /// IATA code of the main hub, used for route visuals (e.g. "IST").
-  mainAirportIata String?  @db.Char(3)
-  overviewAr      String?
-  overviewEn      String?
-  seoTitleAr      String?
-  seoTitleEn      String?
-  seoDescAr       String?
-  seoDescEn       String?
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                   String   @id @default(cuid(2))
+  iso2                 String   @unique @db.Char(2)
+  iso3                 String?  @unique @db.Char(3)
+  slug                 String   @unique
+  nameAr               String
+  nameEn               String
+  /// Demonym shown in the finder's nationality picker ("مصري" / "Egyptian"). Null = not offered as a nationality.
+  nationalityAr        String?
+  nationalityEn        String?
+  /// Position in the nationality picker (most common resident nationalities first).
+  nationalitySortOrder Int      @default(0)
+  region               Region?
+  isDestination        Boolean  @default(false)
+  isPopular            Boolean  @default(false)
+  isSchengen           Boolean  @default(false)
+  sortOrder            Int      @default(0)
+  /// Unsplash photo id (the part after "photo-"). Uploaded images arrive with S3 storage in Phase 4.
+  imageId              String?
+  imageAltAr           String?
+  imageAltEn           String?
+  /// IATA code of the main hub, used for stamps and route visuals (e.g. "IST").
+  mainAirportIata      String?  @db.Char(3)
+  latitude             Float?
+  longitude            Float?
+  capitalAr            String?
+  capitalEn            String?
+  taglineAr            String?
+  taglineEn            String?
+  overviewAr           String?
+  overviewEn           String?
+  bestTimeAr           String?
+  bestTimeEn           String?
+  /// Approximate flight time from Riyadh, hours.
+  flightHours          Float?
+  currency             String?  @db.Char(3)
+  /// Travel-insurance service cross-sold on the destination page.
+  insuranceServiceId   String?
+  seoTitleAr           String?
+  seoTitleEn           String?
+  seoDescAr            String?
+  seoDescEn            String?
+  isActive             Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
-  services       Service[]
+  insurance      Service?        @relation("CountryInsurance", fields: [insuranceServiceId], references: [id], onDelete: SetNull)
+  services       Service[]       @relation("ServiceCountry")
   priceRules     PriceRule[]     @relation("PriceRuleNationality")
   orders         Order[]         @relation("OrderDestination")
   travelers      Traveler[]
@@ -223,6 +247,7 @@ enum TravelPurpose {
 }
 
 enum VisaKind {
+  VISA_FREE // no visa needed; we still list requirements and checks
   E_VISA
   STICKER // embassy / visa-centre submission
   VISA_ON_ARRIVAL
@@ -264,7 +289,8 @@ model Service {
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
 
-  country        Country?          @relation(fields: [countryId], references: [id])
+  country        Country?          @relation("ServiceCountry", fields: [countryId], references: [id])
+  insuredIn      Country[]         @relation("CountryInsurance")
   priceRules     PriceRule[]
   requirements   Requirement[]
   faqs           Faq[]
@@ -1026,24 +1052,60 @@ model Faq {
   @@index([scope, sortOrder])
 }
 
+/// Only publish real, consented reviews (PDPL + consumer-protection). Seeded rows are placeholders.
 model Testimonial {
-  id         String        @id @default(cuid(2))
-  authorName String
-  city       String?
-  rating     Int // 1–5
-  quoteAr    String
-  quoteEn    String?
-  serviceId  String?
-  status     PublishStatus @default(DRAFT)
-  sortOrder  Int           @default(0)
-  createdAt  DateTime      @default(now())
+  id             String        @id @default(cuid(2))
+  authorNameAr   String
+  authorNameEn   String?
+  cityAr         String?
+  cityEn         String?
+  /// Free-text label under the name, e.g. "شنغن · فرنسا". Optional link to the catalog service below.
+  serviceLabelAr String?
+  serviceLabelEn String?
+  rating         Int // 1–5
+  quoteAr        String
+  quoteEn        String?
+  serviceId      String?
+  /// Customer agreed to have the review published (date of consent).
+  consentedAt    DateTime?
+  isPlaceholder  Boolean       @default(false)
+  status         PublishStatus @default(DRAFT)
+  sortOrder      Int           @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   service Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+
+  @@index([status, sortOrder])
 }
 
 // ─────────────────────────────────────────────────────────────
 // Platform
 // ─────────────────────────────────────────────────────────────
+
+enum ContactTopic {
+  VISA
+  ORDER
+  INSURANCE
+  BUSINESS
+  OTHER
+}
+
+/// Inbound messages from the public contact form.
+model ContactMessage {
+  id        String       @id @default(cuid(2))
+  name      String
+  phone     String
+  topic     ContactTopic
+  message   String
+  locale    Locale       @default(ar)
+  ip        String?
+  userAgent String?
+  handledAt DateTime?
+  createdAt DateTime     @default(now())
+
+  @@index([handledAt, createdAt])
+}
 
 /// Key/value config editable from the admin: company legal info (CR, VAT no., address), support hours,
 /// WhatsApp ETA, refund-policy version, ZATCA EGS details. Values validated by Zod per key.

@@ -1,4 +1,4 @@
-import { DESTINATIONS, getDestination, type AppLocale } from "@myvisa/shared";
+import type { AppLocale } from "@myvisa/shared";
 import { ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
@@ -19,7 +19,7 @@ import { SplitReveal } from "@/components/motion/split-reveal";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
-import { COMPANY } from "@/lib/company";
+import { getCatalog, getSettings } from "@/lib/api/server";
 import { SITE_URL, jsonLd, pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
@@ -32,9 +32,11 @@ export default function HomePage({ params }: { params: Promise<{ locale: Locale 
   const { locale } = use(params);
   setRequestLocale(locale);
   const t = useTranslations("home");
-  const popular = DESTINATIONS.filter((d) => d.popular);
+  const { destinations } = use(getCatalog());
+  const { company } = use(getSettings());
+  const popular = destinations.filter((d) => d.popular);
   // Pricing explainer example: Schengen tourism for France, Saudi citizen.
-  const france = getDestination("france")?.visas.find((v) => v.purpose === "TOURISM")?.pricing.find((p) => p.applicant === "SAUDI_CITIZEN");
+  const france = destinations.find((d) => d.slug === "france")?.visas.find((v) => v.purpose === "TOURISM")?.pricing.find((p) => p.applicant === "SAUDI_CITIZEN");
   const faq = t.raw("faq.items") as { q: string; a: string }[];
 
   const organization = {
@@ -42,9 +44,9 @@ export default function HomePage({ params }: { params: Promise<{ locale: Locale 
     "@type": "TravelAgency",
     name: locale === "ar" ? "ماي فيزا" : "myvisa",
     url: SITE_URL,
-    telephone: COMPANY.phone,
-    email: COMPANY.email,
-    address: { "@type": "PostalAddress", streetAddress: COMPANY.address[locale as AppLocale], addressLocality: "Riyadh", addressCountry: "SA" },
+    telephone: company.phone,
+    email: company.email,
+    address: { "@type": "PostalAddress", streetAddress: company.address[locale as AppLocale], addressLocality: "Riyadh", addressCountry: "SA" },
     areaServed: "SA",
   };
   const faqLd = {

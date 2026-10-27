@@ -1,16 +1,18 @@
 import { SiWhatsapp } from "@icons-pack/react-simple-icons";
 import { ArrowUpRight } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { use } from "react";
 import { PassportStamp } from "@/components/brand/passport-stamp";
 import { Magnetic } from "@/components/motion/magnetic";
 import { Reveal } from "@/components/motion/reveal";
 import { SplitReveal } from "@/components/motion/split-reveal";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { COMPANY } from "@/lib/company";
+import { getSettings, whatsappHref } from "@/lib/api/server";
 
 export function FinalCta() {
   const t = useTranslations("home.cta");
+  const { support } = use(getSettings());
   return (
     <section className="container-page py-16 sm:py-24">
       <div data-surface="dark" className="dark relative isolate overflow-hidden rounded-[2.5rem] bg-ink-950 px-6 py-20 text-center text-foreground sm:px-12 sm:py-28">
@@ -39,7 +41,7 @@ export function FinalCta() {
             </Button>
           </Magnetic>
           <Button asChild size="lg" variant="outline" className="h-16 border-white/20 px-7 hover:bg-white/10">
-            <a href={`https://wa.me/${COMPANY.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer">
+            <a href={whatsappHref(support.whatsapp)} target="_blank" rel="noopener noreferrer">
               <SiWhatsapp className="text-[#25D366]" aria-hidden />
               {t("secondary")}
             </a>

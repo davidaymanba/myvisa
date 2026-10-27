@@ -13,7 +13,15 @@
     "test": "turbo run test",
     "db:validate": "pnpm --filter @myvisa/db validate",
     "db:generate": "pnpm --filter @myvisa/db generate",
-    "visual-tour": "node scripts/visual-tour.mjs"
+    "visual-tour": "node scripts/visual-tour.mjs",
+    "infra:up": "docker compose up -d postgres redis mailpit",
+    "infra:down": "docker compose down",
+    "db:migrate": "pnpm --filter @myvisa/db migrate",
+    "db:deploy": "pnpm --filter @myvisa/db migrate:deploy",
+    "db:seed": "pnpm --filter @myvisa/db seed",
+    "db:reset": "pnpm --filter @myvisa/db reset",
+    "test:e2e": "pnpm --filter @myvisa/api test:e2e",
+    "admin-tour": "node scripts/admin-tour.mjs"
   },
   "devDependencies": {
     "turbo": "^2.11.10",

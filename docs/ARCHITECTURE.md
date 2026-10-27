@@ -31,6 +31,8 @@ myvisa/
 │   │       │       └── admin/            ⏳ P6  dashboard, orders (kanban/table), documents review,
 │   │       │                                    catalog (countries, services, price rules, requirements),
 │   │       │                                    coupons, customers, content, staff & roles, audit log
+│   │       │                                    ✅ P3 already: login (OTP), overview, destinations + visa/price/
+│   │       │                                    requirement/FAQ editor, inbox, testimonials, settings, audit log
 │   │       ├── components/
 │   │       │   ├── ui/                   ✅ primitives (Radix + cva): button, field, input, select, choice,
 │   │       │   │                            badge, card, tabs, accordion, dialog, tooltip, alert, progress,
@@ -47,10 +49,12 @@ myvisa/
 │   │       │   └── wizard/ tracking/ admin/   ⏳ P4–P6
 │   │       ├── i18n/                     ✅ routing, navigation, request config
 │   │       ├── messages/{ar,en}.json     ✅ type-checked keys (src/global.d.ts)
-│   │       ├── lib/                      ✅ cn(); ⏳ api client (typed from OpenAPI), auth helpers, seo
-│   │       └── middleware.ts             ✅ locale routing; ⏳ auth guard for (account)/admin
+│   │       ├── lib/                      ✅ cn(), seo; ✅ P3 api/server.ts (ISR + fallback), api/client.ts (CSRF + refresh)
+│   │       └── middleware.ts             ✅ locale routing; ✅ admin gate (staff JWT); ⏳ (account) gate
 │   │
-│   └── api/                              ⏳ P3  NestJS REST API (OpenAPI at /docs)
+│   └── api/                              ✅ P3  NestJS REST API (OpenAPI at /docs) — ✅ built: config, common,
+│       │                                        infra (prisma, redis, throttler), auth, catalog, settings, content,
+│       │                                        contact, consents, audit, revalidate, health · ⏳ the rest below
 │       ├── src/
 │       │   ├── main.ts                   helmet, CORS, cookie-parser, global ValidationPipe, versioning
 │       │   ├── app.module.ts
@@ -78,11 +82,11 @@ myvisa/
 │   │   └── src/  money.ts · pricing.ts · order-status.ts · phone.ts · digits.ts  (all tested)
 │   │       ├── catalog/  types · destinations (20 countries, sample data) · services · helpers (pickVisa, matchVisa…)
 │   │       └── content/  legal (terms, refund, privacy — drafts pending legal review)
-│   └── db/                               ✅ Prisma 7 schema (35 models) + prisma.config.ts
-│       └── prisma/ schema.prisma · ⏳ migrations/ · ⏳ seed.ts (15+ destinations, P3)
+│   └── db/                               ✅ Prisma 7 schema + prisma.config.ts + createPrismaClient()
+│       └── prisma/ schema.prisma · ✅ migrations/ · ✅ seed.ts (src/seed: shared catalog → DB)
 │
 ├── docs/                                 ✅ ARCHITECTURE.md · DESIGN.md
-├── ⏳ docker-compose.yml                  P3  postgres 17, redis 7, mailpit, clamav
+├── ✅ docker-compose.yml                  postgres 17, redis 7, mailpit, clamav (profile "scan")
 ├── ⏳ .github/workflows/ci.yml            P7  lint · typecheck · test · build · playwright
 └── turbo.json · pnpm-workspace.yaml · tsconfig.base.json
 ```
@@ -100,3 +104,7 @@ myvisa/
 | **Encrypted PII + blind index** | Passport/ID numbers are AES-GCM ciphertext; an HMAC column allows exact lookups without decrypting. |
 | **Append-only `Consent`, `AuditLog`, `Invoice`** | PDPL evidence, staff accountability, and ZATCA's "never edit an issued invoice" rule. |
 | **Arabic at `/`, English at `/en`, no auto-detect** | Arabic-first brand; many Saudi users run English-language phones but still expect the Arabic site. |
+| **Website reads the API with a build-time fallback** | The admin changes prices without a deploy (tag revalidation), yet a down API never breaks a build or a page: the shared catalog is the floor. |
+| **Browser → Next → API proxy (`/api/v1/*`)** | Auth cookies stay first-party; no CORS in the browser path; one origin to protect with CSRF checks. |
+| **Zod schemas shared by API DTOs and admin forms** | One definition of "valid" (e.g. visa-free ⇒ no fee, publish ⇒ consent) enforced on both sides. |
+| **Refresh-token families** | Rotation on every refresh; replaying an old token revokes the whole chain (stolen-token detection). |

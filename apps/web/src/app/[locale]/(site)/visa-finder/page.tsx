@@ -1,4 +1,4 @@
-import { DESTINATIONS, NATIONALITIES, type AppLocale } from "@myvisa/shared";
+import type { AppLocale } from "@myvisa/shared";
 import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -7,7 +7,7 @@ import type { VisaTabData } from "@/components/destinations/visa-tabs";
 import { VisaFinder, type FinderDestination } from "@/components/finder/visa-finder";
 import { PageHero } from "@/components/layout/page-hero";
 import type { Locale } from "@/i18n/routing";
-import { COMPANY } from "@/lib/company";
+import { getCatalog, getSettings } from "@/lib/api/server";
 import { unsplash } from "@/lib/images";
 import { pageMetadata } from "@/lib/seo";
 
@@ -24,7 +24,9 @@ export default function VisaFinderPage({ params }: { params: Promise<{ locale: L
   const t = useTranslations("finder");
   const tc = useTranslations("common");
 
-  const destinations: FinderDestination[] = DESTINATIONS.map((d) => ({
+  const catalog = use(getCatalog());
+  const { support } = use(getSettings());
+  const destinations: FinderDestination[] = catalog.destinations.map((d) => ({
     slug: d.slug,
     iso2: d.iso2,
     iata: d.iata,
@@ -56,7 +58,7 @@ export default function VisaFinderPage({ params }: { params: Promise<{ locale: L
       <PageHero eyebrow={t("eyebrow")} title={t("title")} accent={t("titleAccent")} crumbs={[{ label: t("eyebrow") }]} />
       <section className="container-page py-14 sm:py-20">
         <Suspense>
-          <VisaFinder destinations={destinations} nationalities={NATIONALITIES.map((n) => ({ iso2: n.iso2, name: n.name[l] }))} whatsapp={COMPANY.whatsapp} />
+          <VisaFinder destinations={destinations} nationalities={catalog.nationalities.map((n) => ({ iso2: n.iso2, name: n.name[l] }))} whatsapp={support.whatsapp} />
         </Suspense>
       </section>
     </>

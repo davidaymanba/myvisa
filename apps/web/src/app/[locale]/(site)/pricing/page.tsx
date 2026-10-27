@@ -1,4 +1,4 @@
-import { DESTINATIONS, LEGAL_DOCUMENTS, type AppLocale } from "@myvisa/shared";
+import { LEGAL_DOCUMENTS, type AppLocale } from "@myvisa/shared";
 import { ArrowUpRight, Check, Info } from "lucide-react";
 import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
@@ -12,6 +12,7 @@ import { PriceTable, type PriceRow } from "@/components/pricing/price-table";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
+import { getCatalog } from "@/lib/api/server";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
@@ -29,7 +30,7 @@ export default function PricingPage({ params }: { params: Promise<{ locale: Loca
   const principles = t.raw("principles") as string[];
   const refund = LEGAL_DOCUMENTS["refund-policy"];
 
-  const rows: PriceRow[] = DESTINATIONS.map((d) => ({
+  const rows: PriceRow[] = use(getCatalog()).destinations.map((d) => ({
     slug: d.slug,
     iso2: d.iso2,
     country: d.name[l],

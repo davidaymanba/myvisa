@@ -1,8 +1,10 @@
-import { DESTINATIONS, type AppLocale } from "@myvisa/shared";
+import type { AppLocale } from "@myvisa/shared";
 import { useLocale, useTranslations } from "next-intl";
+import { use } from "react";
 import { Flag } from "@/components/brand/flag";
 import { Counter } from "@/components/motion/counter";
 import { Marquee } from "@/components/motion/marquee";
+import { getCatalog } from "@/lib/api/server";
 
 // PLACEHOLDER figures — replace with real metrics (admin reports) before launch.
 const STATS = [
@@ -15,6 +17,7 @@ const STATS = [
 export function TrustStrip() {
   const t = useTranslations("home.trust");
   const locale = useLocale() as AppLocale;
+  const { destinations } = use(getCatalog());
 
   return (
     <section className="relative border-b border-border bg-background py-14 sm:py-20">
@@ -32,7 +35,7 @@ export function TrustStrip() {
       </div>
 
       <Marquee className="mt-14 sm:mt-20" duration={55} gap="2.5rem">
-        {DESTINATIONS.map((d) => (
+        {destinations.map((d) => (
           <span key={d.slug} className="flex shrink-0 items-center gap-3 font-display text-[clamp(1.5rem,1.2rem+1.2vw,2.5rem)] text-foreground/80">
             <Flag code={d.iso2} className="h-[0.7em] w-[1.05em] rounded-[4px]" />
             {d.name[locale]}

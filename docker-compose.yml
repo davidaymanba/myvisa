@@ -1,0 +1,53 @@
+# Local development services. Host ports are offset from the defaults so myvisa can run
+# next to other projects (5432/6379 are often taken). Override them in .env if needed.
+name: myvisa
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: myvisa
+      POSTGRES_PASSWORD: myvisa
+      POSTGRES_DB: myvisa
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5442}:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      # Creates the disposable myvisa_test database used by the API e2e suite.
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myvisa -d myvisa"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6390}:6379"
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "127.0.0.1:${MAILPIT_SMTP_PORT:-1035}:1025"
+      - "127.0.0.1:${MAILPIT_UI_PORT:-8035}:8025"
+
+  # Virus scanning for uploads (Phase 4). Heavy (~1 GB RAM), so it only starts with
+  # `docker compose --profile scan up`.
+  clamav:
+    image: clamav/clamav:stable
+    profiles: ["scan"]
+    ports:
+      - "127.0.0.1:${CLAMAV_PORT:-3310}:3310"
+
+volumes:
+  postgres:
+  redis:

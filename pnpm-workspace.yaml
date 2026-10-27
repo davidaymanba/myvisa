@@ -2,6 +2,8 @@ packages:
   - apps/*
   - packages/*
 allowBuilds:
+  # Telemetry pinger pulled in by swagger-ui-dist — never needed.
+  '@scarf/scarf': false
   '@parcel/watcher': true
   '@prisma/engines': true
   '@swc/core': true

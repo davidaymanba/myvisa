@@ -1,4 +1,3 @@
-import { DESTINATIONS } from "@myvisa/shared";
 import { Eye, Gauge, HeartHandshake, LockKeyhole } from "lucide-react";
 import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
@@ -14,6 +13,7 @@ import { Stagger, StaggerItem } from "@/components/motion/reveal";
 import { ScrollText } from "@/components/motion/scroll-text";
 import { Spotlight } from "@/components/motion/spotlight";
 import type { Locale } from "@/i18n/routing";
+import { getCatalog } from "@/lib/api/server";
 import { pageMetadata } from "@/lib/seo";
 
 const VALUE_ICONS = [Eye, Gauge, HeartHandshake, LockKeyhole];
@@ -30,9 +30,10 @@ export default function AboutPage({ params }: { params: Promise<{ locale: Locale
   const t = useTranslations("about");
   const story = t.raw("story") as string[];
   const values = t.raw("values") as { title: string; body: string }[];
+  const { destinations } = use(getCatalog());
   // PLACEHOLDER team/coverage numbers — confirm with operations before launch.
   const numbers = [
-    { v: DESTINATIONS.length, s: "+", k: "countries" },
+    { v: destinations.length, s: "+", k: "countries" },
     { v: 18, k: "specialists" },
     { v: 30, s: "+", k: "cities" },
     { v: 2, k: "hours" },

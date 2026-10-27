@@ -3,12 +3,33 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./seed": "./src/seed/index.ts"
+  },
   "scripts": {
     "validate": "prisma validate",
     "format": "prisma format",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "seed": "node --env-file-if-exists=../../.env --import tsx prisma/seed.ts",
+    "reset": "prisma migrate reset --force",
+    "studio": "prisma studio",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "prisma generate"
   },
   "devDependencies": {
-    "prisma": "7.10.1"
+    "@types/node": "^22.20.5",
+    "@types/pg": "^8.23.1",
+    "prisma": "7.10.1",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@myvisa/shared": "workspace:*",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "pg": "^8.23.1"
   }
 }

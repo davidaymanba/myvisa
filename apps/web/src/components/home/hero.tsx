@@ -1,13 +1,15 @@
-import { DESTINATIONS, NATIONALITIES, type AppLocale } from "@myvisa/shared";
+import type { AppLocale, Destination } from "@myvisa/shared";
 import { Star } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { use } from "react";
 import { SplitReveal } from "@/components/motion/split-reveal";
 import { FadeIn } from "@/components/motion/fade-in";
+import { getCatalog } from "@/lib/api/server";
 import { HeroExperience, type SearchDestination } from "./hero-experience";
 
 /** Slim, locale-resolved catalog for the client — keeps requirements/FAQs out of the JS bundle. */
-function searchData(locale: AppLocale): SearchDestination[] {
-  return DESTINATIONS.map((d) => ({
+function searchData(destinations: Destination[], locale: AppLocale): SearchDestination[] {
+  return destinations.map((d) => ({
     slug: d.slug,
     iso2: d.iso2,
     iata: d.iata,
@@ -35,6 +37,7 @@ function searchData(locale: AppLocale): SearchDestination[] {
 export function Hero() {
   const t = useTranslations("home.hero");
   const locale = useLocale() as AppLocale;
+  const { destinations, nationalities } = use(getCatalog());
 
   return (
     <section data-surface="dark" className="dark relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-ink-950 text-foreground">
@@ -47,8 +50,8 @@ export function Hero() {
       </div>
 
       <HeroExperience
-        destinations={searchData(locale)}
-        nationalities={NATIONALITIES.map((n) => ({ iso2: n.iso2, name: n.name[locale] }))}
+        destinations={searchData(destinations, locale)}
+        nationalities={nationalities.map((n) => ({ iso2: n.iso2, name: n.name[locale] }))}
         intro={
           <>
             <FadeIn delay={0.1}>

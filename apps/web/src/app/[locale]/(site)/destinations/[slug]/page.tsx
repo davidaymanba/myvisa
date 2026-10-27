@@ -1,4 +1,4 @@
-import { DESTINATIONS, INSURANCE_PLANS, formatMoney, getDestination, startingPrice, type AppLocale } from "@myvisa/shared";
+import { formatMoney, startingPrice, type AppLocale } from "@myvisa/shared";
 import { ArrowUpRight, Banknote, CalendarHeart, Landmark, Plane, ShieldPlus } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -19,16 +19,18 @@ import { SplitReveal } from "@/components/motion/split-reveal";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
+import { getCatalog, getDestinationBySlug } from "@/lib/api/server";
 import { unsplash } from "@/lib/images";
 import { SITE_URL, jsonLd, localePath, pageMetadata } from "@/lib/seo";
 
-export function generateStaticParams() {
-  return routing.locales.flatMap((locale) => DESTINATIONS.map((d) => ({ locale, slug: d.slug })));
+export async function generateStaticParams() {
+  const { destinations } = await getCatalog();
+  return routing.locales.flatMap((locale) => destinations.map((d) => ({ locale, slug: d.slug })));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale; slug: string }> }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const d = getDestination(slug);
+  const d = await getDestinationBySlug(slug);
   if (!d) return {};
   const t = await getTranslations({ locale, namespace: "destination" });
   const from = startingPrice(d);
@@ -40,14 +42,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: L
 export default function DestinationPage({ params }: { params: Promise<{ locale: Locale; slug: string }> }) {
   const { locale, slug } = use(params);
   setRequestLocale(locale);
-  const d = getDestination(slug);
+  const catalog = use(getCatalog());
+  const d = catalog.destinations.find((x) => x.slug === slug);
   if (!d) notFound();
   const l = locale as AppLocale;
   const t = useTranslations("destination");
   const tc = useTranslations("common");
   const from = startingPrice(d);
-  const plan = INSURANCE_PLANS.find((p) => p.id === d.insurance);
-  const related = DESTINATIONS.filter((x) => x.slug !== d.slug && x.region === d.region).slice(0, 3);
+  const plan = catalog.insurancePlans.find((p) => p.id === d.insurance);
+  const related = catalog.destinations.filter((x) => x.slug !== d.slug && x.region === d.region).slice(0, 3);
   const steps = t.raw("timelineSteps") as string[];
   const firstVisa = d.visas[0];
 

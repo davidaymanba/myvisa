@@ -1,11 +1,13 @@
-import { DESTINATIONS, SERVICE_CATEGORIES } from "@myvisa/shared";
+import { SERVICE_CATEGORIES } from "@myvisa/shared";
 import type { MetadataRoute } from "next";
+import { getCatalog } from "@/lib/api/server";
 import { SITE_URL, localePath } from "@/lib/seo";
 
 const STATIC = ["/", "/destinations", "/visa-finder", "/services", "/pricing", "/about", "/contact", "/terms", "/refund-policy", "/privacy"];
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const paths = [...STATIC, ...DESTINATIONS.map((d) => `/destinations/${d.slug}`), ...SERVICE_CATEGORIES.map((s) => `/services/${s.slug}`)];
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const { destinations } = await getCatalog();
+  const paths = [...STATIC, ...destinations.map((d) => `/destinations/${d.slug}`), ...SERVICE_CATEGORIES.map((s) => `/services/${s.slug}`)];
   return paths.map((path) => ({
     url: `${SITE_URL}${localePath("ar", path)}`,
     changeFrequency: path.startsWith("/destinations/") ? "weekly" : "monthly",

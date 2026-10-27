@@ -1,4 +1,4 @@
-import { INSURANCE_PLANS, SERVICE_CATEGORIES, VISA_TYPES, formatMoney, getServiceCategory, type AppLocale } from "@myvisa/shared";
+import { SERVICE_CATEGORIES, VISA_TYPES, formatMoney, getServiceCategory, type AppLocale } from "@myvisa/shared";
 import { ArrowUpRight, Check, ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { routing, type Locale } from "@/i18n/routing";
+import { getCatalog } from "@/lib/api/server";
 import { SITE_URL, jsonLd, localePath, pageMetadata } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +38,7 @@ export default function ServicePage({ params }: { params: Promise<{ locale: Loca
   const s = getServiceCategory(slug);
   if (!s) notFound();
   const l = locale as AppLocale;
+  const { insurancePlans } = use(getCatalog());
   const t = useTranslations("servicesPage");
   const tc = useTranslations("common");
   const Icon = SERVICE_ICONS[s.icon];
@@ -127,7 +129,7 @@ export default function ServicePage({ params }: { params: Promise<{ locale: Loca
         <section className="container-page pb-16 sm:pb-24">
           <SectionHeading eyebrow={t("plans")} title={s.name[l]} className="mb-10" />
           <Stagger className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5" stagger={0.08}>
-            {INSURANCE_PLANS.map((p, i) => (
+            {insurancePlans.map((p, i) => (
               <StaggerItem key={p.id} className="h-full">
                 <TiltCard max={5} className="h-full rounded-[1.75rem]">
                   <div className={cn("flex h-full flex-col gap-5 rounded-[1.75rem] border p-6", i === 0 ? "dark border-white/10 bg-ink-900 text-foreground" : "border-border bg-surface")}>

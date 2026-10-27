@@ -1,4 +1,4 @@
-import { DESTINATIONS, type Region } from "@myvisa/shared";
+import type { Region } from "@myvisa/shared";
 import type { Metadata } from "next";
 import { useTranslations } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -8,6 +8,7 @@ import { DestinationPoster } from "@/components/home/destination-poster";
 import { FinalCta } from "@/components/home/final-cta";
 import { PageHero } from "@/components/layout/page-hero";
 import type { Locale } from "@/i18n/routing";
+import { getCatalog } from "@/lib/api/server";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
@@ -20,7 +21,8 @@ export default function DestinationsPage({ params }: { params: Promise<{ locale:
   const { locale } = use(params);
   setRequestLocale(locale);
   const t = useTranslations("destinationsPage");
-  const regions = Array.from(new Set(DESTINATIONS.map((d) => d.region))) as Region[];
+  const { destinations } = use(getCatalog());
+  const regions = Array.from(new Set(destinations.map((d) => d.region))) as Region[];
 
   return (
     <>
@@ -28,7 +30,7 @@ export default function DestinationsPage({ params }: { params: Promise<{ locale:
       <section className="container-page py-16 sm:py-24">
         <DestinationGrid
           regions={regions}
-          items={DESTINATIONS.map((d, i) => ({
+          items={destinations.map((d, i) => ({
             slug: d.slug,
             region: d.region,
             haystack: `${d.name.ar} ${d.name.en} ${d.capital.ar} ${d.capital.en}`.toLowerCase(),

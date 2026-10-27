@@ -1,25 +1,28 @@
-import { DESTINATIONS, SERVICE_CATEGORIES, type AppLocale } from "@myvisa/shared";
+import { SERVICE_CATEGORIES, type AppLocale } from "@myvisa/shared";
 import { SiWhatsapp } from "@icons-pack/react-simple-icons";
 import { ArrowUpRight, Mail, MapPin, Phone } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { use } from "react";
 import { LocaleSwitcher } from "@/components/brand/locale-switcher";
 import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/brand/theme-toggle";
 import { TrustBar } from "@/components/brand/trust-bar";
 import { FooterWordmark } from "./footer-wordmark";
 import { Link } from "@/i18n/navigation";
-import { COMPANY } from "@/lib/company";
+import { getCatalog, getSettings, whatsappHref } from "@/lib/api/server";
 
 export function SiteFooter() {
   const t = useTranslations("footer");
   const tn = useTranslations("nav");
   const locale = useLocale() as AppLocale;
   const year = 2026;
+  const { company, support } = use(getSettings());
+  const { destinations } = use(getCatalog());
 
   const columns = [
     {
       title: t("destinations"),
-      links: DESTINATIONS.filter((d) => d.popular)
+      links: destinations.filter((d) => d.popular)
         .slice(0, 6)
         .map((d) => ({ href: `/destinations/${d.slug}`, label: d.name[locale] })),
     },
@@ -57,34 +60,34 @@ export function SiteFooter() {
             <p className="max-w-sm text-body text-muted-foreground">{t("blurb")}</p>
             <ul className="flex flex-col gap-3 text-body-sm">
               <li>
-                <a href={`https://wa.me/${COMPANY.whatsapp.replace(/\D/g, "")}`} className="group inline-flex items-center gap-3 hover:text-gold-300">
+                <a href={whatsappHref(support.whatsapp)} className="group inline-flex items-center gap-3 hover:text-gold-300">
                   <span className="grid size-9 place-items-center rounded-full bg-[#25D366] text-white">
                     <SiWhatsapp className="size-4" aria-hidden />
                   </span>
-                  <span dir="ltr" className="tabular">{COMPANY.whatsappDisplay}</span>
+                  <span dir="ltr" className="tabular">{support.whatsappDisplay}</span>
                 </a>
               </li>
               <li>
-                <a href={`tel:${COMPANY.phone}`} className="inline-flex items-center gap-3 hover:text-gold-300">
+                <a href={`tel:${company.phone}`} className="inline-flex items-center gap-3 hover:text-gold-300">
                   <span className="grid size-9 place-items-center rounded-full border border-border">
                     <Phone className="size-4" aria-hidden />
                   </span>
-                  <span dir="ltr" className="tabular">{COMPANY.phoneDisplay}</span>
+                  <span dir="ltr" className="tabular">{company.phoneDisplay}</span>
                 </a>
               </li>
               <li>
-                <a href={`mailto:${COMPANY.email}`} className="inline-flex items-center gap-3 hover:text-gold-300">
+                <a href={`mailto:${company.email}`} className="inline-flex items-center gap-3 hover:text-gold-300">
                   <span className="grid size-9 place-items-center rounded-full border border-border">
                     <Mail className="size-4" aria-hidden />
                   </span>
-                  {COMPANY.email}
+                  {company.email}
                 </a>
               </li>
               <li className="inline-flex items-start gap-3 text-muted-foreground">
                 <span className="grid size-9 shrink-0 place-items-center rounded-full border border-border text-foreground">
                   <MapPin className="size-4" aria-hidden />
                 </span>
-                <span className="pt-1.5">{COMPANY.address[locale]}</span>
+                <span className="pt-1.5">{company.address[locale]}</span>
               </li>
             </ul>
           </div>
@@ -110,7 +113,7 @@ export function SiteFooter() {
           </nav>
         </div>
 
-        <TrustBar crNumber={COMPANY.crNumber} vatNumber={COMPANY.vatNumber} className="mt-16 border-t border-border pt-10" />
+        <TrustBar crNumber={company.crNumber} vatNumber={company.vatNumber} className="mt-16 border-t border-border pt-10" />
       </div>
 
       <FooterWordmark />

@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { AppProviders } from "@/components/providers/app-providers";
 import { localeDirection, routing } from "@/i18n/routing";
@@ -43,11 +43,13 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   const dir = localeDirection[locale];
+  // Admin strings are only sent to the client under /admin (see admin/layout.tsx).
+  const messages = Object.fromEntries(Object.entries(await getMessages()).filter(([namespace]) => namespace !== "admin"));
 
   return (
     <html lang={locale} dir={dir} className={fontVariables} suppressHydrationWarning>
       <body>
-        <NextIntlClientProvider>
+        <NextIntlClientProvider messages={messages}>
           <AppProviders dir={dir}>{children}</AppProviders>
         </NextIntlClientProvider>
       </body>

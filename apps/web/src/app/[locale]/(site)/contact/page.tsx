@@ -10,7 +10,7 @@ import { PageHero } from "@/components/layout/page-hero";
 import { Reveal, Stagger, StaggerItem } from "@/components/motion/reveal";
 import { Spotlight } from "@/components/motion/spotlight";
 import type { Locale } from "@/i18n/routing";
-import { COMPANY } from "@/lib/company";
+import { getSettings, whatsappHref } from "@/lib/api/server";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: Locale }> }): Promise<Metadata> {
@@ -24,15 +24,16 @@ export default function ContactPage({ params }: { params: Promise<{ locale: Loca
   setRequestLocale(locale);
   const l = locale as AppLocale;
   const t = useTranslations("contact");
-  const { lat, lon } = COMPANY.geo;
+  const { company, support } = use(getSettings());
+  const { lat, lon } = company.geo;
   const bbox = [lon - 0.012, lat - 0.007, lon + 0.012, lat + 0.007].join(",");
   const directions = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
 
   const channels: { key: "whatsapp" | "phone" | "email" | "visit"; icon: ReactNode; value: string; href: string; accent?: boolean; ltr?: boolean }[] = [
-    { key: "whatsapp", icon: <SiWhatsapp />, value: COMPANY.whatsappDisplay, href: `https://wa.me/${COMPANY.whatsapp.replace(/\D/g, "")}`, accent: true, ltr: true },
-    { key: "phone", icon: <Phone />, value: COMPANY.phoneDisplay, href: `tel:${COMPANY.phone}`, ltr: true },
-    { key: "email", icon: <Mail />, value: COMPANY.email, href: `mailto:${COMPANY.email}`, ltr: true },
-    { key: "visit", icon: <MapPin />, value: COMPANY.address[l], href: directions },
+    { key: "whatsapp", icon: <SiWhatsapp />, value: support.whatsappDisplay, href: whatsappHref(support.whatsapp), accent: true, ltr: true },
+    { key: "phone", icon: <Phone />, value: company.phoneDisplay, href: `tel:${company.phone}`, ltr: true },
+    { key: "email", icon: <Mail />, value: company.email, href: `mailto:${company.email}`, ltr: true },
+    { key: "visit", icon: <MapPin />, value: company.address[l], href: directions },
   ];
 
   return (
@@ -80,12 +81,12 @@ export default function ContactPage({ params }: { params: Promise<{ locale: Loca
             <div className="flex flex-col gap-4 p-6">
               <p className="flex items-start gap-3">
                 <MapPin className="mt-0.5 size-5 shrink-0 text-secondary-text" aria-hidden />
-                {COMPANY.address[l]}
+                {company.address[l]}
               </p>
               <p className="flex items-start gap-3 text-muted-foreground">
                 <Clock className="mt-0.5 size-5 shrink-0" aria-hidden />
                 <span>
-                  {t("hours")}: {COMPANY.hours[l]}
+                  {t("hours")}: {company.hours[l]}
                 </span>
               </p>
               <a href={directions} target="_blank" rel="noopener noreferrer" className="inline-flex w-fit items-center gap-2 font-medium text-secondary-text underline underline-offset-4">

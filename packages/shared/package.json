@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./rbac": "./src/rbac.ts",
+    "./auth": "./src/api/auth.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
