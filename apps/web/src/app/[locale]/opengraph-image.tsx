@@ -9,7 +9,7 @@ export const contentType = "image/png";
  * photos). Latin text only: the OG renderer can't shape Arabic, and broken Arabic is worse than English.
  */
 export default function OgImage() {
-  const gold = "#C8A24A";
+  const gold = "#34C1C3";
   return new ImageResponse(
     (
       <div
@@ -18,9 +18,9 @@ export default function OgImage() {
           height: "100%",
           display: "flex",
           position: "relative",
-          backgroundColor: "#08131F",
-          backgroundImage: "radial-gradient(circle at 15% 10%, rgba(15,94,90,0.75), transparent 55%), radial-gradient(circle at 90% 95%, rgba(200,162,74,0.35), transparent 50%)",
-          color: "#F7F3EC",
+          backgroundColor: "#071023",
+          backgroundImage: "radial-gradient(circle at 15% 10%, rgba(43,79,161,0.75), transparent 55%), radial-gradient(circle at 90% 95%, rgba(52,193,195,0.35), transparent 50%)",
+          color: "#F3F7F9",
           fontFamily: "sans-serif",
           padding: "72px 80px",
           flexDirection: "column",
@@ -31,7 +31,7 @@ export default function OgImage() {
         <svg width="1200" height="630" viewBox="0 0 1200 630" style={{ position: "absolute", inset: 0 }}>
           <path d="M 900 540 Q 960 330 1120 300" fill="none" stroke={gold} strokeWidth="3" strokeDasharray="10 12" opacity="0.8" />
           <circle cx="900" cy="540" r="9" fill={gold} />
-          <circle cx="1120" cy="300" r="7" fill="#5FB3AC" />
+          <circle cx="1120" cy="300" r="7" fill="#7C9BDB" />
         </svg>
         <div style={{ display: "flex", alignItems: "baseline", fontSize: 64, letterSpacing: -1 }}>
           <span style={{ color: gold, fontStyle: "italic" }}>my</span>
@@ -39,7 +39,7 @@ export default function OgImage() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 720 }}>
           <div style={{ fontSize: 66, lineHeight: 1.05, fontWeight: 600, letterSpacing: -2 }}>Visas and travel documents, done right.</div>
-          <div style={{ fontSize: 28, color: "rgba(247,243,236,0.7)" }}>Transparent fees · Every step tracked · Riyadh</div>
+          <div style={{ fontSize: 28, color: "rgba(243,247,249,0.7)" }}>Transparent fees · Every step tracked · Riyadh</div>
         </div>
         <div
           style={{

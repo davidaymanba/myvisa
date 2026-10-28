@@ -176,7 +176,7 @@ function DepartureBoard({ orderNumber, view }: { orderNumber: string; view: Trac
     { label: t("status"), value: view ? BOARD_STATUS[view.status] : "AWAITING CODE", length: 13 },
   ];
   return (
-    <motion.div initial={{ opacity: 0, y: 30, rotateX: 18 }} animate={{ opacity: 1, y: 0, rotateX: 0 }} transition={{ delay: 0.3, duration: 1, ease: EASE }} style={{ transformPerspective: 1400 }} className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#0a1119] shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)]">
+    <motion.div initial={{ opacity: 0, y: 30, rotateX: 18 }} animate={{ opacity: 1, y: 0, rotateX: 0 }} transition={{ delay: 0.3, duration: 1, ease: EASE }} style={{ transformPerspective: 1400 }} className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#081022] shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)]">
       <div className="flex items-center justify-between gap-4 border-b border-white/10 bg-white/[0.03] px-5 py-3 sm:px-7">
         <span lang="en" className="flex items-center gap-2 font-mono text-caption tracking-[0.25em] text-gold-300">
           <span className="size-2 animate-pulse rounded-full bg-success" aria-hidden />

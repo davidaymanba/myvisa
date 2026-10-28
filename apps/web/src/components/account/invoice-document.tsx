@@ -21,7 +21,7 @@ function ZatcaQr({ payload, className }: { payload: string; className?: string }
   const [svg, setSvg] = useState<string | null>(null);
   useEffect(() => {
     let live = true;
-    void QRCode.toString(payload, { type: "svg", margin: 0, errorCorrectionLevel: "M", color: { dark: "#0b1b2b", light: "#ffffff" } }).then((s) => live && setSvg(s));
+    void QRCode.toString(payload, { type: "svg", margin: 0, errorCorrectionLevel: "M", color: { dark: "#0b1830", light: "#ffffff" } }).then((s) => live && setSvg(s));
     return () => {
       live = false;
     };
@@ -84,7 +84,7 @@ export function InvoiceDocument({ id, backHref = "/account/invoices" }: { id: st
 
         <header className="flex flex-col gap-6 border-b border-ink-100 pb-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex flex-col gap-4">
-            <Logo className="text-ink-900" />
+            <Logo tone="light" className="text-ink-900" />
             <div>
               <h1 className="font-display text-display-md leading-tight">{inv.type === "CREDIT_NOTE" ? t("creditNote") : t("taxInvoice")}</h1>
               <p className="text-body-sm text-ink-500" lang={locale === "ar" ? "en" : "ar"}>

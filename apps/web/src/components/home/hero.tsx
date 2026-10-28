@@ -45,7 +45,7 @@ export function Hero() {
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -start-[20%] -top-[30%] size-[70vw] animate-drift rounded-full bg-teal-500/25 blur-[140px]" />
         <div className="absolute -bottom-[35%] end-[5%] size-[55vw] animate-drift rounded-full bg-gold-400/15 blur-[140px] [animation-delay:-9s]" />
-        <div className="absolute inset-0 bg-[radial-gradient(rgb(247_243_236/0.5)_1px,transparent_1px)] [background-size:56px_56px] opacity-[0.06] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgb(243_247_249/0.5)_1px,transparent_1px)] [background-size:56px_56px] opacity-[0.06] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-ink-950 to-transparent" />
       </div>
 

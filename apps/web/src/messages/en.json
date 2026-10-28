@@ -128,7 +128,7 @@
     "sections": {
       "color": {
         "title": "Color",
-        "desc": "Ink navy for text, warm sand for surfaces, desert gold reserved for moments of decision, deep teal for trust and progress."
+        "desc": "Taken from the logo: navy for text, cool paper for surfaces, brand turquoise reserved for moments of decision, brand blue for trust and progress."
       },
       "type": {
         "title": "Typography",
@@ -144,7 +144,7 @@
       },
       "buttons": {
         "title": "Buttons & actions",
-        "desc": "Gold is for the single most important action on a screen. Everything else is ink or outline."
+        "desc": "Turquoise is for the single most important action on a screen. Everything else is ink or outline."
       },
       "forms": {
         "title": "Forms",
@@ -171,15 +171,15 @@
       "brand": "Brand palette",
       "semantic": "Semantic tokens (swap in dark mode)",
       "contrast": "Contrast checks",
-      "contrastNote": "Gold #C8A24A on sand only reaches 2.2:1, so gold is a button fill with navy text, and the deep shade #7A5D1C is used whenever gold is text.",
+      "contrastNote": "Turquoise #34C1C3 on paper only reaches 2.0:1, so turquoise is a button fill with navy text, and the deep shade #11686B is used whenever turquoise is text.",
       "pass": "AA pass",
       "largeOnly": "Large text only",
       "fail": "Not for text",
       "names": {
         "ink": "Ink",
-        "sand": "Sand",
-        "gold": "Gold",
-        "teal": "Teal"
+        "sand": "Paper",
+        "gold": "Turquoise",
+        "teal": "Blue"
       }
     },
     "type": {

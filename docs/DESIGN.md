@@ -32,18 +32,20 @@ Live reference: `/style-guide` (Arabic) and `/en/style-guide`.
 
 ## Colour
 
+Brand palette (Oct 2026) taken from the client's logo "تأشيرتي My VISA": turquoise `#34C1C3` and royal blue `#2B4FA1`. The scale names predate the logo and were kept so no component changed: `gold-*` is now the brand turquoise, `teal-*` the brand blue, `ink-*` a blue-navy, `sand-*` a cool paper.
+
 | Role | Token | Light | Dark | Notes |
 |---|---|---|---|---|
-| Text / ink | `foreground` | ink-900 `#0B1B2B` | sand-100 `#F7F3EC` | 16.2:1 on sand |
-| Page | `background` | sand-100 `#F7F3EC` | ink-950 `#08131F` | warm paper, never pure white |
-| Cards | `surface` | `#FFFDF9` | `#0F2032` | |
-| Decision / CTA | `primary` | gold-400 `#C8A24A` | gold-400 | **navy text on gold (7.2:1)** |
-| Gold as text | `accent-text` | gold-700 `#7A5D1C` | gold-300 `#DDBF72` | 5.6:1 / 9.3:1 |
-| Trust / progress | `secondary` | teal-500 `#0F5E5A` | teal-300 `#5FB3AC` | completed steps, links, focus |
-| Muted text | `muted-foreground` | ink-500 `#4F6378` | ink-300 `#9AABBC` | 5.6:1 / 7.0:1 |
-| Semantic | `success · warning · danger · info` | AA on sand | AA on ink | each has a `-soft` tint |
+| Text / ink | `foreground` | ink-900 `#0B1830` | sand-100 `#F3F7F9` | 16.4:1 on paper |
+| Page | `background` | sand-100 `#F3F7F9` | ink-950 `#071023` | cool paper |
+| Cards | `surface` | `#FFFFFF` | `#0E1C33` | |
+| Decision / CTA | `primary` | gold-400 `#34C1C3` (turquoise) | gold-400 | **navy text on turquoise (8.0:1)** |
+| Turquoise as text | `accent-text` | gold-700 `#11686B` | gold-300 `#6BD3D6` | 6.1:1 / 9.7:1 |
+| Trust / progress | `secondary` | teal-500 `#2B4FA1` (brand blue) | teal-300 `#7C9BDB` | completed steps, links, focus |
+| Muted text | `muted-foreground` | ink-500 `#4C5E7A` | ink-300 `#97A6BE` | 6.1:1 / 7.7:1 |
+| Semantic | `success · warning · danger · info` | AA on paper | AA on ink | each has a `-soft` tint |
 
-**The one hard rule:** the brief's gold `#C8A24A` on sand is only **2.18:1**, so it fails WCAG for text. Gold is therefore a *fill* (buttons, highlights, price bar) with navy text on it, and whenever gold must be text we use the deep shade. Gold is reserved for the single most important action on a screen.
+**The one hard rule:** brand turquoise `#34C1C3` on paper is only **2.04:1**, so it fails WCAG for text. Turquoise is therefore a *fill* (buttons, highlights, price bar) with navy text on it, and whenever it must be text we use the deep shade. It is reserved for the single most important action on a screen.
 
 Dark mode swaps semantic tokens only, so components never branch on theme. The same trick makes any section "inverse": add `className="dark"` to a container (see the hero map panel).
 
@@ -81,7 +83,7 @@ Logical properties everywhere (`ms/me/ps/pe/start/end`). Directional icons use t
 
 ## Placeholders to replace
 
-- Brand mark: a working mark, not a final identity. Replace it if a designer delivers one.
+- Brand mark: the client's logo is in `apps/web/src/assets/brand/` (light, dark-surface and icon-only PNGs, cut from a 628 px JPG). Swap in vector (SVG) artwork when the designer provides it.
 - CR number, VAT number, WhatsApp number: placeholder values until they move into admin Settings (Phase 3).
 - Payment marks are text chips. Use the official mada / Apple Pay / STC Pay artwork from the chosen gateway's brand kit.
 - Destination photos come from Unsplash for now.

@@ -56,7 +56,7 @@ export function MockCheckout() {
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -start-[10%] -top-[30%] size-[55vw] animate-drift rounded-full bg-teal-500/25 blur-[140px]" />
         <div className="absolute -bottom-[40%] -end-[10%] size-[50vw] animate-drift rounded-full bg-gold-400/15 blur-[140px] [animation-delay:-8s]" />
-        <div className="absolute inset-0 bg-[radial-gradient(rgb(247_243_236/0.06)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgb(243_247_249/0.06)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
       </div>
 
       <div aria-hidden className="pointer-events-none fixed right-[-4.5rem] top-8 z-20 w-72 rotate-45 bg-gradient-to-l from-danger to-[#ff7a59] py-2 text-center text-caption font-bold tracking-[0.2em] text-white shadow-lg max-sm:inset-x-0 max-sm:bottom-0 max-sm:top-auto max-sm:w-full max-sm:rotate-0 max-sm:py-1.5">

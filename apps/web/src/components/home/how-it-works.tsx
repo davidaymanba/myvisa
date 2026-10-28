@@ -80,7 +80,7 @@ function SceneFrame({ active }: { active: number }) {
     <div className="dark relative h-full overflow-hidden rounded-[2rem] border border-white/10 bg-ink-900 text-foreground shadow-lg">
       <div aria-hidden className="absolute -start-20 -top-20 size-72 rounded-full bg-teal-500/30 blur-3xl" />
       <div aria-hidden className="absolute -bottom-24 -end-10 size-72 rounded-full bg-gold-400/20 blur-3xl" />
-      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(rgb(247_243_236/0.6)_1px,transparent_1px)] [background-size:22px_22px] opacity-[0.07]" />
+      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(rgb(243_247_249/0.6)_1px,transparent_1px)] [background-size:22px_22px] opacity-[0.07]" />
       <AnimatePresence mode="wait">
         <motion.div
           key={active}

@@ -147,7 +147,7 @@ export function AccountLogin() {
             {!reduce && (
               <motion.div
                 aria-hidden
-                className={cn("absolute inset-0 z-10 flex flex-col items-center justify-center gap-5 rounded-[2rem] bg-teal-800 shadow-[0_40px_80px_-30px_rgb(7_48_46/0.9)] [backface-visibility:hidden]", rtl ? "origin-right" : "origin-left")}
+                className={cn("absolute inset-0 z-10 flex flex-col items-center justify-center gap-5 rounded-[2rem] bg-teal-800 shadow-[0_40px_80px_-30px_rgb(21_38_78/0.9)] [backface-visibility:hidden]", rtl ? "origin-right" : "origin-left")}
                 initial={{ rotateY: 0 }}
                 animate={{ rotateY: rtl ? 165 : -165, opacity: [1, 1, 0] }}
                 transition={{ delay: 0.7, duration: 1.4, ease: [0.65, 0, 0.35, 1], opacity: { delay: 0.7, duration: 1.4, times: [0, 0.8, 1] } }}
@@ -155,7 +155,7 @@ export function AccountLogin() {
                 <div className="absolute inset-3 rounded-[1.6rem] border border-dashed border-gold-300/30" />
                 <div className="absolute inset-0 overflow-hidden rounded-[2rem] opacity-[0.15] mix-blend-overlay [background-image:radial-gradient(rgb(255_255_255/0.5)_0.6px,transparent_0.6px)] [background-size:3px_3px]" />
                 <span className="grid size-24 place-items-center rounded-full border border-gold-300/60">
-                  <LogoMark className="size-11 text-gold-300 [&_rect]:fill-transparent" />
+                  <LogoMark tone="dark" className="size-11 text-gold-300 [&_rect]:fill-transparent" />
                 </span>
                 <span className={cn("font-display text-display-md", foil)}>{tn("passport")}</span>
                 <span lang="en" className="text-caption uppercase tracking-[0.4em] text-gold-300/70">

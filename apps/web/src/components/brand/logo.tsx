@@ -1,31 +1,48 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
+import logoLight from "@/assets/brand/logo.png";
+import logoDark from "@/assets/brand/logo-dark.png";
+import markLight from "@/assets/brand/logo-mark.png";
+import markDark from "@/assets/brand/logo-mark-dark.png";
 
-/** Mark: a route arc leaving an origin ring — the journey we handle for you. */
-export function LogoMark({ className }: { className?: string }) {
+/**
+ * Brand artwork (the "تأشيرتي My VISA" logo). `auto` follows the nearest `.dark` container, so the
+ * header, footer and dark panels pick the variant with the blue lettering turned white.
+ * `light` / `dark` force one variant where the surface doesn't follow the theme (invoice paper, inverse bands).
+ */
+type Tone = "auto" | "light" | "dark";
+
+/** `width` is the largest rendered width in CSS px, so the optimizer serves a small file (2x for retina). */
+function Variants({ light, dark, tone, alt, width, className, priority }: { light: typeof logoLight; dark: typeof logoDark; tone: Tone; alt: string; width: number; className: string; priority?: boolean }) {
   return (
-    <svg viewBox="0 0 32 32" className={cn("size-8 shrink-0", className)} aria-hidden>
-      <rect width="32" height="32" rx="9" fill="currentColor" />
-      <circle cx="9" cy="23" r="2.6" fill="none" stroke="var(--color-sand-100)" strokeWidth="1.6" className="dark:stroke-ink-900" />
-      <path d="M10.8 21.2 C 13 12, 19 8.5, 24.2 9.4" fill="none" stroke="var(--color-gold-400)" strokeWidth="2" strokeLinecap="round" strokeDasharray="0.1 3.6" />
-      <circle cx="24" cy="9.5" r="2.4" fill="var(--color-gold-400)" />
-    </svg>
+    <>
+      {tone !== "dark" && <Image src={light} alt={alt} width={width} priority={priority} className={cn(className, tone === "auto" && "dark:hidden")} />}
+      {tone !== "light" && <Image src={dark} alt={alt} width={width} priority={priority} className={cn(className, tone === "auto" && "hidden dark:block")} />}
+    </>
   );
 }
 
-export function Logo({ className, withArabic = false }: { className?: string; withArabic?: boolean }) {
+/** Mark: the passport-and-plane icon from the logo, sized by `className` (default 32px). */
+export function LogoMark({ className, tone = "auto" }: { className?: string; tone?: Tone }) {
   return (
-    <span className={cn("inline-flex items-center gap-2.5 text-foreground", className)}>
-      <LogoMark />
-      <span className="flex flex-col leading-none">
-        <span lang="en" dir="ltr" className="font-[family-name:var(--font-instrument)] text-[1.65rem] leading-none tracking-[-0.01em]">
-          <em className="text-accent-text">my</em>visa
-        </span>
-        {withArabic && (
-          <span lang="ar" className="mt-0.5 font-[family-name:var(--font-alexandria)] text-[0.7rem] font-medium leading-none text-muted-foreground">
-            ماي فيزا
-          </span>
-        )}
-      </span>
+    <span className={cn("relative block size-8 shrink-0", className)} aria-hidden>
+      <Variants light={markLight} dark={markDark} tone={tone} alt="" width={48} className="size-full object-contain" />
+    </span>
+  );
+}
+
+export function Logo({ className, withArabic = false, tone = "auto" }: { className?: string; withArabic?: boolean; tone?: Tone }) {
+  return (
+    <span className={cn("inline-flex shrink-0 items-center", className)}>
+      <Variants
+        light={logoLight}
+        dark={logoDark}
+        tone={tone}
+        alt="تأشيرتي My VISA"
+        width={withArabic ? 130 : 90}
+        priority
+        className={cn("w-auto", withArabic ? "h-14 sm:h-16" : "h-10 sm:h-11")}
+      />
     </span>
   );
 }

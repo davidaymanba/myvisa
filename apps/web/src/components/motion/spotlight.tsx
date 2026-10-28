@@ -16,7 +16,7 @@ export function Spotlight({ className, children, ...props }: ComponentProps<"div
       className={cn(
         "group/spot relative isolate overflow-hidden",
         "before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100",
-        "before:bg-[radial-gradient(420px_circle_at_var(--sx,50%)_var(--sy,50%),rgb(200_162_74/0.14),transparent_60%)]",
+        "before:bg-[radial-gradient(420px_circle_at_var(--sx,50%)_var(--sy,50%),rgb(52_193_195/0.14),transparent_60%)]",
         className,
       )}
       {...props}

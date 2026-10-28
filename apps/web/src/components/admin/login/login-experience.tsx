@@ -138,7 +138,7 @@ export function LoginExperience() {
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -start-[10%] -top-[30%] size-[55vw] animate-drift rounded-full bg-teal-500/25 blur-[140px]" />
         <div className="absolute -bottom-[40%] end-[-10%] size-[50vw] animate-drift rounded-full bg-gold-400/15 blur-[140px] [animation-delay:-8s]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgb(247_243_236/0.045)_1px,transparent_1px)] [background-size:calc(100%/12)_100%] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgb(243_247_249/0.045)_1px,transparent_1px)] [background-size:calc(100%/12)_100%] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
         <div className="absolute inset-x-0 bottom-0 opacity-50 [mask-image:linear-gradient(to_top,black_30%,transparent)]">
           <RouteArcs />
         </div>

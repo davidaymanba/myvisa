@@ -99,10 +99,10 @@ function PassportCover({ pathname }: { pathname: string }) {
   const name = (locale === "en" ? (profile?.fullNameEn ?? profile?.fullNameAr) : (profile?.fullNameAr ?? profile?.fullNameEn)) ?? null;
 
   return (
-    <div className="dark relative isolate flex h-full flex-col overflow-hidden rounded-[2rem] bg-teal-800 px-5 py-6 text-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_30px_60px_-30px_rgb(7_48_46/0.9)]">
+    <div className="dark relative isolate flex h-full flex-col overflow-hidden rounded-[2rem] bg-teal-800 px-5 py-6 text-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_30px_60px_-30px_rgb(21_38_78/0.9)]">
       {/* Leather grain, stitched edge and the engraved rosette. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_0%_0%,rgb(44_135_128/0.55),transparent_60%),radial-gradient(90%_70%_at_100%_100%,rgb(8_19_31/0.7),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_0%_0%,rgb(74_111_194/0.55),transparent_60%),radial-gradient(90%_70%_at_100%_100%,rgb(7_16_35/0.7),transparent_60%)]" />
         <div className="absolute inset-0 opacity-[0.18] mix-blend-overlay [background-image:radial-gradient(rgb(255_255_255/0.5)_0.6px,transparent_0.6px)] [background-size:3px_3px]" />
         <div className="absolute inset-2.5 rounded-[1.6rem] border border-dashed border-gold-300/25" />
         <motion.div className="absolute -end-28 top-10 size-[26rem] text-gold-300/[0.13]" animate={{ rotate: 360 }} transition={{ duration: 180, repeat: Infinity, ease: "linear" }}>
@@ -122,7 +122,7 @@ function PassportCover({ pathname }: { pathname: string }) {
 
       {/* The cover emblem */}
       <div className="mt-8 flex flex-col items-center gap-3 text-center">
-        <motion.span initial={{ scale: 0.6, opacity: 0, rotate: -30 }} animate={{ scale: 1, opacity: 1, rotate: 0 }} transition={{ duration: 0.9, ease: EASE }} className="relative grid size-20 place-items-center rounded-full border border-gold-300/60 shadow-[0_0_40px_-6px_rgb(221_191_114/0.45)]">
+        <motion.span initial={{ scale: 0.6, opacity: 0, rotate: -30 }} animate={{ scale: 1, opacity: 1, rotate: 0 }} transition={{ duration: 0.9, ease: EASE }} className="relative grid size-20 place-items-center rounded-full border border-gold-300/60 shadow-[0_0_40px_-6px_rgb(107_211_214/0.45)]">
           <span className="absolute inset-1.5 rounded-full border border-gold-300/30" />
           <LogoMark className="size-9 text-gold-300 [&_rect]:fill-gold-300/10" />
         </motion.span>
@@ -162,7 +162,7 @@ function PassportCover({ pathname }: { pathname: string }) {
           return (
             <motion.div key={item.href} initial={{ opacity: 0, x: -14 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 + 0.045 * i, duration: 0.5, ease: EASE }}>
               <Link href={item.href} aria-current={active ? "page" : undefined} className={cn("group relative flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-body-sm font-medium transition-colors", active ? "text-ink-950" : "text-foreground/75 hover:text-foreground")}>
-                {active && <motion.span layoutId="account-nav" className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-l from-gold-200 to-gold-400 shadow-[0_10px_30px_-10px_rgb(200_162_74/0.8)]" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
+                {active && <motion.span layoutId="account-nav" className="absolute inset-0 -z-10 rounded-xl bg-gradient-to-l from-gold-200 to-gold-400 shadow-[0_10px_30px_-10px_rgb(52_193_195/0.8)]" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
                 <Icon className="size-[18px] transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110" aria-hidden />
                 {t(item.key)}
                 {badge > 0 ? (

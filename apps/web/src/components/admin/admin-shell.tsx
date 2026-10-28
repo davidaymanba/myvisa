@@ -99,7 +99,7 @@ function Rail({ pathname, onClose }: { pathname: string; onClose?: () => void })
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -start-24 -top-24 size-80 animate-drift rounded-full bg-teal-500/30 blur-[90px]" />
         <div className="absolute -bottom-32 -end-20 size-72 animate-drift rounded-full bg-gold-400/20 blur-[90px] [animation-delay:-6s]" />
-        <div className="absolute inset-0 bg-[radial-gradient(rgb(247_243_236/0.07)_1px,transparent_1px)] [background-size:18px_18px] [mask-image:linear-gradient(to_bottom,black,transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(rgb(243_247_249/0.07)_1px,transparent_1px)] [background-size:18px_18px] [mask-image:linear-gradient(to_bottom,black,transparent_70%)]" />
       </div>
 
       <div className="flex items-center justify-between gap-3">
@@ -128,7 +128,7 @@ function Rail({ pathname, onClose }: { pathname: string; onClose?: () => void })
                 {active && (
                   <motion.span
                     layoutId="admin-nav-pill"
-                    className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-l from-gold-300 to-gold-400 shadow-[0_8px_30px_-8px_rgb(200_162_74/0.7)]"
+                    className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-l from-gold-300 to-gold-400 shadow-[0_8px_30px_-8px_rgb(52_193_195/0.7)]"
                     transition={{ type: "spring", stiffness: 420, damping: 34 }}
                   />
                 )}

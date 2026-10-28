@@ -18,10 +18,10 @@ interface GlobeProps {
 }
 
 const RAD = Math.PI / 180;
-const GOLD = "200,162,74";
-const GOLD_SOFT = "221,191,114";
-const TEAL = "95,179,172";
-const SAND = "247,243,236";
+const GOLD = "52,193,195";
+const GOLD_SOFT = "107,211,214";
+const TEAL = "124,155,219";
+const SAND = "243,247,249";
 
 type Vec3 = [number, number, number];
 
@@ -212,9 +212,9 @@ export function Globe({ origin, destinations, highlight, className }: GlobeProps
       ctx.fill();
 
       const body = ctx.createRadialGradient(cx - R * 0.35, cyy - R * 0.4, R * 0.1, cx, cyy, R);
-      body.addColorStop(0, "rgba(29,58,85,0.95)");
-      body.addColorStop(0.7, "rgba(11,27,43,0.96)");
-      body.addColorStop(1, "rgba(8,19,31,1)");
+      body.addColorStop(0, "rgba(24,46,88,0.95)");
+      body.addColorStop(0.7, "rgba(11,24,48,0.96)");
+      body.addColorStop(1, "rgba(7,16,35,1)");
       ctx.beginPath();
       ctx.arc(cx, cyy, R, 0, Math.PI * 2);
       ctx.fillStyle = body;

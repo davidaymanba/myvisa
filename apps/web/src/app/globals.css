@@ -4,53 +4,56 @@
 
 /* ──────────────────────────────────────────────────────────────
    1. Raw palette — never use directly in components; use semantic tokens below.
+   Brand ("تأشيرتي My VISA" logo): turquoise #34C1C3 and royal blue #2B4FA1. The scale names
+   predate the logo and are kept so components don't change: `gold-*` is the brand turquoise
+   (CTA fill), `teal-*` the brand blue (trust/links), `ink-*` navy, `sand-*` a cool paper.
    Every pair used for text is checked against WCAG AA (see docs/DESIGN.md).
    ────────────────────────────────────────────────────────────── */
 @theme {
-  --color-ink-50: #f2f5f8;
-  --color-ink-100: #e3e9ef;
-  --color-ink-200: #c6d1dc;
-  --color-ink-300: #9aabbc;
-  --color-ink-400: #6e8399;
-  --color-ink-500: #4f6378;
-  --color-ink-600: #3a4d61;
-  --color-ink-700: #29394b;
-  --color-ink-800: #1a2a3b;
-  --color-ink-900: #0b1b2b;
-  --color-ink-950: #08131f;
+  --color-ink-50: #f1f4f9;
+  --color-ink-100: #e2e8f1;
+  --color-ink-200: #c4cfdf;
+  --color-ink-300: #97a6be;
+  --color-ink-400: #6a7c99;
+  --color-ink-500: #4c5e7a;
+  --color-ink-600: #374863;
+  --color-ink-700: #26364f;
+  --color-ink-800: #18263b;
+  --color-ink-900: #0b1830;
+  --color-ink-950: #071023;
 
-  --color-sand-50: #fcfaf6;
-  --color-sand-100: #f7f3ec;
-  --color-sand-200: #efe8dc;
-  --color-sand-300: #e2d7c4;
-  --color-sand-400: #cdbea4;
-  --color-sand-500: #af9c7e;
-  --color-sand-600: #8c7a5e;
-  --color-sand-700: #685a45;
-  --color-sand-800: #463c2e;
-  --color-sand-900: #2a241b;
+  --color-sand-50: #fafcfd;
+  --color-sand-100: #f3f7f9;
+  --color-sand-200: #e7eef2;
+  --color-sand-300: #d3dee5;
+  --color-sand-400: #b7c6d0;
+  --color-sand-500: #93a5b2;
+  --color-sand-600: #6f8290;
+  --color-sand-700: #53636f;
+  --color-sand-800: #36414a;
+  --color-sand-900: #1f262c;
 
-  --color-gold-50: #fbf7ec;
-  --color-gold-100: #f5ebcf;
-  --color-gold-200: #ebd7a1;
-  --color-gold-300: #ddbf72;
-  --color-gold-400: #c8a24a;
-  --color-gold-500: #b08a35;
-  --color-gold-600: #94722a;
-  --color-gold-700: #7a5d1c;
-  --color-gold-800: #5a4415;
-  --color-gold-900: #3b2c0e;
+  --color-gold-50: #ecfafa;
+  --color-gold-100: #cff2f3;
+  --color-gold-200: #a0e4e6;
+  --color-gold-300: #6bd3d6;
+  --color-gold-400: #34c1c3;
+  --color-gold-500: #24a4a7;
+  --color-gold-600: #1b8588;
+  --color-gold-700: #11686b;
+  --color-gold-800: #0d4f51;
+  --color-gold-900: #083536;
 
-  --color-teal-50: #eaf4f3;
-  --color-teal-100: #cce5e2;
-  --color-teal-200: #9ccbc6;
-  --color-teal-300: #5fb3ac;
-  --color-teal-400: #2c8780;
-  --color-teal-500: #0f5e5a;
-  --color-teal-600: #0c4f4c;
-  --color-teal-700: #0a403d;
-  --color-teal-800: #07302e;
-  --color-teal-900: #042120;
+  --color-teal-50: #edf2fb;
+  --color-teal-100: #d3dff4;
+  --color-teal-200: #a9bfe8;
+  --color-teal-300: #7c9bdb;
+  --color-teal-400: #4a6fc2;
+  --color-teal-500: #2b4fa1;
+  --color-teal-600: #233f84;
+  --color-teal-700: #1c3369;
+  --color-teal-800: #15264e;
+  --color-teal-900: #0d1833;
 
   /* Typography. Families resolve per-locale in :root / :lang() below. */
   --font-sans: var(--font-body);
@@ -100,7 +103,7 @@
     0 16px 32px -12px rgb(var(--shadow-rgb) / 0.1);
   --shadow-lg: 0 1px 2px rgb(var(--shadow-rgb) / 0.04), 0 8px 20px -6px rgb(var(--shadow-rgb) / 0.1),
     0 32px 64px -24px rgb(var(--shadow-rgb) / 0.18);
-  --shadow-gold: 0 8px 24px -8px rgb(200 162 74 / 0.55), 0 2px 6px -2px rgb(200 162 74 / 0.35);
+  --shadow-gold: 0 8px 24px -8px rgb(52 193 195 / 0.55), 0 2px 6px -2px rgb(52 193 195 / 0.35);
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
@@ -283,11 +286,11 @@
 :root {
   --background: var(--color-sand-100);
   --foreground: var(--color-ink-900);
-  --surface: #fffdf9;
+  --surface: #ffffff;
   --surface-sunken: var(--color-sand-200);
   --muted: var(--color-sand-200);
   --muted-foreground: var(--color-ink-500);
-  --border: #e5dccb;
+  --border: #dce5eb;
   --border-strong: var(--color-sand-400);
 
   --primary: var(--color-gold-400);
@@ -313,7 +316,7 @@
   --info: #1d5fa6;
   --info-soft: #e2ecf7;
 
-  --shadow-rgb: 11 27 43;
+  --shadow-rgb: 11 24 48;
   --grain-opacity: 0.035;
 
   /* Latin defaults; Arabic overrides below. */
@@ -331,12 +334,12 @@
 .dark {
   --background: var(--color-ink-950);
   --foreground: var(--color-sand-100);
-  --surface: #0f2032;
-  --surface-sunken: #0b1826;
-  --muted: #132638;
+  --surface: #0e1c33;
+  --surface-sunken: #0a1529;
+  --muted: #12223b;
   --muted-foreground: var(--color-ink-300);
-  --border: #1f3346;
-  --border-strong: #2d4458;
+  --border: #1e2f4a;
+  --border-strong: #2c4263;
 
   --primary: var(--color-gold-400);
   --primary-hover: var(--color-gold-300);
@@ -346,7 +349,7 @@
   --secondary-hover: var(--color-teal-200);
   --secondary-foreground: var(--color-ink-950);
   --secondary-text: var(--color-teal-300);
-  --inverse: #0d1c2c;
+  --inverse: #0c1a30;
   --inverse-foreground: var(--color-sand-100);
   --inverse-muted: var(--color-ink-300);
   --ring: var(--color-teal-300);

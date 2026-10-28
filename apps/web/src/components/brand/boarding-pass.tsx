@@ -39,7 +39,7 @@ export function BoardingPass({ orderNumber, from, to, serviceName, travelers, st
       {/* Header stub */}
       <header className="flex items-center justify-between gap-4 bg-inverse px-5 py-4 text-inverse-foreground sm:px-7">
         <div className="flex items-center gap-3">
-          <LogoMark className="text-sand-100 dark:text-sand-100 [&_rect]:fill-white/10" />
+          <LogoMark tone="dark" className="text-sand-100 dark:text-sand-100 [&_rect]:fill-white/10" />
           <span className="eyebrow text-inverse-muted">{t("title")}</span>
         </div>
         <div className="flex flex-col items-end">

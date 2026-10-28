@@ -100,7 +100,7 @@ export function MessagesPanel({ orderId, className, viewer = "CUSTOMER" }: { ord
         </div>
       </header>
 
-      <div ref={scroller} data-lenis-prevent className="flex max-h-[28rem] min-h-64 flex-col gap-2 overflow-y-auto bg-[radial-gradient(rgb(15_94_90/0.06)_1px,transparent_1px)] [background-size:16px_16px] px-4 py-5">
+      <div ref={scroller} data-lenis-prevent className="flex max-h-[28rem] min-h-64 flex-col gap-2 overflow-y-auto bg-[radial-gradient(rgb(43_79_161/0.06)_1px,transparent_1px)] [background-size:16px_16px] px-4 py-5">
         {messages.isLoading ? (
           <div className="flex flex-col gap-3">
             <Skeleton className="h-12 w-2/3 rounded-2xl" />

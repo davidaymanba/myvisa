@@ -39,7 +39,7 @@ export function PageHero({
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -start-[15%] -top-[40%] size-[60vw] animate-drift rounded-full bg-teal-500/25 blur-[130px]" />
         <div className="absolute -bottom-[50%] end-0 size-[45vw] animate-drift rounded-full bg-gold-400/15 blur-[130px] [animation-delay:-7s]" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgb(247_243_236/0.05)_1px,transparent_1px)] [background-size:calc(100%/12)_100%] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgb(243_247_249/0.05)_1px,transparent_1px)] [background-size:calc(100%/12)_100%] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
       </div>
 
       <div className="container-page grid gap-10 pb-16 pt-32 sm:pb-24 sm:pt-40 lg:grid-cols-12 lg:items-end">

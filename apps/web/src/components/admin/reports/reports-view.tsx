@@ -17,10 +17,11 @@ import { AdminPageHeader } from "../page-header";
 
 /**
  * Chart colours, validated with the dataviz palette checker (lightness band, chroma floor, CVD and
- * normal-vision separation, 3:1 contrast) against the light card (#FFFDF9) and the dark card (#0F2032).
+ * normal-vision separation, 3:1 contrast) against the light card (#FFFFFF) and the dark card (#0E1C33).
+ * Slots 1 and 3 are the brand turquoise and blue.
  * Slot 1 is every single-series chart; the three slots are the revenue split, always in this order.
  */
-const CHART_VARS = "[--chart-1:#0A8F86] [--chart-2:#B08A35] [--chart-3:#5B6FB0] dark:[--chart-1:#1C9A8F] dark:[--chart-3:#6F82D0]";
+const CHART_VARS = "[--chart-1:#1B8588] [--chart-2:#B08A35] [--chart-3:#2B4FA1] dark:[--chart-1:#34C1C3] dark:[--chart-3:#7C9BDB]";
 
 const riyadhToday = () => new Date(Date.now() + 3 * 3_600_000).toISOString().slice(0, 10);
 const shiftDay = (day: string, n: number) => new Date(new Date(`${day}T00:00:00Z`).getTime() + n * 86_400_000).toISOString().slice(0, 10);

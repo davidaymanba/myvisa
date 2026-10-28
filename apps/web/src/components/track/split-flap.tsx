@@ -49,7 +49,7 @@ export function SplitFlap({ text, length, className, cellClassName, delay = 0 }:
           key={i}
           aria-hidden
           className={cn(
-            "relative grid h-[1.6em] w-[1.05em] place-items-center overflow-hidden rounded-[3px] bg-gradient-to-b from-[#1a2533] to-[#0d151f] font-mono font-semibold text-gold-200 shadow-[inset_0_-1px_0_rgb(0_0_0/0.6),0_1px_0_rgb(255_255_255/0.05)]",
+            "relative grid h-[1.6em] w-[1.05em] place-items-center overflow-hidden rounded-[3px] bg-gradient-to-b from-[#17233a] to-[#0b1427] font-mono font-semibold text-gold-200 shadow-[inset_0_-1px_0_rgb(0_0_0/0.6),0_1px_0_rgb(255_255_255/0.05)]",
             "after:absolute after:inset-x-0 after:top-1/2 after:h-px after:bg-black/70",
             cellClassName,
           )}

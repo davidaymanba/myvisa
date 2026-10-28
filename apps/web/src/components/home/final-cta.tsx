@@ -17,8 +17,8 @@ export function FinalCta() {
     <section className="container-page py-16 sm:py-24">
       <div data-surface="dark" className="dark relative isolate overflow-hidden rounded-[2.5rem] bg-ink-950 px-6 py-20 text-center text-foreground sm:px-12 sm:py-28">
         <div aria-hidden className="absolute inset-0 -z-10">
-          <div className="absolute start-1/2 top-1/2 size-[60rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[conic-gradient(from_0deg,transparent,rgb(15_94_90/0.5),transparent,rgb(200_162_74/0.35),transparent)] animate-spin-slow blur-3xl rtl:translate-x-1/2" />
-          <div className="absolute inset-0 bg-[radial-gradient(rgb(247_243_236/0.6)_1px,transparent_1px)] [background-size:28px_28px] opacity-[0.06]" />
+          <div className="absolute start-1/2 top-1/2 size-[60rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[conic-gradient(from_0deg,transparent,rgb(43_79_161/0.5),transparent,rgb(52_193_195/0.35),transparent)] animate-spin-slow blur-3xl rtl:translate-x-1/2" />
+          <div className="absolute inset-0 bg-[radial-gradient(rgb(243_247_249/0.6)_1px,transparent_1px)] [background-size:28px_28px] opacity-[0.06]" />
         </div>
         <RotatingRing />
         <PassportStamp animated shape="oval" tone="gold" top="DEPARTURE · RIYADH" bottom="MYVISA" code="RUH" caption="BON VOYAGE" rotate={-10} className="absolute -start-8 bottom-6 hidden w-56 opacity-80 lg:block [&_svg]:mix-blend-normal" />

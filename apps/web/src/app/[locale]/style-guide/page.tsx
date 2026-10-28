@@ -238,10 +238,10 @@ const PALETTES = [
 ] as const;
 const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
 const HEX: Record<(typeof PALETTES)[number]["key"], Record<number, string>> = {
-  ink: { 50: "#F2F5F8", 100: "#E3E9EF", 200: "#C6D1DC", 300: "#9AABBC", 400: "#6E8399", 500: "#4F6378", 600: "#3A4D61", 700: "#29394B", 800: "#1A2A3B", 900: "#0B1B2B" },
-  sand: { 50: "#FCFAF6", 100: "#F7F3EC", 200: "#EFE8DC", 300: "#E2D7C4", 400: "#CDBEA4", 500: "#AF9C7E", 600: "#8C7A5E", 700: "#685A45", 800: "#463C2E", 900: "#2A241B" },
-  gold: { 50: "#FBF7EC", 100: "#F5EBCF", 200: "#EBD7A1", 300: "#DDBF72", 400: "#C8A24A", 500: "#B08A35", 600: "#94722A", 700: "#7A5D1C", 800: "#5A4415", 900: "#3B2C0E" },
-  teal: { 50: "#EAF4F3", 100: "#CCE5E2", 200: "#9CCBC6", 300: "#5FB3AC", 400: "#2C8780", 500: "#0F5E5A", 600: "#0C4F4C", 700: "#0A403D", 800: "#07302E", 900: "#042120" },
+  ink: { 50: "#F1F4F9", 100: "#E2E8F1", 200: "#C4CFDF", 300: "#97A6BE", 400: "#6A7C99", 500: "#4C5E7A", 600: "#374863", 700: "#26364F", 800: "#18263B", 900: "#0B1830" },
+  sand: { 50: "#FAFCFD", 100: "#F3F7F9", 200: "#E7EEF2", 300: "#D3DEE5", 400: "#B7C6D0", 500: "#93A5B2", 600: "#6F8290", 700: "#53636F", 800: "#36414A", 900: "#1F262C" },
+  gold: { 50: "#ECFAFA", 100: "#CFF2F3", 200: "#A0E4E6", 300: "#6BD3D6", 400: "#34C1C3", 500: "#24A4A7", 600: "#1B8588", 700: "#11686B", 800: "#0D4F51", 900: "#083536" },
+  teal: { 50: "#EDF2FB", 100: "#D3DFF4", 200: "#A9BFE8", 300: "#7C9BDB", 400: "#4A6FC2", 500: "#2B4FA1", 600: "#233F84", 700: "#1C3369", 800: "#15264E", 900: "#0D1833" },
 };
 
 const SEMANTIC = [
@@ -260,12 +260,12 @@ const SEMANTIC = [
 ] as const;
 
 const CONTRAST = [
-  { fg: "#0B1B2B", bg: "#F7F3EC", ratio: 16.2, use: "Ink / Sand" },
-  { fg: "#0B1B2B", bg: "#C8A24A", ratio: 7.23, use: "Ink / Gold button" },
-  { fg: "#7A5D1C", bg: "#F7F3EC", ratio: 5.57, use: "Gold-700 text / Sand" },
-  { fg: "#0F5E5A", bg: "#F7F3EC", ratio: 6.86, use: "Teal / Sand" },
-  { fg: "#4F6378", bg: "#F7F3EC", ratio: 5.6, use: "Muted / Sand" },
-  { fg: "#C8A24A", bg: "#F7F3EC", ratio: 2.18, use: "Gold text / Sand" },
+  { fg: "#0B1830", bg: "#F3F7F9", ratio: 16.41, use: "Ink / Paper" },
+  { fg: "#0B1830", bg: "#34C1C3", ratio: 8.05, use: "Ink / Turquoise button" },
+  { fg: "#11686B", bg: "#F3F7F9", ratio: 6.06, use: "Turquoise-700 text / Paper" },
+  { fg: "#2B4FA1", bg: "#F3F7F9", ratio: 7.12, use: "Blue / Paper" },
+  { fg: "#4C5E7A", bg: "#F3F7F9", ratio: 6.11, use: "Muted / Paper" },
+  { fg: "#34C1C3", bg: "#F3F7F9", ratio: 2.04, use: "Turquoise text / Paper" },
 ] as const;
 
 function ColorSection() {
