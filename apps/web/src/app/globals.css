@@ -500,15 +500,6 @@
     transform: none !important;
   }
 
-  /* Mobile Safari zooms into inputs below 16px. */
-  @media (max-width: 640px) {
-    input,
-    textarea,
-    select {
-      font-size: max(16px, 1em);
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     *,
     ::before,
@@ -519,6 +510,16 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+/* Mobile Safari zooms into any field below 16px on focus. Unlayered on purpose: it must beat text-size
+   utilities (text-body-sm, text-caption…) that components put on inputs. */
+@media (max-width: 640px) {
+  input:not([type="checkbox"], [type="radio"], [type="range"]),
+  textarea,
+  select {
+    font-size: max(16px, 1em);
   }
 }
 

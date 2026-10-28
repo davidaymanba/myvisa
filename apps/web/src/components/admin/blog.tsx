@@ -71,10 +71,10 @@ export function BlogList() {
                       {p.titleEn}
                     </p>
                   )}
-                  <p className="mt-auto flex items-center gap-2 pt-3 text-caption text-muted-foreground">
-                    <PenLine className="size-3.5" aria-hidden />
+                  <p className="mt-auto flex items-center gap-2 pt-3 text-caption text-muted-foreground max-sm:flex-wrap max-sm:gap-y-1">
+                    <PenLine className="size-3.5 shrink-0" aria-hidden />
                     {t("updated", { when: format.relativeTime(new Date(p.updatedAt), now) })}
-                    <span lang="en" dir="ltr" className="ms-auto font-mono">
+                    <span lang="en" dir="ltr" className="ms-auto font-mono max-sm:min-w-0 max-sm:truncate">
                       /{p.slug}
                     </span>
                   </p>
@@ -198,7 +198,7 @@ export function BlogEditor({ id }: { id?: string }) {
       className="flex flex-col gap-6"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href="/admin/blog" className="group inline-flex items-center gap-2 text-body-sm font-medium text-muted-foreground hover:text-foreground">
+        <Link href="/admin/blog" className="group -my-2 inline-flex items-center gap-2 py-2 text-body-sm font-medium text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1" aria-hidden />
           {t("back")}
         </Link>
@@ -238,7 +238,7 @@ export function BlogEditor({ id }: { id?: string }) {
       </div>
 
       <div className="grid items-start gap-6 xl:grid-cols-2">
-        <fieldset disabled={readOnly} className="flex flex-col gap-5 rounded-[1.75rem] border border-border bg-surface p-5 sm:p-6">
+        <fieldset disabled={readOnly} className="flex min-w-0 flex-col gap-5 rounded-[1.75rem] border border-border bg-surface p-5 sm:p-6">
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label={t("titleAr")} error={errors.titleAr}>
               <Input dir="rtl" value={form.titleAr} onChange={(e) => set("titleAr", e.target.value)} maxLength={160} />
@@ -287,7 +287,7 @@ export function BlogEditor({ id }: { id?: string }) {
           </Field>
         </fieldset>
 
-        <section aria-label={t("preview")} className="overflow-hidden rounded-[1.75rem] border border-border bg-background xl:sticky xl:top-6">
+        <section aria-label={t("preview")} className="min-w-0 overflow-hidden rounded-[1.75rem] border border-border bg-background xl:sticky xl:top-6">
           <div className="flex items-center justify-between border-b border-border bg-surface px-5 py-3">
             <span className="flex items-center gap-2 text-body-sm font-medium">
               <Eye className="size-4" aria-hidden />

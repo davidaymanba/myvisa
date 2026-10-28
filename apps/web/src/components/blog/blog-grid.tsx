@@ -8,7 +8,7 @@ import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { unsplash } from "@/lib/images";
-import { cn } from "@/lib/utils";
+import { calendarDate, cn } from "@/lib/utils";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -20,7 +20,7 @@ export function FeaturedPost({ post }: { post: BlogSummary }) {
   const title = post.title[locale] ?? post.title.ar;
   return (
     <motion.article initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.9, ease: EASE }} className="group relative isolate overflow-hidden rounded-[2.5rem] bg-ink-950 text-sand-100">
-      <Link href={`/blog/${post.slug}`} className="grid min-h-[28rem] lg:grid-cols-2">
+      <Link href={`/blog/${post.slug}`} className="grid grid-cols-1 min-h-[28rem] lg:grid-cols-2">
         <div className="relative min-h-64 overflow-hidden">
           {post.coverImageId && <Image src={unsplash(post.coverImageId, 1400)} alt={post.coverAlt ?? ""} fill priority sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover transition-transform duration-[1.6s] ease-out group-hover:scale-105" />}
           <div className="absolute inset-0 bg-gradient-to-t from-ink-950/70 via-transparent lg:bg-gradient-to-l rtl:lg:bg-gradient-to-r" />
@@ -31,7 +31,7 @@ export function FeaturedPost({ post }: { post: BlogSummary }) {
           <h2 className="font-display text-[clamp(2rem,1.4rem+2.4vw,3.5rem)] leading-[1.15]">{title}</h2>
           {(post.excerpt[locale] ?? post.excerpt.ar) && <p className="max-w-lg text-body-lg text-sand-100/70">{post.excerpt[locale] ?? post.excerpt.ar}</p>}
           <div className="flex flex-wrap items-center gap-4 text-caption text-sand-100/60">
-            <span>{format.dateTime(new Date(post.publishedAt), { day: "numeric", month: "long", year: "numeric" })}</span>
+            <span>{calendarDate(format, new Date(post.publishedAt), locale)}</span>
             <span className="flex items-center gap-1.5">
               <Clock3 className="size-3.5" aria-hidden />
               {t("minutes", { count: post.readingMinutes[locale] ?? post.readingMinutes.ar })}
@@ -66,7 +66,7 @@ export function PostCard({ post, index = 0 }: { post: BlogSummary; index?: numbe
         </div>
         <div className="flex flex-col gap-2 px-1">
           <span className="text-caption text-muted-foreground">
-            {format.dateTime(new Date(post.publishedAt), { day: "numeric", month: "short", year: "numeric" })} · {t("minutes", { count: post.readingMinutes[locale] ?? post.readingMinutes.ar })}
+            {calendarDate(format, new Date(post.publishedAt), locale, "short")} · {t("minutes", { count: post.readingMinutes[locale] ?? post.readingMinutes.ar })}
           </span>
           <h3 className="font-display text-title leading-snug transition-colors group-hover:text-secondary-text">{post.title[locale] ?? post.title.ar}</h3>
           {(post.excerpt[locale] ?? post.excerpt.ar) && <p className="line-clamp-2 text-body-sm text-muted-foreground">{post.excerpt[locale] ?? post.excerpt.ar}</p>}
@@ -99,7 +99,7 @@ export function BlogGrid({ posts }: { posts: BlogSummary[] }) {
           </div>
         </LayoutGroup>
       )}
-      <motion.div layout className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+      <motion.div layout className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
         <AnimatePresence mode="popLayout">
           {shown.map((p, i) => (
             <PostCard key={p.slug} post={p} index={i} />

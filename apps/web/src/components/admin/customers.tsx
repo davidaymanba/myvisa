@@ -55,7 +55,37 @@ export function CustomersView() {
         <EmptyState icon={<Users />} title={t("empty")} />
       ) : (
         <>
-          <div data-lenis-prevent className="overflow-x-auto rounded-[1.75rem] border border-border bg-surface">
+          <ul className="flex flex-col gap-3 md:hidden">
+            {customers.data.items.map((c, i) => (
+              <motion.li key={c.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 15) * 0.02 }}>
+                <Link href={`/admin/customers/${c.id}`} className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-4 shadow-xs">
+                  <div className="flex items-center gap-3">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-teal-300 to-teal-700 text-caption font-semibold text-white">{initials(c.name ?? "#")}</span>
+                    <span className="flex min-w-0 flex-1 flex-col">
+                      <span className="truncate font-medium">{c.name ?? "—"}</span>
+                      <span dir="ltr" className="tabular truncate text-caption text-muted-foreground rtl:text-end">
+                        {c.phone}
+                      </span>
+                    </span>
+                  </div>
+                  <dl className="grid grid-cols-2 gap-x-3 gap-y-2.5 border-t border-border pt-3 text-caption">
+                    {[
+                      { k: "spent", v: formatMoney(c.spentHalalas, locale, { fractionDigits: 2 }) },
+                      { k: "orders", v: `${c.paidOrders} / ${c.orders}` },
+                      { k: "last", v: c.lastOrderAt ? format.dateTime(new Date(c.lastOrderAt), { day: "numeric", month: "short", year: "numeric" }) : "—" },
+                      { k: "since", v: format.dateTime(new Date(c.createdAt), { month: "short", year: "numeric" }) },
+                    ].map((f) => (
+                      <div key={f.k} className="flex min-w-0 flex-col gap-0.5">
+                        <dt className="truncate text-muted-foreground">{t(`columns.${f.k as "orders"}`)}</dt>
+                        <dd className="tabular font-medium">{f.v}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </Link>
+              </motion.li>
+            ))}
+          </ul>
+          <div data-lenis-prevent className="overflow-x-auto rounded-[1.75rem] border border-border bg-surface max-md:hidden">
             <table className="w-full min-w-[46rem] text-body-sm">
               <thead>
                 <tr className="border-b border-border text-caption text-muted-foreground">
@@ -98,9 +128,9 @@ export function CustomersView() {
               </tbody>
             </table>
           </div>
-          <div className="mt-4 flex items-center justify-between gap-3 text-body-sm text-muted-foreground">
+          <div className="mt-4 flex items-center justify-between gap-3 text-body-sm text-muted-foreground max-sm:flex-wrap">
             <span>{customers.data.total}</span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 max-sm:ms-auto">
               <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>
                 {to("prev")}
               </Button>
@@ -132,7 +162,7 @@ export function CustomerProfile({ id }: { id: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <Link href="/admin/customers" className="group inline-flex w-fit items-center gap-2 text-body-sm font-medium text-muted-foreground hover:text-foreground">
+      <Link href="/admin/customers" className="group -my-2 inline-flex w-fit items-center gap-2 py-2 text-body-sm font-medium text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1" aria-hidden />
         {t("title")}
       </Link>
@@ -140,9 +170,9 @@ export function CustomerProfile({ id }: { id: string }) {
         <div aria-hidden className="absolute -end-16 -top-24 -z-10 size-80 animate-drift rounded-full bg-teal-500/30 blur-[90px]" />
         <div className="flex items-center gap-4">
           <span className="grid size-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-gold-200 to-gold-500 font-display text-display-md text-ink-950">{initials(c.name ?? "#")}</span>
-          <div className="flex flex-col gap-1">
+          <div className="flex min-w-0 flex-col gap-1">
             <p className="eyebrow text-gold-300">{t("profile")}</p>
-            <h1 className="font-display text-display-md leading-tight">{c.name ?? c.phone}</h1>
+            <h1 className="break-words font-display text-display-md leading-tight">{c.name ?? c.phone}</h1>
             <p className="text-body-sm text-foreground/70">
               <span dir="ltr">{c.phone}</span>
               {c.email && <> · {c.email}</>} · {c.lastLoginAt ? t("lastLogin", { when: format.relativeTime(new Date(c.lastLoginAt), now) }) : t("never")}
@@ -176,7 +206,7 @@ export function CustomerProfile({ id }: { id: string }) {
       </motion.header>
 
       <div className="grid items-start gap-6 xl:grid-cols-12">
-        <section className="rounded-[1.75rem] border border-border bg-surface p-5 sm:p-6 xl:col-span-7">
+        <section className="min-w-0 rounded-[1.75rem] border border-border bg-surface p-5 sm:p-6 xl:col-span-7">
           <h2 className="mb-4 flex items-center gap-2 font-display text-title">
             <Ticket className="size-5 text-secondary-text" aria-hidden />
             {t("orders")}
@@ -189,17 +219,17 @@ export function CustomerProfile({ id }: { id: string }) {
                   <span lang="en" dir="ltr" className="font-mono text-body-sm font-semibold">
                     {o.number}
                   </span>
-                  <span className="min-w-0 flex-1 truncate text-body-sm text-muted-foreground">{o.service[locale]}</span>
+                  <span className="min-w-0 flex-1 truncate text-body-sm text-muted-foreground max-sm:order-last max-sm:basis-full max-sm:whitespace-normal">{o.service[locale]}</span>
                   <Badge tone={statusTone(o.status)} dot>
                     {tb(`statuses.${o.status}`)}
                   </Badge>
-                  <span className="tabular text-body-sm">{formatMoney(o.totalHalalas, locale, { fractionDigits: 2 })}</span>
+                  <span className="tabular text-body-sm max-sm:ms-auto">{formatMoney(o.totalHalalas, locale, { fractionDigits: 2 })}</span>
                 </Link>
               </li>
             ))}
           </ul>
         </section>
-        <div className="flex flex-col gap-6 xl:col-span-5">
+        <div className="flex min-w-0 flex-col gap-6 xl:col-span-5">
           <section className="rounded-[1.75rem] border border-border bg-surface p-5 sm:p-6">
             <h2 className="mb-4 flex items-center gap-2 font-display text-title">
               <BookUser className="size-5 text-secondary-text" aria-hidden />
@@ -207,9 +237,9 @@ export function CustomerProfile({ id }: { id: string }) {
             </h2>
             <ul className="flex flex-col gap-2">
               {c.travelers.map((tr) => (
-                <li key={tr.id} className="flex items-center gap-3 rounded-2xl bg-surface-sunken/70 px-3 py-2.5 text-body-sm">
+                <li key={tr.id} className="flex items-center gap-3 rounded-2xl bg-surface-sunken/70 px-3 py-2.5 text-body-sm max-sm:flex-wrap max-sm:gap-y-1">
                   <Flag code={tr.nationalityIso2.toLowerCase()} className="h-4 w-6 rounded-[3px]" />
-                  <span lang="en" className="flex-1 font-medium">
+                  <span lang="en" className="min-w-0 flex-1 break-words font-medium">
                     {tr.name}
                   </span>
                   <span className="text-caption text-muted-foreground">{ta(`relationships.${tr.relationship as "SELF"}`)}</span>
@@ -225,7 +255,7 @@ export function CustomerProfile({ id }: { id: string }) {
             </h2>
             <ul className="flex flex-col gap-1.5 text-body-sm">
               {c.consents.map((k, i) => (
-                <li key={i} className="flex items-center gap-2">
+                <li key={i} className="flex items-center gap-2 max-sm:flex-wrap max-sm:gap-y-0.5">
                   {k.granted ? <ShieldCheck className="size-4 text-success" aria-hidden /> : <ShieldX className="size-4 text-danger" aria-hidden />}
                   <span className="flex-1">{t.has(`consentTypes.${k.type}` as "consentTypes.TERMS") ? t(`consentTypes.${k.type}` as "consentTypes.TERMS") : k.type}</span>
                   <span className={cn("text-caption", k.granted ? "text-success" : "text-danger")}>{k.granted ? t("granted") : t("withdrawn")}</span>

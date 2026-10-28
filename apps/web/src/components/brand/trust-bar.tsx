@@ -16,7 +16,7 @@ export function TrustBar({ crNumber, vatNumber, className }: { crNumber: string;
 
   return (
     <div className={cn("flex flex-col gap-5", className)}>
-      <ul className="grid gap-x-6 gap-y-4 sm:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
         {items.map(({ icon: Icon, label, value }) => (
           <li key={label} className="flex items-center gap-3">
             <span className="grid size-10 shrink-0 place-items-center rounded-xl border border-border bg-surface text-secondary-text">

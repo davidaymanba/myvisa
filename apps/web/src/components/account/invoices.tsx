@@ -47,8 +47,8 @@ export function InvoicesPage() {
                 <p className="text-caption text-muted-foreground">{format.dateTime(new Date(inv.issuedAt), { day: "numeric", month: "long", year: "numeric" })}</p>
                 <div className="my-4 border-t-2 border-dashed border-border" />
                 <div className="flex items-end justify-between gap-3">
-                  <span className="text-caption text-muted-foreground">{t("order", { number: inv.orderNumber })}</span>
-                  <span className="tabular font-display text-display-md leading-none">{formatMoney(inv.totalHalalas, locale, { fractionDigits: 2 })}</span>
+                  <span className="min-w-0 text-caption text-muted-foreground">{t("order", { number: inv.orderNumber })}</span>
+                  <span className="tabular whitespace-nowrap font-display text-display-md leading-none">{formatMoney(inv.totalHalalas, locale, { fractionDigits: 2 })}</span>
                 </div>
                 <span className="mt-4 inline-flex items-center gap-1 text-body-sm font-medium text-secondary-text">
                   {t("view")}

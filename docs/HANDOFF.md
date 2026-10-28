@@ -94,6 +94,13 @@ Dashboard: http://localhost:3100/account with `0500000002` + `000000` (after `db
 - **Deployment:** `apps/api/Dockerfile` (includes the db package with the Prisma CLI, so the same image runs migrations), `apps/web/Dockerfile` (Next standalone when `NEXT_OUTPUT_STANDALONE=1`), `.dockerignore`, `render.yaml` (API + Postgres + Redis on Render), `infra/storage/cors.json` (bucket CORS for direct uploads), and **`docs/DEPLOYMENT.md`** (topology, secrets, one-time setup, each release, post-deploy checklist, operations). The Docker images were **not built on this machine** (its Docker VM has 1.9 GB and `pnpm install` is OOM-killed); CI builds them on GitHub's runners.
 - QA helpers: `scripts/csp-check.mjs` (CSP violations per page), `scripts/request-watch.mjs` (runaway requests).
 
+## After Phase 7 (client feedback, 2026-10-28)
+
+- **Brand colours + logo:** palette remapped to the client's logo (turquoise `#34C1C3`, royal blue `#2B4FA1`); see `docs/DESIGN.md`. Logo PNGs in `apps/web/src/assets/brand/`.
+- **Phone/iPhone pass over every screen** (public, apply, pay, account, admin): layout-only fixes behind `max-sm:`/base classes, desktop unchanged. Main cause was grid/flex children without `min-w-0` blowing out and being silently cut by `overflow-x: clip`. Admin and account tables become stacked cards on phones; inputs are ≥16px on phones (iOS zoom); Arabic dates in server-rendered client components go through `calendarDate()` (Safari's ICU adds a comma → hydration error). Contact map works again (`frame-src https://www.openstreetmap.org`).
+- **Responsive audit:** `node scripts/responsive-audit.mjs <base> <out-dir> [chromium|webkit]` visits every screen at 320/375/390/430 in ar/en and reports content sticking out, clipped text, tiny tap targets, iOS-zoom inputs and page errors (`SHOTS=1` for screenshots, `ONLY=` for paths). Run it on port 3100 — the API's CSRF only trusts that origin.
+- **Demo deploy:** website only, on Hostinger shared hosting at https://myvisa.codexai.systems (no API there).
+
 ## After launch (not built, by decision)
 
 Server-side invoice PDF for email attachments (today: print-to-PDF), ZATCA reporting once the client is onboarded, email/Google sign-in for customers, realtime chat (today: polled every 15 s), and a nonce-based CSP (would make every page render dynamically).

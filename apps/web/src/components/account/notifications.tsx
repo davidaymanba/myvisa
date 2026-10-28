@@ -113,8 +113,8 @@ export function NotificationsPage() {
                           {!n.readAt && <span className="absolute -end-0.5 -top-0.5 size-3 rounded-full bg-primary ring-2 ring-surface" />}
                         </span>
                         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                          <span className={cn("text-body", !n.readAt && "font-semibold")}>{n.title}</span>
-                          {n.body && <span className="line-clamp-2 text-body-sm text-muted-foreground">{n.body}</span>}
+                          <span className={cn("text-body", !n.readAt && "font-semibold")}>{keepOrderNumbers(n.title)}</span>
+                          {n.body && <span className="line-clamp-2 text-body-sm text-muted-foreground">{keepOrderNumbers(n.body)}</span>}
                           <span className="text-caption text-muted-foreground">
                             {format.relativeTime(new Date(n.createdAt), now)}
                             {n.orderNumber && (
@@ -156,5 +156,18 @@ export function NotificationsPage() {
         </div>
       )}
     </>
+  );
+}
+
+/** Order numbers (MV-26-ABC123) inside Arabic text: keep them in one LTR piece so they don't break at a hyphen or flip. */
+function keepOrderNumbers(text: string) {
+  return text.split(/(MV-\d{2}-[A-Z0-9]+)/).map((part, i) =>
+    i % 2 ? (
+      <bdi key={i} dir="ltr" className="whitespace-nowrap">
+        {part}
+      </bdi>
+    ) : (
+      part
+    ),
   );
 }

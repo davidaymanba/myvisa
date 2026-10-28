@@ -67,13 +67,13 @@ export function Confirmation({ orderId, paymentId, whatsapp }: { orderId: string
             <h1 className="font-display text-display-lg">{t("failedTitle")}</h1>
             <p className="text-body-lg text-muted-foreground">{t("failedLead")}</p>
             <div className="flex flex-wrap justify-center gap-3">
-              <Button asChild size="lg" onClick={() => clearIdempotencyKey(orderId)}>
+              <Button asChild size="lg" className="max-sm:w-full" onClick={() => clearIdempotencyKey(orderId)}>
                 <Link href={`/apply?order=${orderId}&step=payment`}>
                   <RotateCcw aria-hidden />
                   {t("retry")}
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg">
+              <Button asChild variant="outline" size="lg" className="max-sm:h-auto max-sm:min-h-14 max-sm:w-full max-sm:whitespace-normal max-sm:py-3 max-sm:text-center">
                 <a href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
                   <MessageCircle aria-hidden />
                   {t("help")}
@@ -90,7 +90,7 @@ export function Confirmation({ orderId, paymentId, whatsapp }: { orderId: string
         ) : (
           order.data && (
             <motion.div key="paid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid w-full items-center gap-12 lg:grid-cols-12">
-              <div className="flex flex-col gap-6 lg:col-span-5">
+              <div className="flex min-w-0 flex-col gap-6 lg:col-span-5">
                 <PassportStamp animated shape="circle" tone="teal" top="APPLICATION RECEIVED" bottom="MYVISA" code={order.data.service.destination?.iata ?? "✓"} caption={order.data.number} rotate={-10} className="w-44" />
                 <SplitReveal as="h1" trigger="mount" delay={0.4} className="text-[clamp(2.6rem,1.6rem+3.6vw,4.75rem)] font-medium leading-[1.02] tracking-[-0.03em] [:lang(ar)_&]:leading-[1.25]" lines={[{ text: t("paidTitle") }]} />
                 <p className="text-body-lg text-muted-foreground">{t("paidLead")}</p>
@@ -101,13 +101,13 @@ export function Confirmation({ orderId, paymentId, whatsapp }: { orderId: string
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  <Button asChild size="lg">
+                  <Button asChild size="lg" className="max-sm:w-full">
                     <Link href={`/account/orders/${order.data.id}`}>{t("account")}</Link>
                   </Button>
-                  <Button asChild variant="ghost" size="lg">
+                  <Button asChild variant="ghost" size="lg" className="max-sm:w-full">
                     <Link href="/">{t("home")}</Link>
                   </Button>
-                  <Button asChild variant="outline" size="lg">
+                  <Button asChild variant="outline" size="lg" className="max-sm:h-auto max-sm:min-h-14 max-sm:w-full max-sm:whitespace-normal max-sm:py-3 max-sm:text-center">
                     <a href={`https://wa.me/${whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
                       <MessageCircle aria-hidden />
                       {t("help")}
@@ -115,7 +115,7 @@ export function Confirmation({ orderId, paymentId, whatsapp }: { orderId: string
                   </Button>
                 </div>
               </div>
-              <div className="flex flex-col gap-8 lg:col-span-7">
+              <div className="flex min-w-0 flex-col gap-8 lg:col-span-7">
                 <motion.div initial={{ opacity: 0, y: 40, rotate: -2 }} animate={{ opacity: 1, y: 0, rotate: 0 }} transition={{ delay: 0.6, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}>
                   <BoardingPass
                     orderNumber={order.data.number}

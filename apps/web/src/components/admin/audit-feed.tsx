@@ -47,14 +47,14 @@ export function AuditFeed({ items, compact }: { items: AuditLogRecord[]; compact
         const name = (locale === "ar" ? item.actor?.fullNameAr : item.actor?.fullNameEn) ?? item.actor?.phone ?? t("audit.system");
         const expanded = open === item.id;
         return (
-          <motion.li key={item.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 10) * 0.04, duration: 0.4 }} className="relative flex gap-4 py-3">
+          <motion.li key={item.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 10) * 0.04, duration: 0.4 }} className="relative flex gap-3 py-3 sm:gap-4">
             <span className={cn("relative z-10 grid size-9 shrink-0 place-items-center rounded-full border border-border bg-surface shadow-xs", verb === "delete" ? "text-danger" : verb === "create" ? "text-success" : "text-secondary-text")}>
               <Icon className="size-4" aria-hidden />
             </span>
             <div className="flex min-w-0 flex-1 flex-col gap-1">
               <button type="button" disabled={compact || changed.length === 0} onClick={() => setOpen(expanded ? null : item.id)} className="flex w-full flex-wrap items-center gap-x-2 gap-y-1 text-start">
                 <span className="font-medium">{name}</span>
-                <code lang="en" dir="ltr" className="rounded-md bg-muted px-1.5 py-0.5 text-caption">
+                <code lang="en" dir="ltr" className="max-w-full rounded-md [overflow-wrap:anywhere] bg-muted px-1.5 py-0.5 text-caption">
                   {item.action}
                 </code>
                 {changed.length > 0 && <Badge tone="teal">{t("audit.changes", { count: changed.length })}</Badge>}

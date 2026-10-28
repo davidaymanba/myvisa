@@ -46,11 +46,11 @@ export function AdminOverview() {
       </Stagger>
 
       <div className="mt-10 grid gap-6 xl:grid-cols-12">
-        <section className="rounded-[2rem] border border-border bg-surface p-6 shadow-sm sm:p-8 xl:col-span-7">
-          <div className="mb-4 flex items-center justify-between gap-3">
+        <section className="min-w-0 rounded-[2rem] border border-border bg-surface p-5 shadow-sm sm:p-8 xl:col-span-7">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
             <h2 className="font-display text-heading">{t("recent")}</h2>
             {can("audit:read") && (
-              <Link href="/admin/audit" className="inline-flex items-center gap-1 text-body-sm font-medium text-secondary-text hover:underline">
+              <Link href="/admin/audit" className="-my-1.5 inline-flex items-center gap-1 py-1.5 text-body-sm font-medium text-secondary-text hover:underline">
                 {t("allActivity")}
                 <ArrowUpRight className="size-4 flip-rtl" aria-hidden />
               </Link>
@@ -69,7 +69,7 @@ export function AdminOverview() {
           )}
         </section>
 
-        <div className="flex flex-col gap-6 xl:col-span-5">
+        <div className="flex min-w-0 flex-col gap-6 xl:col-span-5">
           <section data-surface="dark" className="dark relative isolate overflow-hidden rounded-[2rem] bg-ink-950 p-6 text-foreground sm:p-8">
             <div aria-hidden className="absolute -end-10 -top-16 -z-10 size-64 animate-drift rounded-full bg-teal-500/30 blur-[80px]" />
             <p className="eyebrow text-gold-300">{t("jump")}</p>

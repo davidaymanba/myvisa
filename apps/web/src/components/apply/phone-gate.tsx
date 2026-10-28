@@ -74,7 +74,7 @@ export function PhoneGate({ onSignedIn, title, lead }: { onSignedIn: (user: Auth
   const slide = { initial: { opacity: 0, x: 30 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -30 }, transition: { duration: 0.35 } };
 
   return (
-    <div className="relative overflow-hidden rounded-[2rem] border border-border bg-surface p-6 shadow-md sm:p-8">
+    <div className="relative overflow-hidden rounded-[2rem] border border-border bg-surface p-5 shadow-md sm:p-8">
       <div aria-hidden className="absolute -end-16 -top-16 size-56 rounded-full bg-gold-200/40 blur-3xl dark:bg-gold-400/10" />
       <div className="relative flex flex-col gap-6">
         <div className="flex items-start gap-4">

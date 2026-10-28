@@ -41,7 +41,7 @@ export default function ContactPage({ params }: { params: Promise<{ locale: Loca
       <PageHero eyebrow={t("eyebrow")} title={t("title")} accent={t("titleAccent")} lead={t("lead")} crumbs={[{ label: t("eyebrow") }]} />
 
       <section className="container-page py-14 sm:py-20">
-        <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
+        <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.08}>
           {channels.map((c) => (
             <StaggerItem key={c.key} className="h-full">
               <Spotlight className={c.accent ? "dark h-full rounded-[1.75rem] border border-white/10 bg-ink-900 text-foreground" : "h-full rounded-[1.75rem] border border-border bg-surface"}>
@@ -63,7 +63,7 @@ export default function ContactPage({ params }: { params: Promise<{ locale: Loca
         </Stagger>
       </section>
 
-      <section className="container-page grid gap-6 pb-20 sm:pb-28 lg:grid-cols-12">
+      <section className="container-page grid grid-cols-1 gap-6 pb-20 sm:pb-28 lg:grid-cols-12">
         <Reveal className="lg:col-span-7">
           <ContactForm />
         </Reveal>

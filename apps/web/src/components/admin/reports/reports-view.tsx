@@ -64,24 +64,24 @@ export function ReportsView() {
 
       {/* Filters: one row, above every chart. */}
       <div className="mb-8 flex flex-wrap items-end gap-3">
-        <div className="flex rounded-full bg-muted p-1" role="radiogroup">
+        <div className="flex rounded-full bg-muted p-1 max-sm:w-full" role="radiogroup">
           {PRESETS.map((p) => {
             const on = days === p && range.to === riyadhToday();
             return (
-              <button key={p} type="button" role="radio" aria-checked={on} onClick={() => setRange({ from: shiftDay(riyadhToday(), -(p - 1)), to: riyadhToday() })} className={cn("relative isolate rounded-full px-4 py-2 text-body-sm font-medium transition-colors", on ? "text-background" : "text-muted-foreground hover:text-foreground")}>
+              <button key={p} type="button" role="radio" aria-checked={on} onClick={() => setRange({ from: shiftDay(riyadhToday(), -(p - 1)), to: riyadhToday() })} className={cn("relative isolate whitespace-nowrap rounded-full px-4 py-2 text-body-sm font-medium transition-colors max-sm:flex-1 max-sm:px-2", on ? "text-background" : "text-muted-foreground hover:text-foreground")}>
                 {on && <motion.span layoutId="report-range" className="absolute inset-0 -z-10 rounded-full bg-foreground" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
                 {t(`ranges.${p}`)}
               </button>
             );
           })}
         </div>
-        <label className="flex items-center gap-2 text-body-sm text-muted-foreground">
+        <label className="flex items-center gap-2 text-body-sm text-muted-foreground max-sm:grid max-sm:w-full max-sm:grid-cols-[3.5rem_minmax(0,1fr)]">
           {t("from")}
-          <Input type="date" dir="ltr" className="h-10 w-40" value={range.from} max={range.to} onChange={(e) => e.target.value && setRange((r) => ({ ...r, from: e.target.value }))} />
+          <Input type="date" dir="ltr" className="h-10 w-40 max-sm:w-full" value={range.from} max={range.to} onChange={(e) => e.target.value && setRange((r) => ({ ...r, from: e.target.value }))} />
         </label>
-        <label className="flex items-center gap-2 text-body-sm text-muted-foreground">
+        <label className="flex items-center gap-2 text-body-sm text-muted-foreground max-sm:grid max-sm:w-full max-sm:grid-cols-[3.5rem_minmax(0,1fr)]">
           {t("to")}
-          <Input type="date" dir="ltr" className="h-10 w-40" value={range.to} min={range.from} max={riyadhToday()} onChange={(e) => e.target.value && setRange((r) => ({ ...r, to: e.target.value }))} />
+          <Input type="date" dir="ltr" className="h-10 w-40 max-sm:w-full" value={range.to} min={range.from} max={riyadhToday()} onChange={(e) => e.target.value && setRange((r) => ({ ...r, to: e.target.value }))} />
         </label>
       </div>
 
@@ -123,7 +123,7 @@ export function ReportsView() {
 
 function Card({ title, children, className }: { title: string; children: ReactNode; className?: string }) {
   return (
-    <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} className={cn("rounded-[1.75rem] border border-border bg-surface p-5 shadow-xs sm:p-6", className)}>
+    <motion.section initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} className={cn("min-w-0 rounded-[1.75rem] border border-border bg-surface p-5 shadow-xs sm:p-6", className)}>
       <h2 className="mb-5 font-display text-title">{title}</h2>
       {children}
     </motion.section>
@@ -290,9 +290,9 @@ function DailyColumns({ daily }: { daily: ReportOverview["daily"] }) {
           </div>
         </div>
       </div>
-      <div dir="ltr" className="ms-12 mt-2 flex text-[0.68rem] text-muted-foreground">
+      <div dir="ltr" className="ms-12 mt-2 flex text-[0.68rem] text-muted-foreground max-sm:[&>[data-alt]]:invisible">
         {daily.map((d, i) => (
-          <span key={d.date} className="flex-1 text-center">
+          <span key={d.date} data-alt={i % labelEvery === 0 && (i / labelEvery) % 2 === 1 ? "" : undefined} className="flex-1 text-center max-sm:flex max-sm:min-w-0 max-sm:justify-center max-sm:whitespace-nowrap">
             {i % labelEvery === 0 ? day(d.date, { day: "numeric", month: "short" }) : ""}
           </span>
         ))}
@@ -360,7 +360,7 @@ function Funnel({ funnel }: { funnel: ReportOverview["funnel"] }) {
   return (
     <ul className="flex flex-col gap-3">
       {steps.map((s, i) => (
-        <li key={s.key} className="grid grid-cols-[7.5rem_1fr] items-center gap-3 text-body-sm">
+        <li key={s.key} className="grid grid-cols-[7.5rem_1fr] items-center gap-3 text-body-sm max-[359px]:grid-cols-[6rem_1fr] max-[359px]:gap-2">
           <span className="text-muted-foreground">{t(`funnelSteps.${s.key}`)}</span>
           <div className="flex items-center gap-3">
             {/* The track is the full scale, so bar lengths stay true proportions; the value sits after it. */}
@@ -384,7 +384,7 @@ function Destinations({ rows }: { rows: ReportOverview["topDestinations"] }) {
   return (
     <ul className="flex flex-col gap-3">
       {rows.map((r, i) => (
-        <li key={r.iso2} className="grid grid-cols-[8rem_1fr] items-center gap-3 text-body-sm">
+        <li key={r.iso2} className="grid grid-cols-[8rem_1fr] items-center gap-3 text-body-sm max-sm:grid-cols-1 max-sm:gap-1.5">
           <span className="flex items-center gap-2 truncate">
             <Flag code={r.iso2} className="h-3.5 w-5 shrink-0 rounded-[2px]" />
             <span className="truncate">{r.name[locale]}</span>

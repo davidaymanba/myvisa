@@ -70,7 +70,7 @@ export function MoneyInput({ value, onChange, disabled, className, ...rest }: { 
           onChange(Number.isFinite(n) ? Math.round(n * 100) : 0);
         }}
         onBlur={() => setDraft(null)}
-        className="tabular h-full min-w-0 flex-1 bg-transparent pe-4 text-body outline-none"
+        className="tabular h-full w-0 min-w-0 flex-1 bg-transparent pe-4 text-body outline-none"
       />
     </div>
   );
@@ -97,16 +97,16 @@ export function SaveBar({ visible, saving, onDiscard, label, saveLabel }: { visi
           transition={{ type: "spring", stiffness: 380, damping: 32 }}
           className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:ps-72"
         >
-          <div className="dark pointer-events-auto flex w-full max-w-2xl items-center gap-3 rounded-full border border-white/10 bg-ink-900/95 py-2 pe-2 ps-5 text-foreground shadow-lg backdrop-blur-xl">
+          <div className="dark pointer-events-auto flex w-full max-w-2xl items-center gap-2 rounded-full border border-white/10 bg-ink-900/95 py-2 pe-2 ps-4 sm:gap-3 sm:ps-5 text-foreground shadow-lg backdrop-blur-xl">
             <span className="relative flex size-2.5 shrink-0" aria-hidden>
               <span className="absolute inset-0 animate-ping rounded-full bg-gold-400/70" />
               <span className="relative size-2.5 rounded-full bg-gold-400" />
             </span>
-            <span className="min-w-0 flex-1 truncate text-body-sm">{label ?? t("unsaved")}</span>
-            <Button type="button" variant="ghost" size="sm" onClick={onDiscard} disabled={saving}>
+            <span className="min-w-0 flex-1 truncate text-body-sm max-sm:whitespace-normal max-sm:text-caption max-sm:leading-snug">{label ?? t("unsaved")}</span>
+            <Button type="button" variant="ghost" size="sm" className="shrink-0 max-[359px]:px-2.5" onClick={onDiscard} disabled={saving}>
               {t("discard")}
             </Button>
-            <Button type="submit" size="sm" loading={saving}>
+            <Button type="submit" size="sm" className="shrink-0" loading={saving}>
               {saving ? t("saving") : (saveLabel ?? t("save"))}
             </Button>
           </div>

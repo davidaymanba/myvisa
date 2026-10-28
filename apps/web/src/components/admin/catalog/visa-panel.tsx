@@ -105,7 +105,7 @@ function VisaTicket({ visa, index, country, nationalities, open, onToggle }: { v
         {open && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="overflow-hidden">
             <div className="perforation relative mx-6 h-px border-t border-dashed border-border-strong" aria-hidden />
-            <div className="flex flex-col gap-12 p-5 sm:p-8">
+            <div className="flex flex-col gap-12 px-3 py-6 min-[400px]:p-5 sm:p-8">
               <VisaForm visa={visa} countryId={country.id} slugPrefix={country.iso2.toLowerCase()} />
               <PriceRules service={visa} countryId={country.id} nationalities={nationalities} />
               <Requirements service={visa} countryId={country.id} />
@@ -188,7 +188,7 @@ function VisaForm({ visa, countryId, slugPrefix, onCreated, onCancel }: { visa?:
 
   return (
     <form onSubmit={form.handleSubmit((d) => save.mutate(d))} noValidate className="flex flex-col gap-5">
-      <fieldset disabled={readOnly} className="flex flex-col gap-5">
+      <fieldset disabled={readOnly} className="flex min-w-0 flex-col gap-5">
         <Bilingual>
           <TextField form={form} name="nameAr" label={t("fields.nameAr")} />
           <TextField form={form} name="nameEn" label={t("fields.nameEn")} lang="en" />

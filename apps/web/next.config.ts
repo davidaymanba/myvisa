@@ -26,7 +26,8 @@ const csp = [
   `connect-src 'self' ${UPLOAD_ORIGIN}${DEV ? " ws:" : ""}`,
   "media-src 'self' blob:",
   "worker-src 'self' blob:",
-  "frame-src 'none'",
+  // The contact page embeds the office map; nothing else may be framed.
+  "frame-src https://www.openstreetmap.org",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

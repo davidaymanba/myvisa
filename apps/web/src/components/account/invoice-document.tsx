@@ -57,7 +57,7 @@ export function InvoiceDocument({ id, backHref = "/account/invoices" }: { id: st
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
-        <Link href={backHref} className="group inline-flex items-center gap-2 text-body-sm font-medium text-muted-foreground hover:text-foreground">
+        <Link href={backHref} className="group inline-flex items-center gap-2 text-body-sm font-medium text-muted-foreground hover:text-foreground max-sm:-my-2 max-sm:py-2">
           <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1" aria-hidden />
           {t("back")}
         </Link>
@@ -137,7 +137,43 @@ export function InvoiceDocument({ id, backHref = "/account/invoices" }: { id: st
           </Party>
         </div>
 
-        <div className="overflow-x-auto py-6" data-lenis-prevent>
+        {/* Phones: one card per line instead of a six-column table (the table stays for wider screens and print). */}
+        <ul className="flex flex-col divide-y divide-ink-100 py-4 text-body-sm sm:hidden print:hidden">
+          {inv.lines.map((l, i) => (
+            <li key={i} className="flex flex-col gap-2 py-3">
+              <div>
+                <span className="block font-medium">{l.description[locale]}</span>
+                <span className="block text-caption text-ink-500" lang={locale === "ar" ? "en" : "ar"}>
+                  {l.description[locale === "ar" ? "en" : "ar"]}
+                </span>
+              </div>
+              <dl className="flex flex-col gap-1 text-caption">
+                <div className="flex justify-between gap-2">
+                  <dt className="text-ink-500">{t("qty")}</dt>
+                  <dd className="tabular">{l.quantity}</dd>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <dt className="text-ink-500">{t("unit")}</dt>
+                  <dd className="tabular whitespace-nowrap">{money(l.unitPriceHalalas)}</dd>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <dt className="text-ink-500">{t("vatRate")}</dt>
+                  <dd className="tabular whitespace-nowrap">{l.vatCategory === "O" ? t("outOfScope") : `${Math.round(l.vatRate * 100)}%`}</dd>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <dt className="text-ink-500">{t("vat")}</dt>
+                  <dd className="tabular whitespace-nowrap">{money(l.vatHalalas)}</dd>
+                </div>
+              </dl>
+              <div className="flex items-baseline justify-between gap-3 border-t border-dashed border-ink-100 pt-2">
+                <span className="text-caption text-ink-500">{t("lineTotal")}</span>
+                <span className="tabular whitespace-nowrap font-medium">{money(l.lineTotalHalalas)}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <div className="overflow-x-auto py-6 max-sm:hidden print:block" data-lenis-prevent>
           <table className="w-full min-w-[34rem] text-body-sm">
             <thead>
               <tr className="border-b-2 border-ink-900 text-start text-caption text-ink-500">
@@ -171,7 +207,7 @@ export function InvoiceDocument({ id, backHref = "/account/invoices" }: { id: st
 
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <p className="max-w-sm text-caption leading-relaxed text-ink-500">{t("footer")}</p>
-          <dl className="flex min-w-64 flex-col gap-2 text-body-sm">
+          <dl className="flex flex-col gap-2 text-body-sm sm:min-w-64">
             <div className="flex justify-between gap-6">
               <dt className="text-ink-500">{t("subtotal")}</dt>
               <dd className="tabular">{money(inv.subtotalHalalas)}</dd>
@@ -182,7 +218,7 @@ export function InvoiceDocument({ id, backHref = "/account/invoices" }: { id: st
             </div>
             <div className="mt-1 flex items-baseline justify-between gap-6 rounded-2xl bg-ink-900 px-4 py-3 text-sand-100 print:bg-transparent print:px-0 print:text-ink-900">
               <dt className="font-medium">{t("grandTotal")}</dt>
-              <dd className="tabular font-display text-heading">{money(inv.totalHalalas)}</dd>
+              <dd className="tabular whitespace-nowrap font-display text-heading">{money(inv.totalHalalas)}</dd>
             </div>
           </dl>
         </div>

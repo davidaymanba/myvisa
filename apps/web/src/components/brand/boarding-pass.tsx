@@ -38,20 +38,20 @@ export function BoardingPass({ orderNumber, from, to, serviceName, travelers, st
     <article className={cn("relative overflow-hidden rounded-3xl border border-border bg-surface shadow-md", className)} aria-label={t("aria", { number: orderNumber })}>
       {/* Header stub */}
       <header className="flex items-center justify-between gap-4 bg-inverse px-5 py-4 text-inverse-foreground sm:px-7">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <LogoMark tone="dark" className="text-sand-100 dark:text-sand-100 [&_rect]:fill-white/10" />
           <span className="eyebrow text-inverse-muted">{t("title")}</span>
         </div>
-        <div className="flex flex-col items-end">
+        <div className="flex shrink-0 flex-col items-end">
           <span className="text-caption text-inverse-muted">{t("orderNumber")}</span>
-          <span lang="en" dir="ltr" className="font-mono text-body-sm font-semibold tracking-wider">
+          <span lang="en" dir="ltr" className="whitespace-nowrap font-mono text-body-sm font-semibold tracking-wider">
             {orderNumber}
           </span>
         </div>
       </header>
 
       {/* Route */}
-      <div className="grid gap-6 px-5 py-6 sm:px-7 md:grid-cols-[1fr_auto] md:items-center md:gap-10">
+      <div className="grid grid-cols-1 gap-6 px-5 py-6 sm:px-7 md:grid-cols-[1fr_auto] md:items-center md:gap-10">
         <div className="flex items-center gap-3 sm:gap-6">
           <Airport label={t("from")} code={from.code} city={from.city} />
           <div className="relative flex flex-1 items-center" aria-hidden>
@@ -65,10 +65,10 @@ export function BoardingPass({ orderNumber, from, to, serviceName, travelers, st
           </div>
           <Airport label={t("to")} code={to.code} city={to.city} align="end" />
         </div>
-        <dl className="grid grid-cols-3 gap-4 border-t border-border pt-5 text-body-sm md:flex md:flex-col md:gap-3 md:border-s md:border-t-0 md:ps-8 md:pt-0">
-          <Meta label={t("service")} value={serviceName} />
+        <dl className="grid grid-cols-3 gap-4 border-t border-border pt-5 text-body-sm max-sm:flex max-sm:flex-wrap max-sm:gap-x-8 md:flex md:flex-col md:gap-3 md:border-s md:border-t-0 md:ps-8 md:pt-0">
+          <Meta label={t("service")} value={serviceName} className="max-sm:basis-full" />
           <Meta label={t("travelers")} value={t("travelerCount", { count: travelers })} />
-          <div className="flex flex-col gap-1">
+          <div className="flex min-w-0 flex-col gap-1">
             <dt className="text-caption text-muted-foreground">{t("status")}</dt>
             <dd>
               <Badge tone={actionRequired ? "warning" : status === "DELIVERED" ? "success" : "teal"} dot>
@@ -88,7 +88,7 @@ export function BoardingPass({ orderNumber, from, to, serviceName, travelers, st
 
       {/* Milestones */}
       <div className="px-5 py-6 sm:px-7">
-        <ol className="relative grid gap-5 md:grid-cols-6 md:gap-2">
+        <ol className="relative grid grid-cols-1 gap-5 md:grid-cols-6 md:gap-2">
           {/* Track line (desktop: horizontal, mobile: vertical) */}
           <span className="absolute start-[17px] top-4 bottom-4 w-0.5 rounded-full bg-border md:start-[calc(100%/12)] md:end-[calc(100%/12)] md:top-[17px] md:bottom-auto md:h-0.5 md:w-auto" aria-hidden />
           <span
@@ -160,9 +160,9 @@ function Airport({ label, code, city, align = "start" }: { label: string; code: 
   );
 }
 
-function Meta({ label, value }: { label: string; value: string }) {
+function Meta({ label, value, className }: { label: string; value: string; className?: string }) {
   return (
-    <div className="flex min-w-0 flex-col gap-1">
+    <div className={cn("flex min-w-0 flex-col gap-1", className)}>
       <dt className="text-caption text-muted-foreground">{label}</dt>
       <dd className="truncate font-medium">{value}</dd>
     </div>

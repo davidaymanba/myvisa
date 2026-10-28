@@ -14,7 +14,7 @@ import { Spotlight } from "@/components/motion/spotlight";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
+import { calendarDate, cn } from "@/lib/utils";
 import { OrderTicket, orderAction } from "./order-ticket";
 import { LoadError } from "./page-header";
 import { ExpiryBadge } from "./passport-card";
@@ -37,6 +37,7 @@ export function Overview() {
   const drafts = orders.data?.filter((o) => isIn("drafts", o.status)) ?? [];
   const needsAction = active.filter((o) => o.status === "ACTION_REQUIRED");
   const [lead, ...rest] = [...needsAction, ...active.filter((o) => o.status !== "ACTION_REQUIRED")];
+  const stampDate = calendarDate(format, now, locale, "short", "2-digit");
 
   return (
     <div className="flex flex-col gap-10">
@@ -56,7 +57,7 @@ export function Overview() {
           </FadeIn>
         </div>
         <motion.div className="hidden w-36 shrink-0 sm:block" initial={{ scale: 2, opacity: 0, rotate: 20 }} animate={{ scale: 1, opacity: 1, rotate: -8 }} transition={{ delay: 0.5, type: "spring", stiffness: 240, damping: 15 }}>
-          <PassportStamp shape="oval" tone="teal" top="MYVISA · ENTRY" bottom="WELCOME" code="RUH" caption={format.dateTime(now, { day: "2-digit", month: "short", year: "numeric" })} className="w-full" />
+          <PassportStamp shape="oval" tone="teal" top="MYVISA · ENTRY" bottom="WELCOME" code="RUH" caption={stampDate} className="w-full" />
         </motion.div>
       </header>
 
@@ -131,7 +132,7 @@ function SectionTitle({ title, href }: { title: string; href?: string }) {
     <div className="flex items-end justify-between gap-3">
       <h2 className="font-display text-display-md">{title}</h2>
       {href && (
-        <Link href={href} className="text-body-sm font-medium text-secondary-text hover:underline">
+        <Link href={href} className="text-body-sm font-medium text-secondary-text hover:underline max-sm:-my-2 max-sm:py-2">
           {t("seeAll")}
         </Link>
       )}
@@ -207,13 +208,13 @@ function LatestUpdates() {
   const notifications = useNotifications();
   const items = notifications.data?.pages[0]?.items.slice(0, 5) ?? [];
   return (
-    <section className="flex flex-col gap-4 rounded-[1.75rem] border border-border bg-surface p-5 sm:p-6">
+    <section className="flex min-w-0 flex-col gap-4 rounded-[1.75rem] border border-border bg-surface p-5 sm:p-6">
       <div className="flex items-center justify-between">
         <h2 className="flex items-center gap-2 font-display text-heading">
           <Bell className="size-5 text-secondary-text" aria-hidden />
           {t("latest")}
         </h2>
-        <Link href="/account/notifications" className="text-body-sm font-medium text-secondary-text hover:underline">
+        <Link href="/account/notifications" className="text-body-sm font-medium text-secondary-text hover:underline max-sm:-my-2 max-sm:py-2">
           {tc("seeAll")}
         </Link>
       </div>
@@ -248,7 +249,7 @@ function FamilyStrip() {
   const t = useTranslations("account.overview");
   const travelers = useTravelers();
   return (
-    <section className="relative flex flex-col gap-4 overflow-hidden rounded-[1.75rem] border border-border bg-surface p-5 sm:p-6">
+    <section className="relative flex min-w-0 flex-col gap-4 overflow-hidden rounded-[1.75rem] border border-border bg-surface p-5 sm:p-6">
       <div className="flex items-center justify-between">
         <h2 className="flex items-center gap-2 font-display text-heading">
           <BookUser className="size-5 text-secondary-text" aria-hidden />

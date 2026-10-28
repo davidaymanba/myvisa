@@ -40,7 +40,7 @@ export function StepPayment({ order, onEdit }: { order: OrderView; onEdit: () =>
         <p className="eyebrow text-gold-300" dir="ltr">
           {order.number}
         </p>
-        <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="tabular mt-4 font-display text-[clamp(2.75rem,2rem+4vw,5.5rem)] leading-none">
+        <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className="tabular mt-4 font-display text-[clamp(2.75rem,2rem+4vw,5.5rem)] leading-none max-sm:text-[clamp(2.25rem,0.5rem+10vw,3rem)]">
           {amount}
         </motion.p>
         <div className="mt-8 flex flex-wrap items-center gap-2">

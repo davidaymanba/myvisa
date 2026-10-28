@@ -81,9 +81,9 @@ export function VisaTabs({ visas, slug, country }: { visas: VisaTabData[]; slug:
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.45, ease: EASE }}
-                className="grid gap-6 lg:grid-cols-12"
+                className="grid grid-cols-1 gap-6 lg:grid-cols-12"
               >
-                <div className="flex flex-col gap-6 lg:col-span-7">
+                <div className="flex min-w-0 flex-col gap-6 lg:col-span-7">
                   <div className="rounded-[1.75rem] border border-border bg-surface p-6 sm:p-8">
                     <div className="flex flex-wrap items-center gap-3">
                       <h3 className="font-display text-display-md">{v.name}</h3>
@@ -142,7 +142,7 @@ export function VisaTabs({ visas, slug, country }: { visas: VisaTabData[]; slug:
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-4 lg:col-span-5">
+                <div className="flex min-w-0 flex-col gap-4 lg:col-span-5">
                   <div className="lg:sticky lg:top-28">
                     {price?.eligible && v.kind === "VISA_FREE" ? (
                       <div className="flex flex-col gap-4 rounded-[1.75rem] border border-success/20 bg-success-soft p-6 sm:p-7">
@@ -164,7 +164,7 @@ export function VisaTabs({ visas, slug, country }: { visas: VisaTabData[]; slug:
                             {price.note}
                           </p>
                         )}
-                        <Button asChild size="lg" block className="mt-4">
+                        <Button asChild size="lg" block className="mt-4 max-sm:h-auto max-sm:min-h-14 max-sm:whitespace-normal max-sm:px-5 max-sm:py-3 max-sm:text-center max-sm:text-body">
                           <Link href={{ pathname: "/apply", query: { to: slug, visa: v.id, purpose: v.purpose, as: applicant } }}>
                             {t("applyCta", { country })} · {formatMoney(total, locale)}
                             <ArrowUpRight className="flip-rtl" aria-hidden />
@@ -190,7 +190,7 @@ export function VisaTabs({ visas, slug, country }: { visas: VisaTabData[]; slug:
 
 function Fact({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-1.5 rounded-2xl bg-muted/70 px-4 py-3">
+    <div className="flex min-w-0 flex-col gap-1.5 rounded-2xl bg-muted/70 px-4 py-3 max-sm:px-3">
       <dt className="flex items-center gap-1.5 text-caption text-muted-foreground [&_svg]:size-3.5">
         {icon}
         {label}

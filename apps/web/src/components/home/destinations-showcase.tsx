@@ -40,14 +40,14 @@ export function DestinationsShowcase({ intro, children, count }: { intro: ReactN
   const pinned = distance > 0;
 
   return (
-    <section ref={sectionRef} className="relative" style={pinned ? { height: `calc(100vh + ${distance}px)` } : undefined}>
-      <div className={cn(pinned && "sticky top-0 flex h-screen flex-col justify-center overflow-hidden")}>
+    <section ref={sectionRef} className="relative" style={pinned ? { height: `calc(100svh + ${distance}px)` } : undefined}>
+      <div className={cn(pinned && "sticky top-0 flex h-svh flex-col justify-center overflow-hidden")}>
         <motion.div
           ref={trackRef}
           style={pinned ? { x } : undefined}
           className={cn(
             "flex w-max items-stretch gap-5 px-[clamp(1rem,4vw,2.5rem)] lg:gap-7",
-            !pinned && "w-full snap-x snap-mandatory overflow-x-auto pb-4 [scrollbar-width:none]",
+            !pinned && "w-full snap-x snap-mandatory scroll-px-[clamp(1rem,4vw,2.5rem)] overflow-x-auto pb-4 [scrollbar-width:none]",
           )}
         >
           <div className="flex w-[min(86vw,30rem)] shrink-0 snap-start flex-col justify-center pe-6 lg:w-[34rem] lg:pe-16">{intro}</div>

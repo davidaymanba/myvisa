@@ -43,11 +43,11 @@ export function OrdersPage() {
         }
       />
 
-      <div className="mb-6 flex flex-wrap gap-2" role="tablist" aria-label={t("eyebrow")}>
+      <div className="mb-6 flex flex-wrap gap-2 max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:[scrollbar-width:none]" role="tablist" aria-label={t("eyebrow")} data-lenis-prevent>
         {FILTERS.map((f) => {
           const active = effective === f;
           return (
-            <button key={f} type="button" role="tab" aria-selected={active} onClick={() => setFilter(f)} className={cn("relative flex items-center gap-2 rounded-full px-4 py-2 text-body-sm font-medium transition-colors", active ? "text-background" : "text-muted-foreground hover:text-foreground")}>
+            <button key={f} type="button" role="tab" aria-selected={active} onClick={() => setFilter(f)} className={cn("relative flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-body-sm font-medium transition-colors", active ? "text-background" : "text-muted-foreground hover:text-foreground")}>
               {active && <motion.span layoutId="orders-filter" className="absolute inset-0 -z-10 rounded-full bg-foreground" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
               {t(`filters.${f}`)}
               {orders.data && <span className={cn("tabular grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-[0.7rem]", active ? "bg-background/20" : "bg-muted")}>{count(f)}</span>}

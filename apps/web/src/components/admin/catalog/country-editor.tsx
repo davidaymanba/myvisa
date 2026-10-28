@@ -139,9 +139,9 @@ function Hero({ title, crumb, imageId, iso2, eyebrow, stampTop, stampCode, actio
       )}
       <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-ink-950 via-ink-950/60 to-ink-950/30" />
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div className="flex flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-4">
           <FadeIn>
-            <Link href="/admin/destinations" className="inline-flex items-center gap-1 text-caption text-foreground/60 hover:text-foreground">
+            <Link href="/admin/destinations" className="-my-2 inline-flex items-center gap-1 py-2 text-caption text-foreground/60 hover:text-foreground">
               <ChevronLeft className="size-4 ltr:rotate-180" aria-hidden />
               {crumb}
             </Link>

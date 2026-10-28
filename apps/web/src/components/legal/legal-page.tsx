@@ -19,7 +19,7 @@ export function LegalPage({ slug }: { slug: LegalDocument["slug"] }) {
         </p>
       </PageHero>
 
-      <div className="container-page grid gap-12 py-14 sm:py-20 lg:grid-cols-12">
+      <div className="container-page grid grid-cols-1 gap-12 py-14 sm:py-20 lg:grid-cols-12">
         <aside className="lg:col-span-4">
           <div className="flex flex-col gap-8 lg:sticky lg:top-28">
             <LegalToc title={t("contents")} items={doc.sections.map((s) => ({ id: s.id, label: s.title[l] }))} />

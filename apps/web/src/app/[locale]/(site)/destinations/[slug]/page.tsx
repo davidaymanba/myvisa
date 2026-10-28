@@ -103,10 +103,10 @@ export default function DestinationPage({ params }: { params: Promise<{ locale: 
       <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(faqLd)} />
 
       <DestinationHero image={unsplash(d.imageId, 2000)} alt={d.imageAlt[l]}>
-        <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-end">
           <div className="flex flex-col gap-5 lg:col-span-8">
             <FadeIn delay={0.2} className="flex flex-wrap items-center gap-3">
-              <Link href="/destinations" className="text-caption text-foreground/60 transition-colors hover:text-foreground">
+              <Link href="/destinations" className="-my-1 py-1 text-caption text-foreground/60 transition-colors hover:text-foreground">
                 {tc("breadcrumbHome")} / {locale === "ar" ? "الوجهات" : "Destinations"}
               </Link>
               {d.schengen && <Badge tone="gold">{t("schengen")}</Badge>}
@@ -146,7 +146,7 @@ export default function DestinationPage({ params }: { params: Promise<{ locale: 
         <section className="border-y border-border bg-surface-sunken/50 py-16 sm:py-24">
           <div className="container-page">
             <SectionHeading eyebrow={t("timeline")} title={tc("workingDays", { min: firstVisa.processingDays[0], max: firstVisa.processingDays[1] })} className="mb-12" />
-            <Stagger className="relative grid gap-6 md:grid-cols-4" stagger={0.15}>
+            <Stagger className="relative grid grid-cols-1 gap-6 md:grid-cols-4" stagger={0.15}>
               <span aria-hidden className="absolute inset-x-[12.5%] top-7 hidden h-px bg-gradient-to-l from-teal-400 via-gold-400 to-teal-400 md:block" />
               {steps.map((s, i) => (
                 <StaggerItem key={s} className="relative flex flex-col items-start gap-4 md:items-center md:text-center">
@@ -161,7 +161,7 @@ export default function DestinationPage({ params }: { params: Promise<{ locale: 
         </section>
       )}
 
-      <section className="container-page grid gap-10 py-16 sm:py-24 lg:grid-cols-12">
+      <section className="container-page grid grid-cols-1 gap-10 py-16 sm:py-24 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <div className="flex flex-col gap-8 lg:sticky lg:top-28">
             <SectionHeading eyebrow="FAQ" title={t("faq", { country: d.name[l] })} />
@@ -191,7 +191,7 @@ export default function DestinationPage({ params }: { params: Promise<{ locale: 
       {related.length > 0 && (
         <section className="container-page pb-20 sm:pb-28">
           <SectionHeading eyebrow={t("related")} title={tc(`regions.${d.region}`)} className="mb-10" />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((r, i) => (
               <DestinationPoster key={r.slug} destination={r} index={i} />
             ))}

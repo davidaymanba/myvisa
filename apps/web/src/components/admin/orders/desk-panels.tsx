@@ -21,9 +21,9 @@ export function Panel({ icon, title, lead, children, className, action, id }: { 
   return (
     <motion.section id={id} initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className={cn("rounded-[1.75rem] border border-border bg-surface p-5 shadow-xs sm:p-6", className)}>
       <header className="mb-4 flex items-start justify-between gap-3">
-        <div className="flex items-start gap-3">
+        <div className="flex min-w-0 items-start gap-3">
           <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-foreground text-background [&_svg]:size-4">{icon}</span>
-          <div className="flex flex-col gap-0.5">
+          <div className="flex min-w-0 flex-col gap-0.5">
             <h2 className="font-display text-title">{title}</h2>
             {lead && <p className="text-caption text-muted-foreground">{lead}</p>}
           </div>
@@ -61,8 +61,8 @@ export function DocumentReview({ desk }: { desk: AdminOrderDetail }) {
                 {reqs.map((r) => {
                   const docs = order.documents.filter((d) => d.requirementId === r.id && d.orderTravelerId === g.key && d.document.uploaded);
                   return (
-                    <li key={r.id} className="flex flex-col gap-2 px-4 py-3">
-                      <div className="flex items-center justify-between gap-2">
+                    <li key={r.id} className="flex flex-col gap-2 px-3 py-3 sm:px-4">
+                      <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5">
                         <span className="text-body-sm font-medium">
                           {r.title[locale]}
                           {r.isRequired && <span className="ms-1 text-danger">*</span>}
@@ -139,8 +139,8 @@ function ReviewRow({ orderId, doc, editable }: { orderId: string; doc: OrderDocu
               if (reason.trim()) review.mutate({ status: "REJECTED", reason: reason.trim() }, { onSuccess: () => (setRejecting(false), setReason("")) });
             }}
           >
-            <Input autoFocus value={reason} onChange={(e) => setReason(e.target.value)} placeholder={t("rejectReason")} aria-label={t("rejectReason")} maxLength={300} dir="auto" className="h-10" />
-            <Button type="submit" variant="danger" size="sm" className="h-10" disabled={!reason.trim()} loading={review.isPending}>
+            <Input autoFocus value={reason} onChange={(e) => setReason(e.target.value)} placeholder={t("rejectReason")} aria-label={t("rejectReason")} maxLength={300} dir="auto" className="h-10 min-w-0" />
+            <Button type="submit" variant="danger" size="sm" className="h-10 shrink-0" disabled={!reason.trim()} loading={review.isPending}>
               {t("rejectConfirm")}
             </Button>
           </motion.form>
@@ -168,7 +168,7 @@ export function AppointmentPanel({ desk }: { desk: AdminOrderDetail }) {
   return (
     <Panel icon={<Package />} title={t("appointment")} lead={t("appointmentLead")}>
       <form
-        className="grid gap-3 sm:grid-cols-2"
+        className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2"
         onSubmit={(e) => {
           e.preventDefault();
           if (when) save.mutate(undefined);
@@ -247,7 +247,7 @@ export function ShippingPanel({ desk }: { desk: AdminOrderDetail }) {
       )}
       {can("orders:write") && (
         <form
-          className="grid gap-3 sm:grid-cols-[auto_1fr_1fr_auto] sm:items-end"
+          className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-[auto_1fr_1fr_auto] sm:items-end"
           onSubmit={(e) => {
             e.preventDefault();
             if (carrier.trim()) add.mutate(undefined, { onSuccess: () => (setCarrier(""), setTracking("")) });

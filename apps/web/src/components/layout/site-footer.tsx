@@ -57,7 +57,7 @@ export function SiteFooter() {
       <div className="pointer-events-none absolute -top-40 start-1/3 -z-10 size-[42rem] rounded-full bg-teal-500/20 blur-[120px]" aria-hidden />
 
       <div className="container-page pt-20 sm:pt-28">
-        <div className="grid gap-12 lg:grid-cols-12">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
           <div className="flex flex-col gap-6 lg:col-span-4">
             <Logo withArabic />
             <p className="max-w-sm text-body text-muted-foreground">{t("blurb")}</p>
@@ -121,7 +121,7 @@ export function SiteFooter() {
 
       <FooterWordmark />
 
-      <div className="container-page flex flex-col items-start justify-between gap-4 border-t border-border py-6 text-caption text-muted-foreground sm:flex-row sm:items-center">
+      <div className="container-page flex flex-col items-start justify-between gap-4 border-t border-border py-6 text-caption text-muted-foreground max-sm:pb-[calc(5rem+env(safe-area-inset-bottom))] sm:flex-row sm:items-center">
         <p>{t("copyright", { year })}</p>
         <div className="flex items-center gap-2">
           <ThemeToggle />

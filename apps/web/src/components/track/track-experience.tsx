@@ -279,7 +279,7 @@ function TrackForm({ orderNumber, onOrderNumber, step, onStep, onVerified }: { o
             }}
           >
             <div className="flex items-center gap-3">
-              <span className="grid size-12 place-items-center rounded-2xl bg-foreground text-background">
+              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-foreground text-background">
                 <Search className="size-5" aria-hidden />
               </span>
               <p className="flex items-center gap-2 text-body-sm text-muted-foreground">
@@ -379,8 +379,8 @@ function TrackResult({ view, expired, onReset }: { view: TrackView; expired: boo
         )}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-12">
-        <section className="rounded-[1.75rem] border border-border bg-surface p-6 sm:p-8 lg:col-span-7">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <section className="min-w-0 rounded-[1.75rem] border border-border bg-surface p-6 sm:p-8 lg:col-span-7">
           <h2 className="mb-5 flex items-center justify-between gap-3 font-display text-heading">
             {t("log")}
             <span className="flex items-center gap-2 text-caption font-normal text-muted-foreground">
@@ -401,7 +401,7 @@ function TrackResult({ view, expired, onReset }: { view: TrackView; expired: boo
             ))}
           </ol>
         </section>
-        <aside className="flex flex-col gap-4 lg:col-span-5">
+        <aside className="flex min-w-0 flex-col gap-4 lg:col-span-5">
           <div className="flex flex-col gap-3 rounded-[1.75rem] border border-border bg-surface p-6 text-body-sm">
             <p className="text-muted-foreground">{t("submitted", { date: format.dateTime(new Date(view.createdAt), { day: "numeric", month: "long", year: "numeric" }) })}</p>
             <p className="font-medium">{t("processing", { min: view.processingDays[0], max: view.processingDays[1] })}</p>

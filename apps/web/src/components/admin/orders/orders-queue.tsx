@@ -81,9 +81,9 @@ export function OrdersQueue() {
 
       <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <LayoutGroup id="order-views">
-          <div className="flex flex-wrap gap-1.5" role="tablist">
+          <div data-lenis-prevent className="flex flex-wrap gap-1.5 max-sm:-mx-4 max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:px-4 max-sm:pb-1 max-sm:[scrollbar-width:none]" role="tablist">
             {ADMIN_ORDER_VIEWS.map((v) => (
-              <button key={v} type="button" role="tab" aria-selected={view === v} onClick={() => (setView(v), setPage(1))} className={cn("relative rounded-full px-4 py-2 text-body-sm font-medium transition-colors", view === v ? "text-background" : "text-muted-foreground hover:text-foreground")}>
+              <button key={v} type="button" role="tab" aria-selected={view === v} onClick={() => (setView(v), setPage(1))} className={cn("relative shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-body-sm font-medium transition-colors", view === v ? "text-background" : "text-muted-foreground hover:text-foreground")}>
                 {view === v && <motion.span layoutId="order-view-pill" className={cn("absolute inset-0 -z-10 rounded-full", v === "overdue" ? "bg-danger" : "bg-foreground")} transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
                 {t(`views.${v}`)}
               </button>
@@ -91,11 +91,11 @@ export function OrdersQueue() {
           </div>
         </LayoutGroup>
         <div className="flex items-center gap-2">
-          <label className="relative flex-1 xl:w-80">
+          <label className="relative min-w-0 flex-1 xl:w-80">
             <Search className="pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
             <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("search")} aria-label={t("search")} className="ps-11" />
           </label>
-          <div className="flex rounded-full bg-muted p-1" role="radiogroup">
+          <div className="flex shrink-0 rounded-full bg-muted p-1" role="radiogroup">
             {(["board", "table"] as const).map((m) => (
               <button key={m} type="button" role="radio" aria-checked={mode === m} aria-label={t(m)} title={t(m)} onClick={() => setMode(m)} className={cn("grid size-10 place-items-center rounded-full transition-colors", mode === m ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground")}>
                 {m === "board" ? <KanbanSquare className="size-[18px]" aria-hidden /> : <Table2 className="size-[18px]" aria-hidden />}
@@ -110,7 +110,7 @@ export function OrdersQueue() {
       ) : !orders.data ? (
         <div className="flex gap-4 overflow-hidden">
           {BOARD.slice(0, 4).map((s) => (
-            <Skeleton key={s} className="h-[28rem] w-72 shrink-0 rounded-3xl" />
+            <Skeleton key={s} className="h-[28rem] w-[min(18rem,calc(100vw-4rem))] shrink-0 rounded-3xl" />
           ))}
         </div>
       ) : board ? (
@@ -174,7 +174,7 @@ function Board({ rows, counts }: { rows: AdminOrderRow[]; counts: Partial<Record
               onDragLeave={() => setOver((o) => (o === col.status ? null : o))}
               onDrop={(e) => drop(e, col.status)}
               className={cn(
-                "flex w-[19rem] shrink-0 snap-start flex-col rounded-[1.75rem] border bg-surface-sunken/60 transition-[border-color,background-color,box-shadow]",
+                "flex w-[min(19rem,calc(100vw-4rem))] shrink-0 snap-start flex-col rounded-[1.75rem] border bg-surface-sunken/60 transition-[border-color,background-color,box-shadow]",
                 target ? "border-dashed border-gold-400 bg-gold-50/60 dark:bg-gold-400/[0.06]" : "border-border",
                 over === col.status && "shadow-gold ring-4 ring-gold-400/25",
               )}
@@ -298,7 +298,49 @@ function OrdersTable({ rows, total, page, pageSize, onPage }: { rows: AdminOrder
   if (!rows.length) return <EmptyState icon={<Ticket />} title={t("empty")} description={t("emptyBody")} />;
   return (
     <div className="flex flex-col gap-4">
-      <div data-lenis-prevent className="overflow-x-auto rounded-[1.75rem] border border-border bg-surface">
+      <ul className="flex flex-col gap-3 md:hidden">
+        {rows.map((r, i) => (
+          <motion.li key={r.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 15) * 0.02 }}>
+            <Link href={`/admin/orders/${r.id}`} className={cn("relative flex flex-col gap-3 overflow-hidden rounded-2xl border bg-surface p-4 shadow-xs", r.overdue ? "border-danger/50" : "border-border")}>
+              {r.overdue && <span className="absolute inset-y-0 start-0 w-1 bg-danger" aria-hidden />}
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span lang="en" dir="ltr" className="font-mono text-body-sm font-semibold tracking-wider text-secondary-text">
+                  {r.number}
+                </span>
+                <Badge tone={statusTone(r.status)} dot>
+                  {tb(`statuses.${r.status}`)}
+                </Badge>
+              </div>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex min-w-0 flex-col">
+                  <span className="truncate font-medium">{r.customer.name ?? "—"}</span>
+                  <span dir="ltr" className="tabular truncate text-caption text-muted-foreground rtl:text-end">
+                    {r.customer.phone}
+                  </span>
+                </div>
+                <span className="tabular shrink-0 font-medium">{formatMoney(r.totalHalalas, locale, { fractionDigits: 2 })}</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-caption text-muted-foreground">
+                <span className="flex min-w-0 items-center gap-1.5">
+                  {r.destination && <Flag code={r.destination.iso2} className="h-3 w-4 shrink-0 rounded-[2px]" />}
+                  <span className="truncate">{r.destination?.name[locale] ?? r.service[locale]}</span>
+                </span>
+                {r.slaDueAt && (
+                  <span className={cn("flex items-center gap-1", r.overdue && "font-semibold text-danger")}>
+                    <AlarmClock className="size-3.5" aria-hidden />
+                    {due(r.slaDueAt)}
+                  </span>
+                )}
+                <span className="ms-auto flex items-center gap-1">
+                  <UserRound className="size-3.5" aria-hidden />
+                  {r.assignee?.name ?? t("unassigned")}
+                </span>
+              </div>
+            </Link>
+          </motion.li>
+        ))}
+      </ul>
+      <div data-lenis-prevent className="overflow-x-auto rounded-[1.75rem] border border-border bg-surface max-md:hidden">
         <table className="w-full min-w-[56rem] text-body-sm">
           <thead>
             <tr className="border-b border-border text-caption text-muted-foreground">
@@ -344,9 +386,9 @@ function OrdersTable({ rows, total, page, pageSize, onPage }: { rows: AdminOrder
           </tbody>
         </table>
       </div>
-      <div className="flex items-center justify-between gap-3 text-body-sm text-muted-foreground">
+      <div className="flex items-center justify-between gap-3 text-body-sm text-muted-foreground max-sm:flex-wrap">
         <span>{t("results", { count: total })}</span>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 max-sm:ms-auto">
           <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => onPage(page - 1)}>
             {t("prev")}
           </Button>

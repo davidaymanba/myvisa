@@ -136,7 +136,7 @@ function SettingCard<K extends SettingKey>({ settingKey, value, readOnly, icon, 
           {index}
         </span>
       </header>
-      <fieldset disabled={readOnly} className="flex flex-col gap-5">
+      <fieldset disabled={readOnly} className="flex min-w-0 flex-col gap-5">
         {children(form)}
       </fieldset>
       {!readOnly && (

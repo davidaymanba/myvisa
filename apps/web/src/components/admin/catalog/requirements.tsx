@@ -76,16 +76,16 @@ export function Requirements({ service, countryId }: { service: ServiceRecord; c
           editing === r.id ? (
             <RequirementForm key={r.id} requirement={r} service={service} countryId={countryId} onDone={() => setEditing(null)} />
           ) : (
-            <motion.li layout key={r.id} transition={{ type: "spring", stiffness: 500, damping: 40 }} className="group flex items-center gap-3 rounded-2xl border border-border bg-surface px-3 py-3 shadow-xs">
+            <motion.li layout key={r.id} transition={{ type: "spring", stiffness: 500, damping: 40 }} className="group flex items-center gap-2 rounded-2xl border border-border bg-surface px-3 py-3 shadow-xs sm:gap-3">
               {can("catalog:write") && <ReorderButtons first={i === 0} last={i === order.length - 1} onUp={() => move(i, -1)} onDown={() => move(i, 1)} disabled={reorder.isPending} />}
-              <span lang="en" className="w-6 text-center font-display text-caption text-muted-foreground tabular">
+              <span lang="en" className="w-6 shrink-0 text-center font-display text-caption text-muted-foreground tabular max-[419px]:hidden">
                 {String(i + 1).padStart(2, "0")}
               </span>
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-muted text-secondary-text">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-muted text-secondary-text max-[419px]:hidden">
                 <FileText className="size-4" aria-hidden />
               </span>
               <div className="flex min-w-0 flex-1 flex-col gap-1">
-                <span className="truncate font-medium">{locale === "ar" ? r.titleAr : r.titleEn}</span>
+                <span className="truncate font-medium max-sm:whitespace-normal">{locale === "ar" ? r.titleAr : r.titleEn}</span>
                 <span className="flex flex-wrap gap-1.5">
                   <Badge tone="neutral">{te(`docs.${r.documentType}`)}</Badge>
                   {!r.isRequired && <Badge tone="outline">{t("optional")}</Badge>}

@@ -165,7 +165,7 @@ export function HeroExperience({
                     transition={{ duration: 0.5, ease: EASE }}
                     className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5"
                   >
-                    <div className="pointer-events-none absolute -end-6 -top-6 w-28 opacity-80 sm:w-32">
+                    <div className="pointer-events-none absolute -end-6 -top-6 w-24 opacity-80 sm:w-32">
                       <PassportStamp
                         animated
                         shape="circle"
@@ -179,10 +179,10 @@ export function HeroExperience({
                       />
                     </div>
 
-                    <div className="flex items-center gap-3 pe-20">
+                    <div className="flex items-center gap-3 pe-14 sm:pe-20">
                       <Flag code={destination.iso2} className="h-6 w-9 rounded-md" />
                       <div className="min-w-0">
-                        <p className="truncate text-title font-semibold">{match.visa.name}</p>
+                        <p className="text-title font-semibold max-sm:line-clamp-2 sm:truncate">{match.visa.name}</p>
                         <p className="text-caption text-teal-200">{tc(`visaKinds.${match.visa.kind}`)}</p>
                       </div>
                     </div>

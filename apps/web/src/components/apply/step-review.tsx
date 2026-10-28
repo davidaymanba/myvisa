@@ -54,7 +54,7 @@ export function StepReview({ order, value, onChange, refundSummary, goTo, showCo
 
   return (
     <div className="grid gap-8 xl:grid-cols-[1fr_22rem]">
-      <div className="flex flex-col gap-4">
+      <div className="flex min-w-0 flex-col gap-4">
         <Row icon={<Stamp />} title={t("visa")} onEdit={() => goTo("visa")}>
           <span className="font-medium">{order.service.name[locale]}</span>
           <span className="text-body-sm text-muted-foreground">{order.service.destination?.name[locale]}</span>
@@ -104,7 +104,7 @@ export function StepReview({ order, value, onChange, refundSummary, goTo, showCo
               </li>
             ))}
           </ul>
-          <Link href="/refund-policy" target="_blank" className="mt-3 inline-block text-body-sm font-medium text-secondary-text underline underline-offset-4">
+          <Link href="/refund-policy" target="_blank" className="mt-3 inline-block text-body-sm font-medium text-secondary-text underline underline-offset-4 max-sm:-mb-1.5 max-sm:mt-1.5 max-sm:py-1.5">
             {t("refundLink")}
           </Link>
         </section>
@@ -141,7 +141,7 @@ export function StepReview({ order, value, onChange, refundSummary, goTo, showCo
         </fieldset>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex min-w-0 flex-col gap-4">
         <PriceBreakdown lines={order.travelers.map((tr) => ({ governmentFee: tr.governmentFee, serviceFee: tr.serviceFee }))} discount={discount ? { kind: "fixed", value: discount } : undefined} travelers={order.travelers.length} />
         <div className="rounded-3xl border border-border bg-surface p-5">
           <label className="flex items-center gap-2 text-body-sm font-medium" htmlFor="coupon">

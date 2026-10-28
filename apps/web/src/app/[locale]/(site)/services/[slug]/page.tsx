@@ -85,7 +85,7 @@ export default function ServicePage({ params }: { params: Promise<{ locale: Loca
 
       <section className="container-page py-16 sm:py-24">
         <SectionHeading eyebrow={t("features")} title={s.tagline[l]} className="mb-12" />
-        <Stagger className="grid gap-4 md:grid-cols-3" stagger={0.12}>
+        <Stagger className="grid grid-cols-1 gap-4 md:grid-cols-3" stagger={0.12}>
           {s.features.map((f, i) => (
             <StaggerItem key={f.title.en}>
               <Spotlight className="h-full rounded-[1.75rem] border border-border bg-surface p-7">
@@ -103,7 +103,7 @@ export default function ServicePage({ params }: { params: Promise<{ locale: Loca
       {s.slug === "visas" && (
         <section className="container-page pb-16 sm:pb-24">
           <SectionHeading eyebrow={t("visaTypes")} title={s.name[l]} className="mb-10" />
-          <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {VISA_TYPES.map((v, i) => (
               <StaggerItem key={v.id}>
                 <div className="group relative h-full overflow-hidden rounded-[1.75rem] border border-border bg-surface p-7 transition-all hover:-translate-y-1 hover:shadow-md">
@@ -128,7 +128,7 @@ export default function ServicePage({ params }: { params: Promise<{ locale: Loca
       {s.slug === "travel-insurance" && (
         <section className="container-page pb-16 sm:pb-24">
           <SectionHeading eyebrow={t("plans")} title={s.name[l]} className="mb-10" />
-          <Stagger className="grid gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5" stagger={0.08}>
+          <Stagger className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5" stagger={0.08}>
             {insurancePlans.map((p, i) => (
               <StaggerItem key={p.id} className="h-full">
                 <TiltCard max={5} className="h-full rounded-[1.75rem]">
@@ -167,7 +167,7 @@ export default function ServicePage({ params }: { params: Promise<{ locale: Loca
       <section className="border-y border-border bg-surface-sunken/50 py-16 sm:py-24">
         <div className="container-page">
           <SectionHeading eyebrow={t("steps")} title={s.name[l]} className="mb-12" />
-          <Stagger className="grid gap-5 md:grid-cols-3 lg:grid-cols-4" stagger={0.12}>
+          <Stagger className="grid grid-cols-1 gap-5 md:grid-cols-3 lg:grid-cols-4" stagger={0.12}>
             {s.steps.map((step, i) => (
               <StaggerItem key={step.en} className="relative flex flex-col gap-5 rounded-[1.75rem] bg-surface p-6 shadow-sm">
                 <span lang="en" className="grid size-12 place-items-center rounded-full bg-foreground font-display text-heading text-background">
@@ -182,7 +182,7 @@ export default function ServicePage({ params }: { params: Promise<{ locale: Loca
 
       <section className="container-page py-16 sm:py-24">
         <SectionHeading eyebrow={t("other")} title={t("title")} accent={t("titleAccent")} className="mb-10" />
-        <Stagger className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Stagger className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {others.map((o) => {
             const OIcon = SERVICE_ICONS[o.icon];
             return (

@@ -47,7 +47,7 @@ export default function PricingPage({ params }: { params: Promise<{ locale: Loca
   return (
     <>
       <PageHero eyebrow={t("eyebrow")} title={t("title")} accent={t("titleAccent")} lead={t("lead")} crumbs={[{ label: t("eyebrow") }]}>
-        <Stagger className="mt-2 grid gap-3 sm:grid-cols-2">
+        <Stagger className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
           {principles.map((p) => (
             <StaggerItem key={p} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-body-sm backdrop-blur">
               <span className="grid size-6 shrink-0 place-items-center rounded-full bg-gold-400 text-ink-950">
@@ -67,7 +67,7 @@ export default function PricingPage({ params }: { params: Promise<{ locale: Loca
         </p>
       </section>
 
-      <section className="container-page grid gap-10 pb-20 sm:pb-28 lg:grid-cols-12">
+      <section className="container-page grid grid-cols-1 gap-10 pb-20 sm:pb-28 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <SectionHeading eyebrow={t("refundTitle")} title={refund.title[l]} />
           <Reveal delay={0.2} className="mt-8">

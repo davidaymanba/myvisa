@@ -85,12 +85,12 @@ function MemberCard({ member, index }: { member: StaffMember; index: number }) {
   const name = member.fullNameAr ?? member.fullNameEn ?? member.phone;
 
   return (
-    <motion.li initial={{ opacity: 0, y: 20 }} animate={{ opacity: member.isActive ? 1 : 0.6, y: 0 }} transition={{ delay: index * 0.05, duration: 0.5 }} className={cn("flex flex-col gap-4 rounded-[1.75rem] border bg-surface p-5 shadow-xs", self ? "border-gold-400/60" : "border-border")}>
+    <motion.li initial={{ opacity: 0, y: 20 }} animate={{ opacity: member.isActive ? 1 : 0.6, y: 0 }} transition={{ delay: index * 0.05, duration: 0.5 }} className={cn("flex min-w-0 flex-col gap-4 rounded-[1.75rem] border bg-surface p-4 shadow-xs min-[360px]:p-5", self ? "border-gold-400/60" : "border-border")}>
       <div className="flex items-start gap-3">
         <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-teal-300 to-teal-700 font-display text-body font-semibold text-white">{initials(name)}</span>
         <div className="flex min-w-0 flex-1 flex-col">
-          <span className="flex items-center gap-2 truncate font-medium">
-            {name}
+          <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 font-medium">
+            <span className="min-w-0 truncate">{name}</span>
             {self && <Badge tone="gold">{t("you")}</Badge>}
           </span>
           <span dir="ltr" className="tabular text-caption text-muted-foreground rtl:text-end">
@@ -100,11 +100,11 @@ function MemberCard({ member, index }: { member: StaffMember; index: number }) {
             {t("openOrders", { count: member.openOrders })} · {member.lastLoginAt ? t("lastLogin", { when: format.relativeTime(new Date(member.lastLoginAt), now) }) : t("never")}
           </span>
         </div>
-        <Badge tone={ROLE_TONE[member.role]}>{tr(member.role)}</Badge>
+        <Badge tone={ROLE_TONE[member.role]} className="shrink-0">{tr(member.role)}</Badge>
       </div>
       <div className="flex flex-wrap items-center gap-3 border-t border-border pt-4">
         <Select value={member.role} onValueChange={(role) => update.mutate({ role, isActive: member.isActive })} disabled={self || update.isPending}>
-          <SelectTrigger className="h-10 flex-1" aria-label={t("role")}>
+          <SelectTrigger className="h-10 flex-1 max-sm:min-w-40" aria-label={t("role")}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -136,7 +136,7 @@ function PermissionMatrix() {
         <table className="w-full min-w-[40rem] text-body-sm">
           <thead>
             <tr className="border-b border-border">
-              <th className="px-4 py-3" />
+              <th className="px-4 py-3 max-md:sticky max-md:start-0 max-md:z-10 max-md:bg-surface" />
               {STAFF_ROLES.map((r) => (
                 <th key={r} className="px-4 py-3 text-center font-medium">
                   {tr(r)}
@@ -147,7 +147,7 @@ function PermissionMatrix() {
           <tbody>
             {PERMISSIONS.map((p, i) => (
               <tr key={p} className="border-b border-border last:border-0">
-                <td className="px-4 py-2.5 text-muted-foreground">{t(`permissions.${p}`)}</td>
+                <td className="px-4 py-2.5 text-muted-foreground max-md:sticky max-md:start-0 max-md:z-10 max-md:bg-surface max-md:px-3 max-md:shadow-[1px_0_0_var(--color-border),inset_0_-1px_0_var(--color-border)] max-md:rtl:shadow-[-1px_0_0_var(--color-border),inset_0_-1px_0_var(--color-border)]">{t(`permissions.${p}`)}</td>
                 {STAFF_ROLES.map((r) => {
                   const has = ROLE_PERMISSIONS[r].includes(p);
                   return (

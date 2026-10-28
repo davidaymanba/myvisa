@@ -110,7 +110,7 @@ export function ActionPanel({ order }: { order: OrderView }) {
               <ul>
                 <UploadSlot orderId={order.id} requirement={slot.requirement} travelerId={slot.travelerId} documents={others} onChanged={reload} index={i} />
               </ul>
-              <Button variant="link" size="sm" className="self-start" onClick={() => setPicking(slot)}>
+              <Button variant="link" size="sm" className="self-start max-sm:-my-1.5 max-sm:py-2.5" onClick={() => setPicking(slot)}>
                 <ArchiveRestore aria-hidden />
                 {td("fromVault")}
               </Button>
@@ -162,15 +162,15 @@ export function VaultPicker({ order, slot, onClose, onAttached, locale }: { orde
         {candidates.length ? (
           <ul className="mt-5 flex flex-col gap-2">
             {candidates.map((d) => (
-              <li key={d.id} className="flex items-center gap-3 rounded-2xl border border-border p-3">
-                <div className="flex min-w-0 flex-1 flex-col">
+              <li key={d.id} className="flex flex-wrap items-center gap-3 rounded-2xl border border-border p-3">
+                <div className="flex min-w-0 flex-1 flex-col max-sm:basis-full">
                   <span className="text-body-sm font-medium">{t(`types.${d.type}`)}</span>
                   <span className="truncate text-caption text-muted-foreground" dir="auto">
                     {d.originalName} · {fileSize(d.sizeBytes)}
                   </span>
                 </div>
                 <ScanBadge status={d.scanStatus} />
-                <Button size="sm" loading={attach.isPending && attach.variables === d.id} onClick={() => attach.mutate(d.id)}>
+                <Button size="sm" className="max-sm:ms-auto" loading={attach.isPending && attach.variables === d.id} onClick={() => attach.mutate(d.id)}>
                   {t("use")}
                 </Button>
               </li>

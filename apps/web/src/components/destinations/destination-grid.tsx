@@ -60,7 +60,7 @@ export function DestinationGrid({ items, regions }: { items: GridItem[]; regions
       {visible.length === 0 ? (
         <EmptyState icon={<SearchX aria-hidden />} title={t("empty")} description={t("emptyBody")} />
       ) : (
-        <motion.ul layout className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:gap-7">
+        <motion.ul layout className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:gap-7">
           <AnimatePresence mode="popLayout">
             {visible.map((item) => (
               <motion.li

@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import type { useFormatter } from "next-intl";
 import { extendTailwindMerge } from "tailwind-merge";
 
 /**
@@ -15,4 +16,15 @@ const twMerge = extendTailwindMerge({
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+type DateFormatter = Pick<ReturnType<typeof useFormatter>, "dateTime">;
+
+/**
+ * "28 أكتوبر 2026" / "28 Oct 2026" for server-rendered client components. Arabic is assembled from parts:
+ * Safari's ICU adds a comma ("28 أكتوبر، 2026") that Node doesn't, which breaks hydration on iPhone.
+ */
+export function calendarDate(format: DateFormatter, date: Date, locale: string, month: "long" | "short" = "long", day: "numeric" | "2-digit" = "numeric") {
+  if (locale !== "ar") return format.dateTime(date, { day, month, year: "numeric" });
+  return `${format.dateTime(date, { day })} ${format.dateTime(date, { month })} ${format.dateTime(date, { year: "numeric" })}`;
 }

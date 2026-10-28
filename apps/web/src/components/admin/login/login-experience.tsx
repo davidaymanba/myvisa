@@ -145,7 +145,7 @@ export function LoginExperience() {
       </div>
 
       <div className="container-page grid w-full items-center gap-12 py-10 lg:grid-cols-12 lg:py-16">
-        <div className="flex flex-col gap-7 lg:col-span-7">
+        <div className="flex min-w-0 flex-col gap-7 lg:col-span-7">
           <FadeIn>
             <Logo withArabic />
           </FadeIn>
@@ -177,15 +177,15 @@ export function LoginExperience() {
           initial={{ opacity: 0, y: 40, rotate: reduce ? 0 : -2 }}
           animate={{ opacity: 1, y: 0, rotate: 0 }}
           transition={{ duration: 0.9, delay: 0.25, ease: EASE }}
-          className="lg:col-span-5"
+          className="min-w-0 lg:col-span-5"
         >
           <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.05] shadow-[0_40px_120px_-30px_rgb(0_0_0/0.8)] backdrop-blur-2xl">
-            <div className="flex items-center justify-between px-7 pt-6 sm:px-9" dir="ltr">
+            <div className="flex items-center justify-between px-5 pt-6 min-[360px]:px-7 sm:px-9" dir="ltr">
               <span className="flex flex-col">
                 <span className="text-caption text-foreground/50">FROM</span>
                 <span className="font-display text-display-md leading-none">RUH</span>
               </span>
-              <motion.span aria-hidden className="h-px flex-1 mx-5 bg-gradient-to-r from-transparent via-gold-400 to-transparent" animate={reduce ? undefined : { opacity: [0.4, 1, 0.4] }} transition={{ duration: 2.4, repeat: Infinity }} />
+              <motion.span aria-hidden className="mx-3 h-px flex-1 min-[360px]:mx-5 bg-gradient-to-r from-transparent via-gold-400 to-transparent" animate={reduce ? undefined : { opacity: [0.4, 1, 0.4] }} transition={{ duration: 2.4, repeat: Infinity }} />
               <span className="flex flex-col items-end">
                 <span className="text-caption text-foreground/50">GATE</span>
                 <span className="font-display text-display-md leading-none text-gold-300">OPS</span>
@@ -197,7 +197,7 @@ export function LoginExperience() {
               <span className="block h-px border-t border-dashed border-white/15" />
             </div>
 
-            <div className="relative min-h-[22rem] px-7 pb-8 sm:px-9">
+            <div className="relative min-h-[22rem] px-5 pb-8 min-[360px]:px-7 sm:px-9">
               <AnimatePresence mode="wait" initial={false}>
                 {step === "checking" && (
                   <motion.div key="checking" {...slide} className="flex min-h-[20rem] flex-col items-center justify-center gap-4 text-foreground/60">

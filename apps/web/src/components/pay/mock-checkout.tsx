@@ -52,14 +52,14 @@ export function MockCheckout() {
   const unauthorized = payment.error instanceof ApiError && payment.error.status === 401;
 
   return (
-    <main data-surface="dark" className="dark relative isolate flex min-h-dvh items-center overflow-hidden bg-ink-950 py-10 text-foreground">
+    <main data-surface="dark" className="dark relative isolate flex min-h-dvh items-center overflow-hidden bg-ink-950 py-10 text-foreground max-sm:pb-16">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute -start-[10%] -top-[30%] size-[55vw] animate-drift rounded-full bg-teal-500/25 blur-[140px]" />
         <div className="absolute -bottom-[40%] -end-[10%] size-[50vw] animate-drift rounded-full bg-gold-400/15 blur-[140px] [animation-delay:-8s]" />
         <div className="absolute inset-0 bg-[radial-gradient(rgb(243_247_249/0.06)_1px,transparent_1px)] [background-size:22px_22px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
       </div>
 
-      <div aria-hidden className="pointer-events-none fixed right-[-4.5rem] top-8 z-20 w-72 rotate-45 bg-gradient-to-l from-danger to-[#ff7a59] py-2 text-center text-caption font-bold tracking-[0.2em] text-white shadow-lg max-sm:inset-x-0 max-sm:bottom-0 max-sm:top-auto max-sm:w-full max-sm:rotate-0 max-sm:py-1.5">
+      <div aria-hidden className="pointer-events-none fixed right-[-4.5rem] top-8 z-20 w-72 rotate-45 bg-gradient-to-l from-danger to-[#ff7a59] py-2 text-center text-caption font-bold tracking-[0.2em] text-white shadow-lg max-sm:inset-x-0 max-sm:bottom-0 max-sm:top-auto max-sm:w-full max-sm:rotate-0 max-sm:py-1.5 max-sm:pb-[max(0.375rem,env(safe-area-inset-bottom))]">
         {t("ribbon")}
       </div>
 
@@ -68,9 +68,9 @@ export function MockCheckout() {
           <Logo withArabic />
           <div className="flex flex-col gap-2">
             <p className="eyebrow text-gold-300">{t("merchant")}</p>
-            <p className="text-body text-foreground/60">{payment.data ? t("orderNo", { number: payment.data.orderNumber }) : <Skeleton className="h-5 w-40" />}</p>
+            <div className="text-body text-foreground/60">{payment.data ? t("orderNo", { number: payment.data.orderNumber }) : <Skeleton className="h-5 w-40" />}</div>
             <p className="text-body-sm text-foreground/50">{t("total")}</p>
-            <div className="tabular font-display text-[clamp(3rem,2rem+4vw,5.5rem)] leading-none">{payment.data ? amount : <Skeleton className="h-16 w-72" />}</div>
+            <div className="tabular font-display text-[clamp(3rem,2rem+4vw,5.5rem)] leading-none">{payment.data ? amount : <Skeleton className="h-16 w-72 max-w-full" />}</div>
           </div>
           <TiltCard className="w-full max-w-md rounded-[1.75rem]">
             <div dir="ltr" className="relative aspect-[1.586] overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-teal-600 via-ink-800 to-ink-950 p-6 shadow-[0_40px_100px_-30px_rgb(0_0_0/0.9)] ring-1 ring-white/10">
@@ -177,7 +177,7 @@ function FakeField({ label, value, icon }: { label: string; value: string; icon?
   return (
     <div className="flex flex-col gap-1.5">
       <span className="text-caption text-foreground/55">{label}</span>
-      <span className="flex h-12 items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 font-mono text-body tracking-wider text-foreground/90">
+      <span className="flex h-12 items-center gap-2 whitespace-nowrap rounded-xl border border-white/15 bg-white/5 px-4 font-mono text-body tracking-wider text-foreground/90 max-sm:px-3 max-sm:text-body-sm max-sm:tracking-normal">
         {icon}
         {value}
       </span>

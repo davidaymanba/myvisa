@@ -181,12 +181,12 @@ export function ApplyWizard({ data, intent }: { data: WizardData; intent: Wizard
   return (
     <div className="min-h-dvh bg-background">
       <header data-surface="dark" className="dark sticky top-0 z-40 border-b border-white/10 bg-ink-950/95 text-foreground backdrop-blur-xl">
-        <div className="container-page flex items-center gap-6 py-4">
+        <div className="container-page flex items-center gap-2.5 py-4 sm:gap-6">
           <Link href="/" aria-label="myvisa">
             <Logo />
           </Link>
-          <Stepper steps={steps.map((s) => t(`steps.${s}`))} current={index} className="min-w-0 flex-1" />
-          <Link href={destination ? `/destinations/${destination.slug}` : "/"} className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/15 px-3 py-1.5 text-caption font-medium text-foreground/80 hover:bg-white/10">
+          <Stepper steps={steps.map((s) => t(`steps.${s}`))} current={index} className="min-w-0 flex-1 max-[360px]:[&_span.tabular]:hidden" />
+          <Link href={destination ? `/destinations/${destination.slug}` : "/"} className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/15 px-3 py-1.5 text-caption font-medium text-foreground/80 hover:bg-white/10 max-sm:size-9 max-sm:justify-center max-sm:p-0">
             <X className="size-3.5" aria-hidden />
             <span className="max-sm:sr-only">{t("exit")}</span>
           </Link>
@@ -253,21 +253,28 @@ export function ApplyWizard({ data, intent }: { data: WizardData; intent: Wizard
 
       {step !== "payment" && (
         <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl">
-          <div className="container-page flex items-center gap-3 py-3">
+          <div className="container-page flex items-center gap-2 py-3 sm:gap-3">
             {index > 0 && (
-              <Button variant="ghost" onClick={() => go(steps[index - 1]!)} disabled={busy} className="max-sm:px-3">
+              <Button variant="ghost" onClick={() => go(steps[index - 1]!)} disabled={busy} className="shrink-0 max-sm:px-3">
                 <ArrowLeft className="rtl:rotate-180" aria-hidden />
-                {t("back")}
+                <span className="max-sm:sr-only">{t("back")}</span>
               </Button>
             )}
             {price && (
-              <span className="flex flex-col text-end lg:hidden">
+              <span className="flex min-w-0 flex-col text-end lg:hidden">
                 <span className="text-caption text-muted-foreground">{t("summary.total")}</span>
-                <span className="tabular font-display text-title">{formatMoney(price.total, locale, { fractionDigits: 2 })}</span>
+                <span className="tabular whitespace-nowrap font-display text-title max-sm:text-body-lg">{formatMoney(price.total, locale, { fractionDigits: 2 })}</span>
               </span>
             )}
             <Button size="lg" className="ms-auto max-sm:h-12 max-sm:px-5 lg:ms-auto" onClick={next} loading={busy} disabled={!canContinue}>
-              {step === "review" ? t("review.toPayment") : t("continue")}
+              {step === "review" ? (
+                <>
+                  <span className="sm:hidden">{t("review.toPaymentShort")}</span>
+                  <span className="max-sm:hidden">{t("review.toPayment")}</span>
+                </>
+              ) : (
+                t("continue")
+              )}
               <ArrowLeft className="rotate-180 rtl:rotate-0" aria-hidden />
             </Button>
           </div>

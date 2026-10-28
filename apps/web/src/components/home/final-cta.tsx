@@ -15,7 +15,7 @@ export function FinalCta() {
   const { support } = use(getSettings());
   return (
     <section className="container-page py-16 sm:py-24">
-      <div data-surface="dark" className="dark relative isolate overflow-hidden rounded-[2.5rem] bg-ink-950 px-6 py-20 text-center text-foreground sm:px-12 sm:py-28">
+      <div data-surface="dark" className="dark relative isolate overflow-hidden rounded-[2.5rem] bg-ink-950 px-5 py-20 text-center text-foreground sm:px-12 sm:py-28">
         <div aria-hidden className="absolute inset-0 -z-10">
           <div className="absolute start-1/2 top-1/2 size-[60rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[conic-gradient(from_0deg,transparent,rgb(43_79_161/0.5),transparent,rgb(52_193_195/0.35),transparent)] animate-spin-slow blur-3xl rtl:translate-x-1/2" />
           <div className="absolute inset-0 bg-[radial-gradient(rgb(243_247_249/0.6)_1px,transparent_1px)] [background-size:28px_28px] opacity-[0.06]" />
@@ -33,14 +33,14 @@ export function FinalCta() {
         </Reveal>
         <Reveal delay={0.35} className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <Magnetic>
-            <Button asChild size="lg" className="h-16 px-9 text-body-lg">
+            <Button asChild size="lg" className="h-16 px-9 text-body-lg max-sm:h-14 max-sm:px-6 max-sm:text-body">
               <Link href="/visa-finder">
                 {t("primary")}
                 <ArrowUpRight className="flip-rtl" aria-hidden />
               </Link>
             </Button>
           </Magnetic>
-          <Button asChild size="lg" variant="outline" className="h-16 border-white/20 px-7 hover:bg-white/10">
+          <Button asChild size="lg" variant="outline" className="h-16 border-white/20 px-7 hover:bg-white/10 max-sm:h-14 max-sm:px-6">
             <a href={whatsappHref(support.whatsapp)} target="_blank" rel="noopener noreferrer">
               <SiWhatsapp className="text-[#25D366]" aria-hidden />
               {t("secondary")}

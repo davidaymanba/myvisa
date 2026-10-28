@@ -104,9 +104,9 @@ export function AccountLogin() {
         </div>
 
         {/* The passport: cover swings open onto the data page that holds the sign-in. */}
-        <div className="relative lg:col-span-6" style={{ perspective: 2200 }}>
+        <div className="relative min-w-0 lg:col-span-6" style={{ perspective: 2200 }}>
           <div className="relative mx-auto max-w-lg">
-            <div className="relative overflow-hidden rounded-[2rem] border border-sand-300 bg-[linear-gradient(160deg,var(--color-sand-50),var(--color-sand-200))] p-4 shadow-lg sm:p-6 dark:border-teal-700 dark:bg-[linear-gradient(160deg,var(--color-teal-700),var(--color-ink-900))]">
+            <div className="relative overflow-hidden rounded-[2rem] border border-sand-300 bg-[linear-gradient(160deg,var(--color-sand-50),var(--color-sand-200))] p-3 shadow-lg sm:p-6 dark:border-teal-700 dark:bg-[linear-gradient(160deg,var(--color-teal-700),var(--color-ink-900))]">
               <div aria-hidden className="pointer-events-none absolute inset-0 text-teal-500/10">
                 <Guilloche variant="waves" className="h-full w-full" />
               </div>

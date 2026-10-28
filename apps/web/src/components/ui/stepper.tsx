@@ -11,8 +11,8 @@ export function Stepper({ steps, current, className }: { steps: readonly string[
     <nav aria-label={t("label")} className={className}>
       <div className="sm:hidden">
         <div className="flex items-baseline justify-between gap-3">
-          <span className="font-medium">{active}</span>
-          <span className="tabular text-caption text-muted-foreground">{t("stepOf", { current: current + 1, total: steps.length })}</span>
+          <span className="min-w-0 truncate font-medium">{active}</span>
+          <span className="tabular whitespace-nowrap text-caption text-muted-foreground">{t("stepOf", { current: current + 1, total: steps.length })}</span>
         </div>
         <div className="mt-3 flex gap-1.5" aria-hidden>
           {steps.map((s, i) => (

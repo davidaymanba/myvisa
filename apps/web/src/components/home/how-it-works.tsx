@@ -28,7 +28,7 @@ export function HowItWorks() {
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30 });
 
   return (
-    <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+    <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
       <div className="hidden lg:col-span-6 lg:block">
         <div className="sticky top-[14vh] h-[72vh]">
           <SceneFrame active={active} />
@@ -67,7 +67,7 @@ function StepItem({ index, step, active, onActive }: { index: number; step: Step
       <div className="flex flex-col gap-4 pt-1">
         <h3 className={cn("font-display text-[clamp(1.75rem,1.4rem+1.4vw,2.75rem)] leading-tight transition-colors duration-500", !active && "lg:text-foreground/35")}>{step.title}</h3>
         <p className={cn("max-w-md text-body-lg text-muted-foreground transition-opacity duration-500", !active && "lg:opacity-40")}>{step.body}</p>
-        <div className="mt-4 h-72 overflow-hidden rounded-3xl lg:hidden">
+        <div className="mt-4 h-[23rem] overflow-hidden rounded-3xl max-sm:-ms-[4.25rem] sm:h-80 lg:hidden">
           <SceneFrame active={index} />
         </div>
       </div>
@@ -84,7 +84,7 @@ function SceneFrame({ active }: { active: number }) {
       <AnimatePresence mode="wait">
         <motion.div
           key={active}
-          className="absolute inset-0 grid place-items-center p-8"
+          className="absolute inset-0 grid place-items-center p-5 sm:p-8"
           initial={{ opacity: 0, scale: 0.94, filter: "blur(8px)" }}
           animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
           exit={{ opacity: 0, scale: 1.04, filter: "blur(8px)" }}

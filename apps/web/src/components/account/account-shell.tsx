@@ -226,7 +226,7 @@ function MobileTabBar({ pathname, onMore, moreActive }: { pathname: string; onMo
   const t = useTranslations("account.nav");
   const badges = useBadges();
   return (
-    <nav aria-label={t("label")} className="dark fixed inset-x-3 bottom-3 z-40 rounded-[1.75rem] border border-white/10 bg-ink-950/90 p-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] text-foreground shadow-lg backdrop-blur-xl lg:hidden print:hidden">
+    <nav aria-label={t("label")} className="dark fixed inset-x-3 bottom-3 z-40 rounded-[1.75rem] border border-white/10 bg-ink-950/90 p-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] text-foreground shadow-lg backdrop-blur-xl lg:hidden print:hidden [body:has(textarea:focus)_&]:hidden [body:has(input:focus:not([type=checkbox]):not([type=radio]):not([type=file]))_&]:hidden">
       <ul className="grid grid-cols-5">
         {TABS.map((key) => {
           const item = NAV.find((n) => n.key === key)!;
@@ -298,10 +298,10 @@ function MoreSheet({ pathname, onClose }: { pathname: string; onClose: () => voi
             );
           })}
         </ul>
-        <div className="mt-5 flex items-center justify-between gap-2">
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-2">
           <ThemeToggle className="border-white/10 bg-white/5" />
           <LocaleSwitcher className="h-9 border-white/10 bg-white/5 px-3" />
-          <button type="button" onClick={signOut} className="inline-flex h-10 items-center gap-2 rounded-full border border-white/15 px-4 text-body-sm font-medium">
+          <button type="button" onClick={signOut} className="inline-flex h-10 items-center gap-2 whitespace-nowrap rounded-full border border-white/15 px-4 text-body-sm font-medium max-sm:basis-full max-sm:justify-center">
             <LogOut className="size-4 flip-rtl" aria-hidden />
             {t("signOut")}
           </button>

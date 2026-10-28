@@ -134,7 +134,7 @@ export default function HomePage({ params }: { params: Promise<{ locale: Locale 
         <Testimonials />
       </section>
 
-      <section className="container-page grid gap-10 py-20 sm:py-28 lg:grid-cols-12">
+      <section className="container-page grid grid-cols-1 gap-10 py-20 sm:py-28 lg:grid-cols-12">
         <div className="lg:col-span-5">
           <div className="lg:sticky lg:top-32">
             <SectionHeading index="06" eyebrow={t("faq.eyebrow")} title={t("faq.title")} />

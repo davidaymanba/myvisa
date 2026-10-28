@@ -72,11 +72,11 @@ export default function ArticlePage({ params }: { params: Promise<{ locale: Loca
         <div className="container-page flex flex-col gap-6 pb-16 pt-36 sm:pb-20">
           <FadeIn>
             <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-caption text-foreground/60">
-              <Link href="/" className="hover:text-foreground">
+              <Link href="/" className="-my-1 py-1 hover:text-foreground">
                 {tc("breadcrumbHome")}
               </Link>
               <span aria-hidden>/</span>
-              <Link href="/blog" className="hover:text-foreground">
+              <Link href="/blog" className="-my-1 py-1 hover:text-foreground">
                 {t("eyebrow")}
               </Link>
             </nav>
@@ -100,7 +100,7 @@ export default function ArticlePage({ params }: { params: Promise<{ locale: Loca
         </div>
       </header>
 
-      <div className="container-page grid gap-12 py-16 sm:py-20 lg:grid-cols-12">
+      <div className="container-page grid grid-cols-1 gap-12 py-16 sm:py-20 lg:grid-cols-12">
         <aside className="hidden lg:col-span-3 lg:block">
           <div className="sticky top-28 flex flex-col gap-8">
             <Toc items={toc} />
@@ -110,7 +110,7 @@ export default function ArticlePage({ params }: { params: Promise<{ locale: Loca
             </div>
           </div>
         </aside>
-        <article className="lg:col-span-7" lang={translated ? locale : "ar"} dir={translated ? undefined : "rtl"}>
+        <article className="min-w-0 lg:col-span-7" lang={translated ? locale : "ar"} dir={translated ? undefined : "rtl"}>
           {!translated && <p className="mb-8 rounded-2xl bg-info-soft px-5 py-3 text-body-sm text-info">{t("arabicOnly")}</p>}
           {(translated ? post.excerpt[l] : post.excerpt.ar) && <p className="mb-10 border-s-4 border-primary ps-5 font-display text-title leading-relaxed text-foreground/90">{translated ? post.excerpt[l] : post.excerpt.ar}</p>}
           <Markdown source={body} />
@@ -140,7 +140,7 @@ export default function ArticlePage({ params }: { params: Promise<{ locale: Loca
       {related.length > 0 && (
         <section className="container-page pb-24">
           <h2 className="mb-8 font-display text-display-md">{t("related")}</h2>
-          <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((p, i) => (
               <PostCard key={p.slug} post={p} index={i} />
             ))}

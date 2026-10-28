@@ -68,7 +68,7 @@ export function DestinationPoster({ destination: d, index, className, priority }
                 <Clock className="size-3.5" aria-hidden />
                 {t("workingDays", { min: fastest, max: slowest })}
               </span>
-              <span className="inline-flex items-center gap-1.5">
+              <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                 <Plane className="size-3.5 flip-rtl" aria-hidden />
                 {d.flightHours}h · RUH → {d.iata}
               </span>

@@ -47,21 +47,21 @@ export function OrderDesk({ id }: { id: string }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <Link href="/admin/orders" className="group inline-flex w-fit items-center gap-2 text-body-sm font-medium text-muted-foreground hover:text-foreground">
+      <Link href="/admin/orders" className="group -my-2 inline-flex w-fit items-center gap-2 py-2 text-body-sm font-medium text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1" aria-hidden />
         {t("back")}
       </Link>
       <DeskHeader desk={d} />
       <NextStep desk={d} />
       <div className="grid items-start gap-6 xl:grid-cols-12">
-        <div className="flex flex-col gap-6 xl:col-span-7">
+        <div className="flex min-w-0 flex-col gap-6 xl:col-span-7">
           <DocumentReview desk={d} />
           {appointmentRelevant && <AppointmentPanel key={d.timeline.appointment?.scheduledAt ?? "new"} desk={d} />}
           {shippingRelevant && <ShippingPanel desk={d} />}
           <TravelersSection order={d.order} />
           <JourneyLog timeline={d.timeline} />
         </div>
-        <div className="flex flex-col gap-6 xl:sticky xl:top-6 xl:col-span-5">
+        <div className="flex min-w-0 flex-col gap-6 xl:sticky xl:top-6 xl:col-span-5">
           <MessagesPanel orderId={d.order.id} viewer="STAFF" />
           <NotesPanel desk={d} />
           <PaymentsPanel desk={d} />
@@ -83,11 +83,11 @@ function DeskHeader({ desk }: { desk: AdminOrderDetail }) {
   const wa = customer.phone.replace(/\D/g, "");
 
   return (
-    <motion.header initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} data-surface="dark" className="dark relative isolate overflow-hidden rounded-[2rem] bg-ink-950 p-6 text-foreground sm:p-8">
+    <motion.header initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} data-surface="dark" className="dark relative isolate overflow-hidden rounded-[2rem] bg-ink-950 p-5 text-foreground sm:p-8">
       <div aria-hidden className="absolute -end-20 -top-24 -z-10 size-80 animate-drift rounded-full bg-teal-500/30 blur-[90px]" />
       <div aria-hidden className="absolute -bottom-32 start-1/3 -z-10 size-72 animate-drift rounded-full bg-gold-400/15 blur-[90px] [animation-delay:-5s]" />
       <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
-        <div className="flex flex-col gap-3">
+        <div className="flex min-w-0 flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
             {dest && <Flag code={dest.iso2} className="h-5 w-7 rounded-sm" />}
             <span lang="en" dir="ltr" className="font-mono text-body-sm font-semibold tracking-[0.2em] text-gold-200">
@@ -103,12 +103,12 @@ function DeskHeader({ desk }: { desk: AdminOrderDetail }) {
               </Badge>
             )}
           </div>
-          <h1 className="font-display text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] leading-tight">{dest?.name[locale] ?? order.service.name[locale]}</h1>
+          <h1 className="break-words font-display text-[clamp(2rem,1.4rem+2.4vw,3.25rem)] leading-tight">{dest?.name[locale] ?? order.service.name[locale]}</h1>
           <p className="text-foreground/70">
             {order.service.name[locale]} · {formatMoney(order.price.total, locale, { fractionDigits: 2 })} · {format.dateTime(new Date(order.createdAt), { day: "numeric", month: "short", year: "numeric" })}
           </p>
         </div>
-        <div className="flex flex-col gap-3 rounded-3xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur sm:min-w-80">
+        <div className="flex min-w-0 flex-col gap-3 rounded-3xl border border-white/10 bg-white/[0.05] p-4 backdrop-blur sm:min-w-80">
           <div className="flex items-center gap-3">
             <span className="grid size-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-gold-200 to-gold-500 text-ink-950">
               <UserRound className="size-5" aria-hidden />
@@ -155,9 +155,9 @@ function AssigneePicker({ desk }: { desk: AdminOrderDetail }) {
   const assign = useDeskMutation(desk.order.id, (assigneeId: string | null) => api<AdminOrderDetail>(`/admin/orders/${desk.order.id}/assign`, { method: "POST", body: { assigneeId } }), t("saved"));
   if (!can("orders:write")) return <p className="text-caption text-foreground/60">{t("assignee")}: {desk.assignee?.name ?? "—"}</p>;
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 max-sm:flex-wrap">
       <Select value={desk.assignee?.id ?? UNASSIGNED} onValueChange={(v) => assign.mutate(v === UNASSIGNED ? null : v)} disabled={assign.isPending}>
-        <SelectTrigger className="h-10 flex-1 border-white/15 bg-white/5" aria-label={t("assignee")}>
+        <SelectTrigger className="h-10 flex-1 max-sm:min-w-36 border-white/15 bg-white/5" aria-label={t("assignee")}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -170,7 +170,7 @@ function AssigneePicker({ desk }: { desk: AdminOrderDetail }) {
         </SelectContent>
       </Select>
       {me && desk.assignee?.id !== me.id && (
-        <Button size="sm" className="h-10" onClick={() => assign.mutate(me.id)} loading={assign.isPending}>
+        <Button size="sm" className="h-10 max-[359px]:flex-1" onClick={() => assign.mutate(me.id)} loading={assign.isPending}>
           {t("assignToMe")}
         </Button>
       )}

@@ -82,12 +82,12 @@ export function OrderDetail({ id }: { id: string }) {
       {(o.status === "DRAFT" || o.status === "PENDING_PAYMENT") && <DraftPanel order={o} />}
 
       <div className="grid items-start gap-6 lg:grid-cols-12">
-        <div className="flex flex-col gap-6 lg:col-span-7">
+        <div className="flex min-w-0 flex-col gap-6 lg:col-span-7">
           {timeline.data && <JourneyLog timeline={timeline.data} />}
           {o.documents.some((d) => d.document.uploaded) && <DocumentsSection order={o} />}
           <TravelersSection order={o} />
         </div>
-        <div className="flex flex-col gap-6 lg:sticky lg:top-6 lg:col-span-5">
+        <div className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-6 lg:col-span-5">
           {o.status !== "DRAFT" && <MessagesPanel orderId={o.id} />}
           <LogisticsSection order={o} timeline={timeline.data} />
         </div>
@@ -99,7 +99,7 @@ export function OrderDetail({ id }: { id: string }) {
 function BackLink() {
   const t = useTranslations("account.order");
   return (
-    <Link href="/account/orders" className="group inline-flex w-fit items-center gap-2 text-body-sm font-medium text-muted-foreground hover:text-foreground">
+    <Link href="/account/orders" className="group inline-flex w-fit items-center gap-2 text-body-sm font-medium text-muted-foreground hover:text-foreground max-sm:-my-2 max-sm:py-2">
       <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1" aria-hidden />
       {t("back")}
     </Link>

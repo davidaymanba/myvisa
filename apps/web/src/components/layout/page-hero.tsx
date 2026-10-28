@@ -42,7 +42,7 @@ export function PageHero({
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgb(243_247_249/0.05)_1px,transparent_1px)] [background-size:calc(100%/12)_100%] [mask-image:linear-gradient(to_bottom,black,transparent)]" />
       </div>
 
-      <div className="container-page grid gap-10 pb-16 pt-32 sm:pb-24 sm:pt-40 lg:grid-cols-12 lg:items-end">
+      <div className="container-page grid grid-cols-1 gap-10 pb-16 pt-32 sm:pb-24 sm:pt-40 lg:grid-cols-12 lg:items-end">
         <div className="flex flex-col gap-6 lg:col-span-8">
           <FadeIn>
             <nav aria-label="Breadcrumb">
@@ -50,7 +50,7 @@ export function PageHero({
                 {trail.map((c, i) => (
                   <li key={`${c.label}-${i}`} className="flex items-center gap-1.5">
                     {c.href && i < trail.length - 1 ? (
-                      <Link href={c.href} className="transition-colors hover:text-foreground">
+                      <Link href={c.href} className="-my-1 py-1 transition-colors hover:text-foreground">
                         {c.label}
                       </Link>
                     ) : (

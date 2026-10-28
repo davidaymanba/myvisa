@@ -116,9 +116,9 @@ function RuleCard({ rule, service, countryId, nationalities, onDone }: { rule?: 
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       onSubmit={form.handleSubmit((d) => save.mutate(d))}
       noValidate
-      className={cn("grid gap-6 rounded-[1.75rem] border bg-surface p-5 shadow-xs sm:p-6 xl:grid-cols-12", eligible ? "border-border" : "border-danger/25 bg-danger-soft/40", !rule && "border-gold-400/60 ring-4 ring-gold-400/10")}
+      className={cn("grid gap-6 rounded-[1.75rem] border bg-surface p-4 shadow-xs sm:p-6 xl:grid-cols-12", eligible ? "border-border" : "border-danger/25 bg-danger-soft/40", !rule && "border-gold-400/60 ring-4 ring-gold-400/10")}
     >
-      <fieldset disabled={readOnly} className="flex flex-col gap-5 xl:col-span-7">
+      <fieldset disabled={readOnly} className="flex min-w-0 flex-col gap-5 xl:col-span-7">
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone={form.watch("applicantType") === "RESIDENT" ? "teal" : "gold"}>{te(`applicants.${form.watch("applicantType") ?? "SAUDI_CITIZEN"}`)}</Badge>
           <Badge tone="outline">{nationalityName}</Badge>
@@ -179,7 +179,7 @@ function RuleCard({ rule, service, countryId, nationalities, onDone }: { rule?: 
         )}
       </fieldset>
 
-      <div className="xl:col-span-5">
+      <div className="min-w-0 xl:col-span-5">
         <div className="sticky top-24 flex flex-col gap-2">
           <p className="eyebrow flex items-center gap-2 text-accent-text">
             <span className="relative flex size-2">

@@ -23,7 +23,7 @@ export function ServicesBento() {
   const locale = useLocale() as AppLocale;
 
   return (
-    <Stagger className="grid auto-rows-[minmax(17rem,auto)] gap-4 sm:grid-cols-2 lg:grid-cols-6" stagger={0.1}>
+    <Stagger className="grid grid-cols-1 auto-rows-[minmax(17rem,auto)] gap-4 sm:grid-cols-2 lg:grid-cols-6" stagger={0.1}>
       {SERVICE_CATEGORIES.map((s) => {
         const Icon = SERVICE_ICONS[s.icon];
         const hero = s.slug === "visas";
@@ -75,7 +75,7 @@ export function ServicesBento() {
                   )}
                   <div className="mt-2 flex items-center justify-between gap-3 border-t border-border pt-4 text-caption">
                     <span className="text-muted-foreground">{s.turnaround[locale]}</span>
-                    <span className="tabular">
+                    <span className="tabular shrink-0 whitespace-nowrap">
                       <span className="text-muted-foreground">{tc("from")} </span>
                       <span className={cn("font-semibold", hero ? "text-gold-300" : "text-accent-text")}>{formatMoney(s.fromPrice, locale)}</span>
                     </span>

@@ -183,7 +183,8 @@
     "consentData": "I consent to myvisa processing my identity documents to prepare this application.",
     "consentCrossBorder": "I consent to my data being shared with the embassy or visa centre abroad for this application.",
     "consentMarketing": "Send me travel offers (optional).",
-    "toPayment": "Continue to payment"
+    "toPayment": "Continue to payment",
+    "toPaymentShort": "To payment"
   },
   "payment": {
     "eyebrow": "Step 6",

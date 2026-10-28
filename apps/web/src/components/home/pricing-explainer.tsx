@@ -25,7 +25,7 @@ export function PricingExplainer({ governmentFee, serviceFee }: { governmentFee:
   ];
 
   return (
-    <div ref={ref} className="grid gap-5 lg:grid-cols-5">
+    <div ref={ref} className="grid grid-cols-1 gap-5 lg:grid-cols-5">
       {/* Them */}
       <div className="relative flex flex-col justify-between gap-10 overflow-hidden rounded-[2rem] border border-border bg-surface-sunken p-7 lg:col-span-2">
         <div>
@@ -34,7 +34,7 @@ export function PricingExplainer({ governmentFee, serviceFee }: { governmentFee:
         </div>
         <div className="relative">
           <motion.p
-            className="font-display text-[clamp(3rem,2rem+4vw,5rem)] leading-none text-foreground/80"
+            className="whitespace-nowrap font-display text-[clamp(2.5rem,2rem+4vw,5rem)] leading-none text-foreground/80"
             initial={{ filter: "blur(0px)" }}
             animate={inView ? { filter: "blur(7px)" } : undefined}
             transition={{ delay: 0.8, duration: 1.2 }}
@@ -53,7 +53,7 @@ export function PricingExplainer({ governmentFee, serviceFee }: { governmentFee:
       </div>
 
       {/* Us */}
-      <div className="dark relative overflow-hidden rounded-[2rem] border border-white/10 bg-ink-900 p-7 text-foreground lg:col-span-3 sm:p-9">
+      <div className="dark relative overflow-hidden rounded-[2rem] border border-white/10 bg-ink-900 p-6 text-foreground lg:col-span-3 sm:p-9">
         <div aria-hidden className="absolute -end-20 -top-24 size-80 rounded-full bg-gold-400/20 blur-3xl" />
         <div className="relative flex flex-wrap items-baseline justify-between gap-3">
           <p className="eyebrow text-gold-300">{t("us")}</p>
@@ -90,14 +90,14 @@ export function PricingExplainer({ governmentFee, serviceFee }: { governmentFee:
                   {r.note && <span className="text-caption text-muted-foreground">{r.note}</span>}
                 </span>
               </dt>
-              <dd className="tabular font-medium">{money(r.value)}</dd>
+              <dd className="tabular shrink-0 whitespace-nowrap font-medium">{money(r.value)}</dd>
             </motion.div>
           ))}
         </dl>
 
-        <div className="relative mt-4 flex items-end justify-between gap-4 border-t-2 border-white/70 pt-5">
+        <div className="relative mt-4 flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-t-2 border-white/70 pt-5">
           <span className="text-body-lg">{t("total")}</span>
-          <span className="font-display text-[clamp(2.5rem,1.8rem+2.8vw,4rem)] leading-none text-gold-300">
+          <span className="whitespace-nowrap font-display text-[clamp(1.625rem,0.4rem+6.5vw,2.5rem)] leading-none text-gold-300 sm:text-[clamp(2.5rem,1.8rem+2.8vw,4rem)]">
             <Counter value={p.total / 100} fractionDigits={Number.isInteger(p.total / 100) ? 0 : 2} suffix={locale === "ar" ? " ر.س" : ""} prefix={locale === "ar" ? "" : "SAR "} />
           </span>
         </div>

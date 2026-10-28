@@ -95,8 +95,8 @@ function Rail({ pathname, onClose }: { pathname: string; onClose?: () => void })
   };
 
   return (
-    <div className="relative isolate flex h-full flex-col overflow-hidden bg-ink-950 px-5 py-6 text-foreground">
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+    <div data-lenis-prevent={onClose ? true : undefined} className={cn("relative isolate flex h-full flex-col bg-ink-950 px-5 py-6 text-foreground", onClose ? "overflow-y-auto overflow-x-hidden overscroll-contain pb-[max(1.5rem,env(safe-area-inset-bottom))]" : "overflow-hidden")}>
+      <div aria-hidden className={cn("pointer-events-none absolute inset-0 -z-10", onClose && "fixed overflow-hidden")}>
         <div className="absolute -start-24 -top-24 size-80 animate-drift rounded-full bg-teal-500/30 blur-[90px]" />
         <div className="absolute -bottom-32 -end-20 size-72 animate-drift rounded-full bg-gold-400/20 blur-[90px] [animation-delay:-6s]" />
         <div className="absolute inset-0 bg-[radial-gradient(rgb(243_247_249/0.07)_1px,transparent_1px)] [background-size:18px_18px] [mask-image:linear-gradient(to_bottom,black,transparent_70%)]" />
@@ -114,7 +114,7 @@ function Rail({ pathname, onClose }: { pathname: string; onClose?: () => void })
         )}
       </div>
 
-      <nav aria-label={t("nav.label")} data-lenis-prevent className="-mx-1 mt-8 flex min-h-0 flex-col gap-0.5 overflow-y-auto px-1">
+      <nav aria-label={t("nav.label")} data-lenis-prevent className={cn("-mx-1 mt-8 flex min-h-0 flex-col gap-0.5 overflow-y-auto px-1", onClose && "mt-6 shrink-0 overflow-visible")}>
         {NAV.filter((item) => !me || can(item.permission)).map((item, i) => {
           const active = isActive(pathname, item.href);
           const Icon = item.icon;

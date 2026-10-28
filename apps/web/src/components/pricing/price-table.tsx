@@ -37,7 +37,7 @@ export function PriceTable({ rows }: { rows: PriceRow[] }) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <span className="text-body-sm text-muted-foreground">{t("as")}</span>
           <div role="radiogroup" className="inline-flex rounded-full border border-border bg-surface p-1">
             {(["SAUDI_CITIZEN", "RESIDENT"] as const).map((a) => (
@@ -85,24 +85,24 @@ export function PriceTable({ rows }: { rows: PriceRow[] }) {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.35, delay: Math.min(i * 0.015, 0.4) }}
-                    className={cn("group border-t border-border transition-colors hover:bg-muted/50 max-md:grid max-md:grid-cols-2 max-md:gap-x-4 max-md:gap-y-1 max-md:px-5 max-md:py-4", !first && "md:border-t-border/50")}
+                    className={cn("group border-t border-border transition-colors hover:bg-muted/50 max-md:grid max-md:grid-cols-1 max-md:gap-x-6 max-md:gap-y-1.5 max-md:px-5 max-md:py-4 sm:max-md:grid-cols-2", !first && "md:border-t-border/50")}
                   >
-                    <td className="px-6 py-4 max-md:col-span-2 max-md:p-0">
+                    <td className="px-6 py-4 max-md:p-0 sm:max-md:col-span-2">
                       {(
-                        <Link href={`/destinations/${r.slug}`} className="inline-flex items-center gap-3 font-medium hover:text-secondary-text">
+                        <Link href={`/destinations/${r.slug}`} className="inline-flex items-center gap-3 font-medium hover:text-secondary-text max-md:min-h-7">
                           <Flag code={r.iso2} />
                           <span className={cn(!first && "md:text-muted-foreground")}>{r.country}</span>
                           <ArrowUpRight className="size-3.5 opacity-0 transition-opacity group-hover:opacity-100 flip-rtl" aria-hidden />
                         </Link>
                       )}
                     </td>
-                    <td className="px-4 py-4 text-muted-foreground max-md:col-span-2 max-md:p-0 max-md:pb-2">{v.name}</td>
+                    <td className="px-4 py-4 text-muted-foreground max-md:p-0 max-md:pb-2 sm:max-md:col-span-2">{v.name}</td>
                     <Cell label={t("gov")} value={b ? money(b.governmentFees) : "—"} />
                     <Cell label={t("service")} value={b ? money(b.serviceFees) : "—"} />
                     <Cell label={t("vat")} value={b ? money(b.vat) : "—"} />
-                    <td className="px-6 py-4 text-end max-md:col-span-2 max-md:mt-2 max-md:flex max-md:justify-between max-md:border-t max-md:border-border max-md:p-0 max-md:pt-2">
+                    <td className="px-6 py-4 text-end max-md:mt-2 max-md:flex max-md:items-baseline max-md:justify-between max-md:gap-4 max-md:border-t max-md:border-border max-md:p-0 max-md:pt-2 sm:max-md:col-span-2">
                       <span className="text-caption text-muted-foreground md:hidden">{t("total")}</span>
-                      <span className="tabular font-semibold">{b ? (b.total === 0 ? tc("free") : money(b.total)) : t("notEligible")}</span>
+                      <span className="tabular font-semibold max-md:whitespace-nowrap">{b ? (b.total === 0 ? tc("free") : money(b.total)) : t("notEligible")}</span>
                     </td>
                   </motion.tr>
                 );
@@ -117,9 +117,9 @@ export function PriceTable({ rows }: { rows: PriceRow[] }) {
 
 function Cell({ label, value }: { label: string; value: string }) {
   return (
-    <td className="tabular px-4 py-4 text-end max-md:flex max-md:justify-between max-md:p-0 max-md:text-start">
+    <td className="tabular px-4 py-4 text-end max-md:flex max-md:items-baseline max-md:justify-between max-md:gap-4 max-md:p-0 max-md:text-start">
       <span className="text-caption text-muted-foreground md:hidden">{label}</span>
-      <span>{value}</span>
+      <span className="max-md:whitespace-nowrap">{value}</span>
     </td>
   );
 }

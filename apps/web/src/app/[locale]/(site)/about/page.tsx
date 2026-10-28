@@ -67,7 +67,7 @@ export default function AboutPage({ params }: { params: Promise<{ locale: Locale
       <section className="border-y border-border bg-surface-sunken/50 py-20 sm:py-28">
         <div className="container-page">
           <SectionHeading eyebrow={t("valuesTitle")} title={t("valuesTitle")} className="mb-12" />
-          <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.1}>
+          <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4" stagger={0.1}>
             {values.map((v, i) => {
               const Icon = VALUE_ICONS[i] ?? Eye;
               return (

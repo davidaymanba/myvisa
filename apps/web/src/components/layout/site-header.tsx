@@ -151,7 +151,7 @@ export function SiteHeader() {
           <motion.div
             id="mobile-menu"
             data-lenis-prevent
-            className="dark fixed inset-0 z-[45] flex flex-col overflow-y-auto bg-ink-950 px-6 pb-10 pt-28 text-foreground lg:hidden"
+            className="dark fixed inset-0 z-[45] flex flex-col overflow-y-auto overflow-x-hidden overscroll-contain bg-ink-950 px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-28 text-foreground lg:hidden"
             initial={{ clipPath: `circle(0% at ${origin})` }}
             animate={{ clipPath: `circle(150% at ${origin})` }}
             exit={{ clipPath: `circle(0% at ${origin})` }}
@@ -171,12 +171,12 @@ export function SiteHeader() {
                       <Link
                         href={link.href}
                         className={cn(
-                          "flex items-baseline gap-4 py-1.5 font-display text-display-lg transition-colors",
+                          "flex items-baseline gap-4 py-1.5 font-display text-display-lg transition-colors [@media(max-height:700px)]:py-0.5 [@media(max-height:700px)]:text-display-md",
                           (link.href === "/" ? pathname === "/" : isActive(link.href)) ? "text-gold-300" : "text-foreground hover:text-gold-300",
                         )}
                       >
                         <span lang="en" className="tabular text-caption text-muted-foreground">
-                          0{i + 1}
+                          {String(i + 1).padStart(2, "0")}
                         </span>
                         {t(link.key)}
                       </Link>
