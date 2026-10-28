@@ -165,7 +165,7 @@ export function VisaTabs({ visas, slug, country }: { visas: VisaTabData[]; slug:
                           </p>
                         )}
                         <Button asChild size="lg" block className="mt-4">
-                          <Link href={{ pathname: "/visa-finder", query: { to: slug, purpose: v.purpose, as: applicant } }}>
+                          <Link href={{ pathname: "/apply", query: { to: slug, visa: v.id, purpose: v.purpose, as: applicant } }}>
                             {t("applyCta", { country })} · {formatMoney(total, locale)}
                             <ArrowUpRight className="flip-rtl" aria-hidden />
                           </Link>

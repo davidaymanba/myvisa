@@ -1,7 +1,7 @@
 "use client";
 
 import { useLenis } from "lenis/react";
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { ArrowUpRight, Menu, UserRound, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
@@ -118,6 +118,9 @@ export function SiteHeader() {
 
             <div className="flex items-center gap-1.5">
               <LocaleSwitcher className="h-10 border-transparent bg-transparent px-3 max-sm:hidden" />
+              <Link href="/account" aria-label={t("account")} title={t("account")} className={cn("grid size-10 place-items-center rounded-full transition-colors hover:bg-foreground/10", isActive("/account") && "bg-foreground text-background")}>
+                <UserRound className="size-[18px]" aria-hidden />
+              </Link>
               <Button asChild size="sm" className="h-10 px-4 max-sm:hidden">
                 <Link href="/visa-finder">
                   {t("cta")}
@@ -158,7 +161,7 @@ export function SiteHeader() {
             <div className="pointer-events-none absolute -start-20 bottom-0 size-80 rounded-full bg-gold-400/20 blur-3xl" aria-hidden />
             <nav aria-label={t("label")} className="relative">
               <ul className="flex flex-col gap-1">
-                {[{ href: "/", key: "home" as const }, ...NAV_LINKS].map((link, i) => (
+                {[{ href: "/", key: "home" as const }, ...NAV_LINKS, { href: "/track", key: "track" as const }, { href: "/account", key: "account" as const }].map((link, i) => (
                   <li key={link.href} className="overflow-hidden">
                     <motion.div
                       initial={{ y: "110%" }}

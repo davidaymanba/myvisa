@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 import { getCatalog } from "@/lib/api/server";
 import { SITE_URL, localePath } from "@/lib/seo";
 
-const STATIC = ["/", "/destinations", "/visa-finder", "/services", "/pricing", "/about", "/contact", "/terms", "/refund-policy", "/privacy"];
+const STATIC = ["/", "/destinations", "/visa-finder", "/services", "/pricing", "/about", "/contact", "/track", "/terms", "/refund-policy", "/privacy"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { destinations } = await getCatalog();

@@ -63,7 +63,7 @@ function setup(overrides: Record<string, string> = {}) {
     DATABASE_URL: "postgresql://x@localhost/x",
     REDIS_URL: "redis://localhost:6379",
     JWT_ACCESS_SECRET: "x".repeat(40),
-    HASH_PEPPER: "p".repeat(20),
+    HASH_PEPPER: "p".repeat(20), S3_ACCESS_KEY: "a", S3_SECRET_KEY: "s", DATA_ENCRYPTION_KEY: Buffer.alloc(32).toString("base64"), BLIND_INDEX_KEY: "b".repeat(20),
     ...overrides,
   });
   const redis = new FakeRedis();

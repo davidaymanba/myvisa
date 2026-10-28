@@ -23,6 +23,18 @@ export function testEnv(overrides: Partial<Record<string, string>> = {}): Env {
     SMS_PROVIDER: "console",
     LOG_LEVEL: "silent",
     TRUST_PROXY: "true",
+    S3_ENDPOINT: process.env.S3_ENDPOINT ?? "http://localhost:9010",
+    S3_BUCKET: "myvisa-test",
+    S3_ACCESS_KEY: process.env.S3_ACCESS_KEY ?? "myvisa",
+    S3_SECRET_KEY: process.env.S3_SECRET_KEY ?? "myvisa-secret-key",
+    S3_FORCE_PATH_STYLE: "true",
+    S3_AUTO_CREATE_BUCKET: "true",
+    DATA_ENCRYPTION_KEY: Buffer.alloc(32, 7).toString("base64"),
+    BLIND_INDEX_KEY: "test-blind-index-key-0000",
+    PAYMENT_PROVIDER: "mock",
+    EMAIL_PROVIDER: "console",
+    WHATSAPP_PROVIDER: "console",
+    QUEUE_WORKERS: "true",
     ...overrides,
   });
 }

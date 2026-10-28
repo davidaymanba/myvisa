@@ -30,7 +30,9 @@ export function Requirements({ service, countryId }: { service: ServiceRecord; c
   const toasts = useMutationToasts();
   const [order, setOrder] = useState(service.requirements);
   const [editing, setEditing] = useState<string | "new" | null>(null);
-  useEffect(() => setOrder(service.requirements), [service.requirements]);
+  useEffect(() => {
+    setOrder(service.requirements);
+  }, [service.requirements]);
 
   const reorder = useMutation({
     mutationFn: (ids: string[]) => api(`/admin/services/${service.id}/requirements-order`, { method: "PUT", body: { ids } }),

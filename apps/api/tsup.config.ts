@@ -6,7 +6,7 @@ import { defineConfig } from "tsup";
  * Workspace packages ship TypeScript source, so they are bundled in; npm deps stay external.
  */
 export default defineConfig({
-  entry: ["src/main.ts"],
+  entry: { main: "src/main.ts", "scripts/seed-demo": "src/scripts/seed-demo.ts" },
   format: ["esm"],
   target: "node22",
   platform: "node",

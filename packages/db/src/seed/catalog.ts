@@ -175,6 +175,15 @@ async function seedDestination(tx: Tx, d: Destination, sortOrder: number, insura
   });
 }
 
+/** Saudi Arabia itself: the nationality of every SAUDI_CITIZEN traveller (not listed in the residents' picker). */
+async function seedHomeCountry(tx: Tx) {
+  await tx.country.upsert({
+    where: { iso2: "SA" },
+    create: { iso2: "SA", iso3: "SAU", slug: "saudi-arabia", nameAr: "المملكة العربية السعودية", nameEn: "Saudi Arabia", region: "GCC", isDestination: false },
+    update: {},
+  });
+}
+
 async function seedNationalities(tx: Tx) {
   for (const [i, n] of NATIONALITIES.entries()) {
     const existing = await tx.country.findUnique({ where: { iso2: n.iso2 } });
@@ -207,6 +216,7 @@ export async function seedDatabase(prisma: PrismaClient, options: SeedOptions = 
       await seedProducts(tx);
       for (const [i, d] of DESTINATIONS.entries()) await seedDestination(tx, d, i, insurance);
       await seedNationalities(tx);
+      await seedHomeCountry(tx);
 
       for (const key of SETTING_KEYS) {
         await tx.setting.upsert({ where: { key }, create: { key, value: DEFAULT_SETTINGS[key] }, update: {} });

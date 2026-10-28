@@ -25,6 +25,9 @@ export const PERMISSIONS = [
   "contact:read",
   "contact:write",
   "audit:read",
+  "orders:read",
+  "orders:write",
+  "finance:read",
   "staff:manage",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
@@ -33,16 +36,16 @@ const STAFF_BASE: Permission[] = ["admin:access", "catalog:read", "content:read"
 
 /**
  * The permission matrix.
- * - AGENT works orders and the inbox; reads the catalog.
- * - ACCOUNTANT reads everything money-related and the audit log; changes nothing in the catalog.
+ * - AGENT works orders (messages, documents) and the inbox; reads the catalog.
+ * - ACCOUNTANT reads orders, invoices and payments, and the audit log; changes nothing.
  * - MANAGER runs the catalog, prices and content.
  * - SUPER_ADMIN additionally manages settings and staff.
  */
 export const ROLE_PERMISSIONS: Record<UserRole, readonly Permission[]> = {
   CUSTOMER: [],
-  AGENT: [...STAFF_BASE, "contact:write"],
-  ACCOUNTANT: [...STAFF_BASE, "audit:read"],
-  MANAGER: [...STAFF_BASE, "contact:write", "catalog:write", "pricing:write", "content:write", "audit:read"],
+  AGENT: [...STAFF_BASE, "contact:write", "orders:read", "orders:write"],
+  ACCOUNTANT: [...STAFF_BASE, "audit:read", "orders:read", "finance:read"],
+  MANAGER: [...STAFF_BASE, "contact:write", "catalog:write", "pricing:write", "content:write", "audit:read", "orders:read", "orders:write", "finance:read"],
   SUPER_ADMIN: PERMISSIONS,
 };
 

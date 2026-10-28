@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { envSchema } from "./env";
 
-const base = { DATABASE_URL: "postgresql://x@h/x", REDIS_URL: "redis://h:1", JWT_ACCESS_SECRET: "a-real-secret-that-is-long-enough-000000", HASH_PEPPER: "a-real-pepper-value" };
+const base = { DATABASE_URL: "postgresql://x@h/x", REDIS_URL: "redis://h:1", JWT_ACCESS_SECRET: "a-real-secret-that-is-long-enough-000000", HASH_PEPPER: "a-real-pepper-value", S3_ACCESS_KEY: "a", S3_SECRET_KEY: "s", DATA_ENCRYPTION_KEY: Buffer.alloc(32).toString("base64"), BLIND_INDEX_KEY: "a-real-blind-index-key" };
 
 describe("env", () => {
   it("applies safe defaults", () => {

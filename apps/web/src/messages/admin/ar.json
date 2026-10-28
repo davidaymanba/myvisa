@@ -149,6 +149,8 @@
       "INVITATION_LETTER": "خطاب دعوة",
       "FAMILY_RECORD": "سجل الأسرة",
       "BIRTH_CERTIFICATE": "شهادة ميلاد",
+      "DRIVING_LICENSE": "رخصة القيادة",
+      "SOURCE_DOCUMENT": "المستند الأصلي للترجمة",
       "OTHER": "أخرى"
     }
   },

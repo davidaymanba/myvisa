@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "title": "Track your order",
+    "description": "Check your visa application's status with your order number and a code sent to your phone."
+  },
+  "eyebrow": "Order tracking",
+  "title": "Where's my application?",
+  "lead": "Enter your order number and the mobile number on the order; we'll text you a code to confirm it's you.",
+  "board": {
+    "flight": "Order",
+    "destination": "Destination",
+    "status": "Status",
+    "gate": "Stage",
+    "departures": "DEPARTURES · المغادرة"
+  },
+  "form": {
+    "orderNumber": "Order number",
+    "orderNumberHint": "It's in your confirmation message, e.g. MV-26-4F7K2Q",
+    "phone": "Mobile number",
+    "send": "Send code",
+    "code": "Verification code",
+    "sentTo": "If it matches the order, we sent a 6-digit code to {phone}.",
+    "verify": "Show my order",
+    "change": "Change details",
+    "resend": "Resend",
+    "resendIn": "Resend in {seconds}s",
+    "privacy": "Names, documents and amounts are never shown here. Sign in to your account for the full details."
+  },
+  "result": {
+    "again": "Track another order",
+    "account": "Open in my account",
+    "submitted": "Submitted {date}",
+    "processing": "Processing {min}–{max} working days",
+    "appointment": "Your appointment in {city}: {date}",
+    "log": "Journey log",
+    "expired": "This view expired. Verify again to keep following your order.",
+    "decision": {
+      "APPROVED": "Approved",
+      "REJECTED": "Not approved",
+      "PARTIAL": "Partly approved"
+    },
+    "refreshing": "Updates automatically"
+  },
+  "errors": {
+    "order_number": "Enter the order number exactly as you received it, e.g. MV-26-4F7K2Q",
+    "track_expired": "This view expired. Verify again."
+  },
+  "events": {
+    "DRAFT": "You started the application",
+    "PENDING_PAYMENT": "You reviewed it and accepted the terms",
+    "RECEIVED": "We received your order and payment",
+    "DOCUMENTS_REVIEW": "Document review started",
+    "ACTION_REQUIRED": "We asked you for something",
+    "APPOINTMENT_BOOKED": "Your appointment was booked",
+    "SUBMITTED_TO_EMBASSY": "Submitted to the embassy",
+    "DECISION_ISSUED": "The embassy decided",
+    "DELIVERED": "Passport delivered",
+    "CANCELLED": "Order cancelled",
+    "REFUNDED": "Refund issued"
+  }
+}

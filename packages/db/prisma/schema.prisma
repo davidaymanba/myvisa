@@ -481,8 +481,11 @@ model Document {
   originalName String
   mimeType     String
   sizeBytes    Int
-  sha256       String
+  /// Hex SHA-256 of the stored bytes, computed by the scan worker ("" until then).
+  sha256       String       @default("")
   scanStatus   ScanStatus   @default(PENDING)
+  /// Set when the client confirms the direct-to-storage upload finished (and the object was verified).
+  uploadedAt   DateTime?
   inVault      Boolean      @default(false)
   /// e.g. passport expiry — drives "renew soon" reminders.
   expiresOn    DateTime?    @db.Date
@@ -588,6 +591,7 @@ model OrderTraveler {
   id                   String        @id @default(cuid(2))
   orderId              String
   travelerId           String?
+  relationship         Relationship  @default(SELF)
   givenNameEn          String
   surnameEn            String
   fullNameAr           String?
@@ -784,6 +788,7 @@ model Notification {
 // ─────────────────────────────────────────────────────────────
 
 enum PaymentProvider {
+  MOCK // local fake gateway, development only
   MOYASAR
   TAP
 }

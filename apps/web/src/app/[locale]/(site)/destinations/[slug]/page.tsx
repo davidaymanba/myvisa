@@ -199,7 +199,7 @@ export default function DestinationPage({ params }: { params: Promise<{ locale: 
         </section>
       )}
 
-      {from && <StickyApplyBar label={tc("applyNow")} priceLabel={tc("from")} price={from.total === 0 ? tc("free") : formatMoney(from.total, l)} href={`/visa-finder?to=${d.slug}`} />}
+      {from && <StickyApplyBar label={tc("applyNow")} priceLabel={tc("from")} price={from.total === 0 ? tc("free") : formatMoney(from.total, l)} href={`/apply?to=${d.slug}`} />}
     </>
   );
 }

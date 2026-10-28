@@ -242,7 +242,7 @@ export function HeroExperience({
                               <Link href={`/destinations/${destination.slug}`}>{t("details")}</Link>
                             </Button>
                             <Button asChild size="md">
-                              <Link href={{ pathname: "/visa-finder", query: { to: destination.slug, purpose, as: applicant } }}>
+                              <Link href={{ pathname: "/apply", query: { to: destination.slug, purpose, as: applicant } }}>
                                 {t("apply")}
                                 <ArrowUpRight className="flip-rtl" aria-hidden />
                               </Link>

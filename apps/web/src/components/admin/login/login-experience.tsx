@@ -231,7 +231,7 @@ export function LoginExperience() {
                         {t("stepCode")}
                       </h2>
                       <p className="text-body-sm text-foreground/60">
-                        {t.rich("sentTo", { phone: () => <bdi dir="ltr" className="tabular font-medium text-foreground">{phone}</bdi> })}
+                        {t("sentTo", { phone: `\u2066${phone}\u2069` })}
                       </p>
                     </div>
                     <OtpInput value={code} onChange={setCode} onComplete={verify} invalid={Boolean(error)} disabled={busy} label={tu("label")} digitLabel={(n) => tu("digit", { n })} />

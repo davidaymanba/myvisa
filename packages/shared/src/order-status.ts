@@ -36,3 +36,25 @@ export function trackingStepIndex(status: OrderStatus): number {
   if (status === "REFUNDED" || status === "CANCELLED" || status === "DRAFT" || status === "PENDING_PAYMENT") return -1;
   return TRACKING_STEPS.indexOf(status);
 }
+
+/**
+ * Allowed transitions — the order state machine. Anything not listed is refused by the API.
+ * Customers drive DRAFT ⇄ PENDING_PAYMENT; payment moves it to RECEIVED; staff take it from there (Phase 6).
+ */
+export const ORDER_TRANSITIONS: Record<OrderStatus, readonly OrderStatus[]> = {
+  DRAFT: ["PENDING_PAYMENT", "CANCELLED"],
+  PENDING_PAYMENT: ["DRAFT", "RECEIVED", "CANCELLED"],
+  RECEIVED: ["DOCUMENTS_REVIEW", "ACTION_REQUIRED", "CANCELLED", "REFUNDED"],
+  DOCUMENTS_REVIEW: ["ACTION_REQUIRED", "APPOINTMENT_BOOKED", "SUBMITTED_TO_EMBASSY", "CANCELLED", "REFUNDED"],
+  ACTION_REQUIRED: ["DOCUMENTS_REVIEW", "CANCELLED", "REFUNDED"],
+  APPOINTMENT_BOOKED: ["SUBMITTED_TO_EMBASSY", "ACTION_REQUIRED", "CANCELLED", "REFUNDED"],
+  SUBMITTED_TO_EMBASSY: ["DECISION_ISSUED"],
+  DECISION_ISSUED: ["DELIVERED", "REFUNDED"],
+  DELIVERED: [],
+  CANCELLED: [],
+  REFUNDED: [],
+};
+
+export function canTransition(from: OrderStatus, to: OrderStatus): boolean {
+  return ORDER_TRANSITIONS[from].includes(to);
+}

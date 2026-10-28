@@ -149,6 +149,8 @@
       "INVITATION_LETTER": "Invitation letter",
       "FAMILY_RECORD": "Family record",
       "BIRTH_CERTIFICATE": "Birth certificate",
+      "DRIVING_LICENSE": "Driving licence",
+      "SOURCE_DOCUMENT": "Document to translate",
       "OTHER": "Other"
     }
   },

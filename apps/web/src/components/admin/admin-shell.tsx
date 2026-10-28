@@ -39,7 +39,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
     return () => setUnauthorizedHandler(null);
   }, [router, pathname]);
 
-  useEffect(() => setMenuOpen(false), [pathname]);
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
 
   return (
     <div className="relative flex min-h-dvh bg-background">

@@ -43,8 +43,8 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   const dir = localeDirection[locale];
-  // Admin strings are only sent to the client under /admin (see admin/layout.tsx).
-  const messages = Object.fromEntries(Object.entries(await getMessages()).filter(([namespace]) => namespace !== "admin"));
+  // Admin and account strings are only sent to the client under /admin and /account (see their layouts).
+  const messages = Object.fromEntries(Object.entries(await getMessages()).filter(([namespace]) => namespace !== "admin" && namespace !== "account"));
 
   return (
     <html lang={locale} dir={dir} className={fontVariables} suppressHydrationWarning>

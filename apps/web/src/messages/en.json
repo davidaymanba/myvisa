@@ -436,7 +436,9 @@
     "contact": "Contact",
     "cta": "Start your visa",
     "menu": "Open menu",
-    "close": "Close menu"
+    "close": "Close menu",
+    "track": "Track order",
+    "account": "My account"
   },
   "footer": {
     "label": "Site links",
@@ -695,7 +697,7 @@
     "appointmentYes": "Required — we book it",
     "appointmentNo": "Not required",
     "apply": "Start application",
-    "applySoon": "The online application launches soon — message us on WhatsApp and we'll start right away.",
+    "applySoon": "Apply online now, or message us on WhatsApp and we'll start with you.",
     "whatsapp": "Start on WhatsApp",
     "share": "Copy link to result",
     "copied": "Link copied",
@@ -704,7 +706,8 @@
     "free": "No visa needed",
     "freeBody": "You can travel straight away. We recommend travel insurance for the length of your trip.",
     "pickDestination": "Choose a destination",
-    "selected": "Your selection"
+    "selected": "Your selection",
+    "applyNow": "Apply now"
   },
   "servicesPage": {
     "metaTitle": "Services",

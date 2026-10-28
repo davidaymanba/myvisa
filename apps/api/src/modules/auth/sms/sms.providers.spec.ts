@@ -34,7 +34,7 @@ describe("SMS providers", () => {
   });
 
   it("the factory follows SMS_PROVIDER", () => {
-    const base = { DATABASE_URL: "postgresql://x@h/x", REDIS_URL: "redis://h:1", JWT_ACCESS_SECRET: "x".repeat(40), HASH_PEPPER: "p".repeat(20) };
+    const base = { DATABASE_URL: "postgresql://x@h/x", REDIS_URL: "redis://h:1", JWT_ACCESS_SECRET: "x".repeat(40), HASH_PEPPER: "p".repeat(20), S3_ACCESS_KEY: "a", S3_SECRET_KEY: "s", DATA_ENCRYPTION_KEY: Buffer.alloc(32).toString("base64"), BLIND_INDEX_KEY: "b".repeat(20) };
     expect(createSmsProvider(envSchema.parse(base))).toBeInstanceOf(ConsoleSmsProvider);
     expect(createSmsProvider(envSchema.parse({ ...base, SMS_PROVIDER: "taqnyat", TAQNYAT_BEARER_TOKEN: "t" }))).toBeInstanceOf(TaqnyatSmsProvider);
     expect(() => envSchema.parse({ ...base, SMS_PROVIDER: "unifonic" })).toThrow(/UNIFONIC_APP_SID/);

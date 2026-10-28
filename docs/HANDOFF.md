@@ -1,33 +1,38 @@
-# Handoff — Phase 3 done, waiting for the client's review
+# Handoff — Phase 5 done, waiting for the client's review
 
 Read this first in a new session, then `visa-platform-prompt.md` (the brief), `docs/ARCHITECTURE.md` and `docs/DESIGN.md`.
 
-## Where we are (2026-10-27)
+## Where we are (2026-10-28)
 
 | Phase | Status |
 |---|---|
 | 1 — Design system, Prisma schema, shared logic | ✅ done |
 | 2 — Public website (ar/en), bold and motion-led | ✅ done |
-| 3 — Backend foundation + admin CMS | ✅ done, **waiting for client review** |
-| **4 — Apply wizard, uploads, payments, notifications** | ⏭ next (don't start without the go-ahead) |
-| 5–7 | not started |
+| 3 — Backend foundation + admin CMS | ✅ done |
+| 4 — Apply wizard, uploads, payments, notifications | ✅ done |
+| 5 — Client dashboard + order tracking + ZATCA invoices | ✅ done, **waiting for client review** |
+| **6 — Admin operations panel + reports** | ⏭ next (don't start without the go-ahead) |
+| 7 | not started |
 
-Green as of handoff: `pnpm typecheck`, `pnpm lint`, `pnpm test` (59 shared + 20 API unit), `pnpm test:e2e` (30 API e2e on a disposable DB), `pnpm build`, `pnpm db:validate`.
+Green as of handoff: `pnpm typecheck`, `pnpm lint`, `pnpm test` (66 shared + 52 API unit), `pnpm test:e2e` (64 API e2e on a disposable DB + S3 bucket), `pnpm build`, `pnpm db:validate`. Browser walkthroughs: `pnpm apply-tour`, `pnpm admin-tour`, and `pnpm account-tour` (dashboard + tracking; ar/en, 1440/390, light/dark — no page errors, no horizontal overflow).
 
-Git: the client created a repo with one commit ("add files") during Phase 3. Phase 3 work is **uncommitted**; ask before committing.
+Git: the client created a repo with one commit ("add files") during Phase 3. Phase 3, 4 and 5 work is **uncommitted**; ask before committing.
 
 ## Running it locally
 
 ```bash
 cp -n .env.example .env && cp -n apps/web/.env.example apps/web/.env.local
 pnpm install                # also runs `prisma generate`
-pnpm infra:up               # postgres :5442, redis :6390, mailpit :8035 (ports offset; 5432/6379/4000 are taken on this machine)
+pnpm infra:up               # postgres :5442, redis :6390, mailpit :8035, S3 (SeaweedFS) :9010 — ports offset; 5432/6379/4000 are taken here
 pnpm db:deploy && pnpm db:seed
+pnpm db:seed-demo           # demo customer 0500000002: family, 4 orders (delivered / appointment booked / action required / draft), chat, invoices
 pnpm --filter @myvisa/api build && pnpm --filter @myvisa/api start    # API :4100, Swagger at /docs
 pnpm --filter @myvisa/web build && pnpm --filter @myvisa/web start    # web :3100
 ```
 
 Admin: http://localhost:3100/admin/login with phone `0500000001` (SEED_ADMIN_PHONE) and the dev code `000000` (OTP_DEV_CODE; refused in production).
+Apply: http://localhost:3100/apply (or any "Apply" button) — any Saudi mobile + `000000`; payment goes through the local **mock gateway** (`PAYMENT_PROVIDER=mock`). Emails land in Mailpit: http://localhost:8035.
+Dashboard: http://localhost:3100/account with `0500000002` + `000000` (after `db:seed-demo`). Tracking: http://localhost:3100/track with an order number from that account + the same phone.
 
 ## What Phase 3 delivered
 
@@ -41,15 +46,52 @@ Admin: http://localhost:3100/admin/login with phone `0500000001` (SEED_ADMIN_PHO
 - **Website:** reads catalog/settings/testimonials through `apps/web/src/lib/api/server.ts` (ISR 5 min + tags) and falls back to the shared data when the API is down, so builds never depend on it. `/api/v1/*` is proxied to the API by a Next rewrite (cookies stay first-party). Contact form posts for real (honeypot, 5/hour/IP). `lib/company.ts` is gone (values live in `DEFAULT_SETTINGS`).
 - **Admin (`/admin`, `/en/admin`):** middleware gate (staff JWT) → login (RUH→OPS boarding-pass card, silent refresh, stamp on success) · overview (counters, audit feed) · destinations grid · destination editor (cinematic hero; visas as tickets; price rules with live `PriceBreakdown`; document checklist with reorder; FAQs; full profile form with save bar) · inbox · testimonials · settings · audit log. Admin strings live in `apps/web/src/messages/admin/{ar,en}.json` and are only sent to the client under `/admin`.
 
+## What Phase 4 delivered
+
+- **Wizard `/apply`** (own layout, noindex): visa (destination rail, purpose/applicant pills, visa tickets with live price, travel dates) → inline phone OTP gate → travellers (up to 9, MRZ-name validation, passport-expiry warning, live per-traveller quote) → documents (per traveller + per order, drag/drop, camera, XHR progress, scan status, photo guide) → appointment (only when the visa needs one) → review (edit links, coupon, `PriceBreakdown`, refund summary, 3 mandatory PDPL consents + marketing) → payment → `/apply/confirmation` (polls payment, stamp + boarding pass). Sticky "boarding pass" summary with animated total; resumable via `?order=&step=`. All site "Apply" CTAs (hero, visa tabs, finder, sticky bar) now open it with the right preselection.
+- **Orders API** (`modules/orders`): quote, draft create/replace (travellers matched by passport so their uploads survive edits), submit (re-prices with coupon, writes 5 `Consent` rows, stores `refundPolicyVersion`, → PENDING_PAYMENT; zero-total → RECEIVED), cancel, owner-only `GET /orders/:id/travelers` for editing. Passport numbers AES-256-GCM encrypted + HMAC blind index (`common/pii.service.ts`); travellers also saved to the family vault (`Traveler`). State machine `ORDER_TRANSITIONS` in shared. `payment.succeeded` → RECEIVED + coupon redemption + `order.status_changed`.
+- **Documents API** (`modules/documents`): presign (validates requirement/traveller/type/size) → browser PUT to S3 → `complete` (HEAD-verifies size) → BullMQ scan worker (SHA-256 + ClamAV INSTREAM when `CLAMAV_HOST` is set; infected files deleted) → short-lived signed view URLs.
+- **Payments** (`modules/payments`): Moyasar (Invoices API) · Tap (Charges API) · mock gateway, chosen by `PAYMENT_PROVIDER`; `Idempotency-Key` per order; webhooks stored once per (provider, eventId) and always re-verified against the gateway API; amount mismatch → FAILED. Mock checkout page `/pay/mock` (dev only, refused by the API in production).
+- **Notifications** (`modules/notifications`): one `Notification` row + BullMQ job per channel (in-app, SMS, WhatsApp Cloud API templates, email via SMTP/Resend), bilingual templates `order.received` and `payment.failed`; adding a status template is one registry entry.
+- **Infra:** SeaweedFS (S3 API) in compose (MinIO images are no longer freely pullable), BullMQ queues (`infra/queue.ts`), domain events (`common/events.ts`).
+
+## What Phase 5 delivered
+
+- **API** (no schema change; everything fits the Phase 1 schema):
+  - `modules/account`: `GET/PUT /me/profile` (marketing consent is a ledger row only when it changes), `GET /me/summary` (dashboard counters + badges), saved travellers CRUD `/me/travelers` (masked in lists, full passport only on `GET /me/travelers/:id`, duplicate passport → `traveler_exists`, soft delete).
+  - Vault (`documents/vault.controller.ts`): `GET/POST /me/documents`, `…/:id/complete`, `…/:id/url`, `DELETE` (files used by an order only leave the vault), and `POST /orders/:id/documents/attach` to reuse a stored, clean file for a requirement. Removing an order upload no longer deletes a file that's in the vault or another order.
+  - `modules/messages`: one thread per order (`GET/POST /orders/:id/messages`, `GET /messages/:id/attachment`); reading marks the other side read; staff with `orders:write` reply as STAFF → `message.created` → in-app + WhatsApp `message.received`.
+  - Orders: `GET /orders/:id/timeline` (events with customer notes, appointment, shipments, decision, invoices), `POST /orders/:id/resubmit` (ACTION_REQUIRED → DOCUMENTS_REVIEW once no required slot relies on a rejected file). `OrderView.statusNote` = note on the latest status change.
+  - Notifications: `GET /me/notifications` (cursor pages, rendered in the browsing locale, with an in-site `href`), `POST /me/notifications/:id/read`, `read-all`. New templates `order.update` (wording per status, carries the staff note) and `message.received`; `STATUS_TEMPLATES` now covers every customer-facing status. Customers aren't messaged about their own actions.
+  - `modules/tracking`: `POST /track/request` (same answer and no SMS when number/phone don't match; per-IP cap), `POST /track/verify` → view + 30-min read-only JWT (audience `myvisa-track`, can't be used as a session), `GET /track` with `x-track-token`. No names, passports, documents or prices in the view.
+  - `modules/invoices` (ZATCA): on PENDING_PAYMENT → RECEIVED an invoice is issued (retried by the `invoices` queue on failure) under a Postgres advisory lock: sequential `INV-YYYY-NNNNNN`, ICV, previous-invoice-hash chain (first = spec PIH), UBL 2.1 simplified-invoice XML stored in S3, SHA-256 hash, ECDSA secp256k1 stamp, TLV QR (tags 1–8; tag 9 when a CSID cert is configured). Lines split our service fee (S, 15%) from government fees (O, out of scope, VATEX-SA-OOS). `GET /me/invoices`, `GET /invoices/:id` (owner, or staff with `finance:read`), `GET /invoices/:id/xml`.
+  - RBAC: new `orders:read`, `orders:write`, `finance:read` (agent: orders; accountant: orders read + finance; manager: all).
+  - `src/scripts/seed-demo.ts` (built to `dist/scripts/seed-demo.js`, `pnpm db:seed-demo`).
+- **Web**:
+  - `/account` (middleware gate: any valid access token, else `/account/login?next=`; login first tries a silent refresh). Shell = passport cover (teal leather, gold foil, rotating guilloche, page numbers, badges) on desktop; tab bar + "more" sheet on mobile.
+  - Pages: overview (greeting + entry stamp, action banner, counters, most urgent order as a boarding pass, drafts, latest updates, family), orders (ticket stubs, filters), order page (cinematic hero, boarding pass with real milestone dates, action panel with rejected files + inline upload + "from vault" + resubmit, draft/pending panel with cancel, journey log, documents by traveller with review state, travellers, chat, payment/invoice/appointment/shipping), family (passport data-page cards with MRZ, add/edit/delete dialog), vault (filters by owner, upload dialog with type/owner/expiry), notifications (grouped by day, mark read), invoices (receipt cards) + printable bilingual tax invoice with QR and XML download, profile.
+  - `/track` (public, in sitemap): split-flap departures board that flips to the real order, OTP form, boarding pass + journey log, auto-refresh with the token (sessionStorage).
+  - Wizard: travellers step offers the saved family as one-tap chips; confirmation links to the order in the account. Header has an account icon; menu/footer link to tracking and the account.
+  - Messages: `messages/account/*` (withheld from public pages like `admin`) and `messages/track/*`.
+
+## Phase 6 starting points
+
+Staff side of what Phase 5 shows the customer: order kanban/table, status changes with a customer note (emit `order.status_changed` with `customerNote` → `order.update` notifications are already wired), document review (set `OrderDocument.reviewStatus`/`rejectionReason`, move to ACTION_REQUIRED), the same message endpoints for agents (`orders:write`), appointments/shipments rows (the customer page already renders them), refunds + credit notes (Invoice type CREDIT_NOTE, chain continues), coupons UI, reports.
+
 ## Left open on purpose
 
 - Blog/MDX CMS: not built (BlogPost model exists).
 - Service-category marketing pages, legal texts and the hero route arcs are still static from `packages/shared`.
 - Staff management UI (`staff:manage`) — create staff by setting `User.role` in the DB for now.
 
-## Phase 4 starting points
-
-Apply wizard + uploads (S3/R2 presigned, ClamAV), Moyasar or Tap (ask the client), notifications (WhatsApp/SMS/email via queues), price snapshot on `Order` using `calculatePrice` + `resolvePriceRule` (`apps/api/src/modules/catalog/catalog.mapper.ts`), consent capture before payment using the `legal.*Version` settings.
+- ZATCA **reporting/clearance** to the Fatoora API: needs the client's onboarding (CSR → compliance CSID → production CSID). Until then invoices stay `PENDING`. Before switching on, validate our XML with the ZATCA SDK and set `ZATCA_EGS_PRIVATE_KEY` / `ZATCA_EGS_CERTIFICATE`. The invoice "PDF" is the browser's print-to-PDF of `/account/invoices/:id` (server-side PDF for email attachments can come in Phase 7).
+- Credit notes for refunds — Phase 6, with the refund flow.
+- Email/Google sign-in for customers (brief says optional) — not built; phone OTP only.
+- Chat is polled (15 s), not pushed; SSE/websocket can come later if volume needs it.
+- Admin order handling (kanban, document review, status changes that notify) — Phase 6. Until then staff see orders only in the DB/Swagger.
+- Coupon admin UI — Phase 6 (validation and redemption already work; create coupons in the DB).
+- Real gateway keys: decide Moyasar vs Tap and add `MOYASAR_SECRET_KEY` + `MOYASAR_WEBHOOK_SECRET` (or `TAP_SECRET_KEY`); the webhook URL is `${API_PUBLIC_URL}/api/v1/payments/webhooks/<provider>`.
+- WhatsApp templates `order_received` / `payment_failed` must be approved in Meta Business Manager before `WHATSAPP_PROVIDER=meta`.
 
 ## Hard-won gotchas (don't rediscover these)
 
@@ -70,6 +112,14 @@ Apply wizard + uploads (S3/R2 presigned, ClamAV), Moyasar or Tap (ask the client
 - **OTP limits bite during QA:** 5 codes per phone per hour. In dev clear them with `docker compose exec redis sh -c "redis-cli --scan --pattern 'otp:*' | xargs -r redis-cli del"`. `scripts/admin-tour.mjs` signs in and screenshots admin pages.
 - **Next layouts must type `params.locale` as `string`** (cast to `Locale` inside), or `next build` fails the LayoutProps check.
 - **Stopping `next start`:** the process is named `next-server`, so `pkill -f "next start"` misses it; kill by port (`lsof -iTCP:3100`).
+- **React 19 + new Chrome:** `scrollIntoView`/`scrollTo` now return Promises — never write `useEffect(() => el.scrollIntoView())` (React calls the Promise as a cleanup → "destroy is not a function"). Use a block body.
+- **next-intl `t.rich`** only takes functions for `<tag>` chunks; a function passed for a plain `{placeholder}` renders nothing. Wrap LTR values in Arabic text with `\u2066…\u2069` instead.
+- **SeaweedFS** needs `-volume.max>0` or every PUT fails with "No writable volumes". The API creates buckets itself in dev (`S3_AUTO_CREATE_BUCKET`).
+- **Feature message files:** `messages/<area>/{ar,en}.json` (admin, apply, pay) are merged as namespaces by `i18n/request.ts`; only `admin` is withheld from public pages. Keep ar/en keys identical.
+- **next-intl `relativeTime` needs a `now`** (`useNow()`), or it throws ENVIRONMENT_FALLBACK in the browser.
+- **Full-page screenshots and `whileInView`:** sections that reveal on scroll stay invisible unless the page is scrolled first (`account-tour.mjs` scrolls before each shot).
+- **Scripts that boot Nest (`seed-demo`) must `process.exit`** — BullMQ connections keep the event loop alive after `app.close()`.
+- **`account` messages are withheld from public pages** — anything shown on `/track` must use the `track` namespace.
 - **Cookies:** refresh cookie path is `/api/v1/auth` and `SameSite=Strict`; the web middleware only sees `mv_at`. In production set `COOKIE_DOMAIN` and add every site origin (www, previews) to `CORS_ORIGINS`, or the CSRF Origin check blocks their writes.
 
 ## Open items the client must handle before launch
@@ -85,4 +135,5 @@ Apply wizard + uploads (S3/R2 presigned, ClamAV), Moyasar or Tap (ask the client
   - when "review started" begins, which decides the 50% refund
 - CR number, VAT number, phone and address are placeholders — edit them in **Admin → Settings**.
 - Testimonials are seeded as placeholders (flagged in the admin). Replace with real, consented reviews or unpublish them.
-- Production secrets: `JWT_ACCESS_SECRET` (same value in API and web), `HASH_PEPPER`, `REVALIDATE_SECRET`, SMS credentials, `SENTRY_DSN`.
+- ZATCA onboarding (see above) and confirm the seller address/CR/VAT in Admin → Settings — they print on every invoice.
+- Production secrets: `JWT_ACCESS_SECRET` (same value in API and web), `HASH_PEPPER`, `DATA_ENCRYPTION_KEY` (32 bytes; losing it makes stored passport numbers unreadable — keep it in a KMS/secret manager), `BLIND_INDEX_KEY`, `REVALIDATE_SECRET`, payment, SMS, email and WhatsApp credentials, `SENTRY_DSN`, S3/R2 bucket + keys, a ClamAV service.

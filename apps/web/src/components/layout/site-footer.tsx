@@ -37,6 +37,8 @@ export function SiteFooter() {
         { href: "/visa-finder", label: tn("finder") },
         { href: "/pricing", label: tn("pricing") },
         { href: "/contact", label: tn("contact") },
+        { href: "/track", label: tn("track") },
+        { href: "/account", label: tn("account") },
       ],
     },
     {

@@ -11,6 +11,6 @@ import { SMS_PROVIDER } from "./sms/sms.provider";
 @Module({
   controllers: [AuthController],
   providers: [AuthService, OtpService, SessionService, { provide: SMS_PROVIDER, useFactory: (env: Env) => createSmsProvider(env), inject: [ENV] }],
-  exports: [SessionService, OtpService],
+  exports: [SessionService, OtpService, SMS_PROVIDER],
 })
 export class AuthModule {}

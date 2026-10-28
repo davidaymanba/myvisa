@@ -2,7 +2,7 @@
 
 import { pickVisa, type ApplicantType, type TravelPurpose } from "@myvisa/shared";
 import { SiWhatsapp } from "@icons-pack/react-simple-icons";
-import { CalendarCheck, Check, Clock, Hourglass, Info, Link2, PartyPopper, Timer } from "lucide-react";
+import { ArrowUpRight, CalendarCheck, Check, Clock, Hourglass, Info, Link2, PartyPopper, Timer } from "lucide-react";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -232,7 +232,15 @@ export function VisaFinder({
                 <div className="flex flex-col gap-3 border-t border-border pt-6">
                   <p className="text-body-sm text-muted-foreground">{t("applySoon")}</p>
                   <div className="flex flex-wrap gap-3">
-                    <Button asChild size="lg">
+                    {result.price.eligible && (
+                      <Button asChild size="lg">
+                        <Link href={{ pathname: "/apply", query: { to: destination.slug, visa: result.visa.id, purpose, as: applicant, ...(applicant === "RESIDENT" ? { nationality } : {}) } }}>
+                          {t("applyNow")}
+                          <ArrowUpRight className="flip-rtl" aria-hidden />
+                        </Link>
+                      </Button>
+                    )}
+                    <Button asChild size="lg" variant={result.price.eligible ? "outline" : "primary"}>
                       <a href={`https://wa.me/${whatsapp.replace(/\D/g, "")}?text=${waText}`} target="_blank" rel="noopener noreferrer">
                         <SiWhatsapp aria-hidden />
                         {t("whatsapp")}

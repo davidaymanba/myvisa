@@ -4,6 +4,8 @@ packages:
 allowBuilds:
   # Telemetry pinger pulled in by swagger-ui-dist — never needed.
   '@scarf/scarf': false
+  # Optional native speed-up for bullmq's msgpackr; the pure-JS fallback is fine.
+  msgpackr-extract: false
   '@parcel/watcher': true
   '@prisma/engines': true
   '@swc/core': true

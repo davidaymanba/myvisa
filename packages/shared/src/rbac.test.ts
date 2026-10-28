@@ -30,4 +30,11 @@ describe("permission matrix", () => {
     expect(can("AGENT", "audit:read")).toBe(false);
     expect(can("ACCOUNTANT", "audit:read")).toBe(true);
   });
+
+  it("accountants read invoices but never write to orders", () => {
+    expect(can("ACCOUNTANT", "finance:read")).toBe(true);
+    expect(can("ACCOUNTANT", "orders:write")).toBe(false);
+    expect(can("AGENT", "orders:write")).toBe(true);
+    expect(can("AGENT", "finance:read")).toBe(false);
+  });
 });

@@ -40,6 +40,17 @@ services:
       - "127.0.0.1:${MAILPIT_SMTP_PORT:-1035}:1025"
       - "127.0.0.1:${MAILPIT_UI_PORT:-8035}:8025"
 
+  # S3-compatible object storage for uploaded documents (stand-in for AWS S3 / Cloudflare R2).
+  # The API creates its buckets on startup in development (S3_AUTO_CREATE_BUCKET).
+  s3:
+    image: chrislusf/seaweedfs:latest
+    command: ["server", "-dir=/data", "-s3", "-s3.port=8333", "-s3.config=/etc/seaweedfs/s3.json", "-volume.max=50", "-master.volumeSizeLimitMB=256"]
+    ports:
+      - "127.0.0.1:${S3_PORT:-9010}:8333"
+    volumes:
+      - s3:/data
+      - ./infra/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+
   # Virus scanning for uploads (Phase 4). Heavy (~1 GB RAM), so it only starts with
   # `docker compose --profile scan up`.
   clamav:
@@ -51,3 +62,4 @@ services:
 volumes:
   postgres:
   redis:
+  s3:

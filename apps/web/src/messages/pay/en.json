@@ -1,0 +1,35 @@
+{
+  "meta": "Test checkout",
+  "ribbon": "TEST GATEWAY",
+  "devNote": "Development gateway — no real card is charged and nothing leaves this machine.",
+  "merchant": "myvisa Travel Services",
+  "orderNo": "Order {number}",
+  "total": "Total due",
+  "methods": "Pay with",
+  "card": {
+    "number": "Card number",
+    "expiry": "Expiry",
+    "cvc": "CVC",
+    "name": "Name on card",
+    "holder": "MYVISA TRAVELLER"
+  },
+  "pay": "Pay {amount}",
+  "fail": "Simulate a declined card",
+  "processing": "Contacting the bank…",
+  "paid": "Payment approved",
+  "declined": "Card declined",
+  "redirecting": "Taking you back to myvisa…",
+  "secure": "3-D Secure · PCI-DSS · 256-bit TLS",
+  "loadError": "We couldn't load this payment.",
+  "signIn": "Sign in again to continue.",
+  "closed": "This payment is already {status}.",
+  "status": {
+    "INITIATED": "waiting",
+    "AUTHORIZED": "authorised",
+    "PAID": "paid",
+    "FAILED": "failed",
+    "REFUNDED": "refunded",
+    "PARTIALLY_REFUNDED": "partly refunded"
+  },
+  "back": "Back to my application"
+}

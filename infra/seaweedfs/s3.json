@@ -1,0 +1,9 @@
+{
+  "identities": [
+    {
+      "name": "myvisa",
+      "credentials": [{ "accessKey": "myvisa", "secretKey": "myvisa-secret-key" }],
+      "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+    }
+  ]
+}

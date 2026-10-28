@@ -23,11 +23,12 @@ myvisa/
 │   │       │       │                            terms, refund-policy, privacy  · ⏳ blog (with CMS, P3)
 │   │       │       ├── not-found.tsx · [...rest]  ✅ localized 404
 │   │       ├── app/sitemap.ts · robots.ts   ✅ hreflang alternates
-│   │       │       ├── apply/            ⏳ P4  multi-step wizard (service → travellers → documents →
+│   │       │       ├── apply/            ✅ P4  multi-step wizard (service → travellers → documents →
 │   │       │       │                            appointment → review → payment → confirmation)
-│   │       │       ├── track/            ⏳ P5  public tracking (order no. + phone OTP)
-│   │       │       ├── (account)/        ⏳ P5  login (OTP), orders, orders/[id], travellers, vault,
-│   │       │       │                            invoices, messages, notifications, settings
+│   │       │       ├── (site)/track/     ✅ P5  public tracking (order no. + phone OTP, split-flap board)
+│   │       │       ├── account/          ✅ P5  login (OTP, passport-cover opening) · (dashboard)/ overview,
+│   │       │       │                            orders, orders/[id] (timeline, action panel, chat), travelers,
+│   │       │       │                            documents (vault), notifications, invoices, invoices/[id], profile
 │   │       │       └── admin/            ⏳ P6  dashboard, orders (kanban/table), documents review,
 │   │       │                                    catalog (countries, services, price rules, requirements),
 │   │       │                                    coupons, customers, content, staff & roles, audit log
@@ -46,7 +47,10 @@ myvisa/
 │   │       │   ├── layout/               ✅ site header (floating, auto-theming), footer, page hero
 │   │       │   ├── globe/                ✅ canvas globe + generated land-dots.json
 │   │       │   ├── home/ destinations/ finder/ pricing/ contact/ legal/   ✅ page composites
-│   │       │   └── wizard/ tracking/ admin/   ⏳ P4–P6
+│   │       │   ├── apply/ pay/ admin/     ✅ P3–P4 (wizard steps, mock checkout, CMS)
+│   │       │   ├── account/              ✅ P5  passport-cover shell, guilloche, order tickets, passport cards,
+│   │       │   │                            vault, chat, journey log, ZATCA invoice document
+│   │       │   └── track/                ✅ P5  split-flap departures board + OTP tracking
 │   │       ├── i18n/                     ✅ routing, navigation, request config
 │   │       ├── messages/{ar,en}.json     ✅ type-checked keys (src/global.d.ts)
 │   │       ├── lib/                      ✅ cn(), seo; ✅ P3 api/server.ts (ISR + fallback), api/client.ts (CSRF + refresh)
@@ -54,7 +58,10 @@ myvisa/
 │   │
 │   └── api/                              ✅ P3  NestJS REST API (OpenAPI at /docs) — ✅ built: config, common,
 │       │                                        infra (prisma, redis, throttler), auth, catalog, settings, content,
-│       │                                        contact, consents, audit, revalidate, health · ⏳ the rest below
+│       │                                        contact, consents, audit, revalidate, health · ✅ P4: orders,
+│       │                                        documents (presign + scan worker), payments, notifications · ✅ P5:
+│       │                                        account (profile, summary, family), vault, messages, tracking,
+│       │                                        invoices (ZATCA) · ⏳ the rest
 │       ├── src/
 │       │   ├── main.ts                   helmet, CORS, cookie-parser, global ValidationPipe, versioning
 │       │   ├── app.module.ts
@@ -70,7 +77,8 @@ myvisa/
 │       │       ├── orders/               lifecycle state machine, status events, assignment, SLA
 │       │       ├── documents/            presigned upload, virus-scan worker, review
 │       │       ├── payments/             Moyasar|Tap adapters, webhooks (idempotent), refunds
-│       │       ├── invoices/             ZATCA Phase 2: XML (UBL 2.1), hash chain, QR TLV, PDF, reporting
+│       │       ├── invoices/             ✅ ZATCA Phase 2: XML (UBL 2.1), hash chain, ECDSA stamp, QR TLV · ⏳ reporting (needs onboarding)
+│       │       ├── account/  tracking/   ✅ profile/summary/family · public tracking (OTP → 30-min read-only token)
 │       │       ├── notifications/        WhatsApp, SMS, email (Resend), in-app — queue-driven templates
 │       │       ├── messages/  coupons/  content/ (blog, faq, testimonials)  settings/  audit/  reports/
 │       │       └── health/
@@ -86,7 +94,7 @@ myvisa/
 │       └── prisma/ schema.prisma · ✅ migrations/ · ✅ seed.ts (src/seed: shared catalog → DB)
 │
 ├── docs/                                 ✅ ARCHITECTURE.md · DESIGN.md
-├── ✅ docker-compose.yml                  postgres 17, redis 7, mailpit, clamav (profile "scan")
+├── ✅ docker-compose.yml                  postgres 17, redis 7, mailpit, S3 (SeaweedFS), clamav (profile "scan")
 ├── ⏳ .github/workflows/ci.yml            P7  lint · typecheck · test · build · playwright
 └── turbo.json · pnpm-workspace.yaml · tsconfig.base.json
 ```
@@ -108,3 +116,8 @@ myvisa/
 | **Browser → Next → API proxy (`/api/v1/*`)** | Auth cookies stay first-party; no CORS in the browser path; one origin to protect with CSRF checks. |
 | **Zod schemas shared by API DTOs and admin forms** | One definition of "valid" (e.g. visa-free ⇒ no fee, publish ⇒ consent) enforced on both sides. |
 | **Refresh-token families** | Rotation on every refresh; replaying an old token revokes the whole chain (stolen-token detection). |
+| **Direct-to-storage uploads** | Files never pass through the API: it signs a PUT bound to the exact type and size, verifies the object, then a queue worker hashes and virus-scans it. Keeps the API small and uploads fast on phones. |
+| **Domain events between orders, payments and notifications** | Payments only report what happened; orders own the state machine; notifications react to status changes. Each can change without touching the others. |
+| **Invoices issued under a Postgres advisory lock** | ZATCA's invoice counter (ICV) and previous-invoice-hash chain must never fork, even with several API instances; one lock serialises issuing and the order's invoice is idempotent. |
+| **Public tracking never confirms an order exists** | A wrong number/phone pair answers exactly like a right one but sends no SMS; a successful check returns a read-only token scoped to one order, with no names, documents or prices. |
+| **Webhook bodies are hints, not truth** | Every payment webhook is stored once and then confirmed by asking the gateway's API, so a forged or replayed webhook can't mark an order paid. |

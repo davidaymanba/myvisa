@@ -1,5 +1,6 @@
 import { type DynamicModule, Module } from "@nestjs/common";
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from "@nestjs/core";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { LoggerModule } from "nestjs-pino";
 import { ZodValidationPipe } from "nestjs-zod";
@@ -10,6 +11,7 @@ import { ConfigModule } from "./config/config.module";
 import type { Env } from "./config/env";
 import { InfraModule } from "./infra/infra.module";
 import { RedisThrottlerStorage } from "./infra/throttler-storage";
+import { AccountModule } from "./modules/account/account.module";
 import { AuditInterceptor } from "./modules/audit/audit.interceptor";
 import { AuditModule } from "./modules/audit/audit.module";
 import { AuthModule } from "./modules/auth/auth.module";
@@ -17,9 +19,16 @@ import { CatalogModule } from "./modules/catalog/catalog.module";
 import { ConsentsModule } from "./modules/consents/consents.module";
 import { ContactModule } from "./modules/contact/contact.module";
 import { ContentModule } from "./modules/content/content.module";
+import { DocumentsModule } from "./modules/documents/documents.module";
 import { HealthModule } from "./modules/health/health.module";
+import { InvoicesModule } from "./modules/invoices/invoices.module";
+import { MessagesModule } from "./modules/messages/messages.module";
+import { NotificationsModule } from "./modules/notifications/notifications.module";
+import { PaymentsModule } from "./modules/payments/payments.module";
+import { OrdersModule } from "./modules/orders/orders.module";
 import { RevalidateModule } from "./modules/revalidate/revalidate.module";
 import { SettingsModule } from "./modules/settings/settings.module";
+import { TrackingModule } from "./modules/tracking/tracking.module";
 
 @Module({})
 export class AppModule {
@@ -38,6 +47,7 @@ export class AppModule {
           },
         }),
         InfraModule,
+        EventEmitterModule.forRoot({ wildcard: false, ignoreErrors: false }),
         ThrottlerModule.forRootAsync({
           inject: [RedisThrottlerStorage],
           useFactory: (storage: RedisThrottlerStorage) => ({ throttlers: [{ name: "default", ttl: 60_000, limit: 300 }], storage }),
@@ -50,7 +60,15 @@ export class AppModule {
         ContactModule,
         ConsentsModule,
         AuditModule,
+        OrdersModule,
+        DocumentsModule,
         HealthModule,
+        PaymentsModule,
+        NotificationsModule,
+        InvoicesModule,
+        MessagesModule,
+        AccountModule,
+        TrackingModule,
       ],
       providers: [
         { provide: APP_PIPE, useClass: ZodValidationPipe },
