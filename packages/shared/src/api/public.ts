@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../zod";
 import { saudiMobileSchema } from "../phone";
 import { APPLICANT_TYPES, TRAVEL_PURPOSES } from "./catalog-admin";
 import type { Destination, InsurancePlan, Nationality, VisaMatch } from "../catalog";

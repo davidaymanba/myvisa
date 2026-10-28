@@ -114,6 +114,12 @@ export class SessionService {
     if (session) await this.revokeFamily(session.familyId);
   }
 
+  /** Ends every session of a user (role removed, account switched off). */
+  async revokeAllForUser(userId: string): Promise<void> {
+    const families = await this.prisma.session.findMany({ where: { userId, revokedAt: null }, select: { familyId: true }, distinct: ["familyId"] });
+    for (const f of families) await this.revokeFamily(f.familyId);
+  }
+
   async revokeFamily(familyId: string): Promise<void> {
     await this.prisma.session.updateMany({ where: { familyId, revokedAt: null }, data: { revokedAt: new Date() } });
     // Access tokens are stateless; block the family until the longest-lived one has expired.

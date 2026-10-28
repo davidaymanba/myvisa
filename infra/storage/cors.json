@@ -1,0 +1,11 @@
+{
+  "CORSRules": [
+    {
+      "AllowedOrigins": ["https://myvisa.sa", "https://www.myvisa.sa"],
+      "AllowedMethods": ["PUT", "GET", "HEAD"],
+      "AllowedHeaders": ["content-type", "x-amz-server-side-encryption"],
+      "ExposeHeaders": ["etag"],
+      "MaxAgeSeconds": 3600
+    }
+  ]
+}

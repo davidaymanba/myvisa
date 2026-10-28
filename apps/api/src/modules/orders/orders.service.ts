@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable, Logger } from "@nestjs/common";
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
-import { canTransition, type OrderTimelineView, type OrderDraftData, type OrderStatus, type OrderView, type QuoteInput, type TravelerData, type TravelerInput } from "@myvisa/shared";
+import { canTransition, slaDueAt, type OrderTimelineView, type OrderDraftData, type OrderStatus, type OrderView, type QuoteInput, type TravelerData, type TravelerInput } from "@myvisa/shared";
 import type { Prisma } from "@myvisa/db";
 import { EVENTS, type OrderStatusChangedEvent, type PaymentSucceededEvent } from "../../common/events";
 import { PiiService } from "../../common/pii.service";
@@ -265,18 +265,13 @@ export class OrdersService {
           couponId: priced.coupon?.id ?? null,
           refundPolicyVersion: legal.refundPolicyVersion,
           submittedAt: new Date(),
-          ...(free ? { slaDueAt: this.slaFrom(new Date()) } : {}),
+          ...(free ? { slaDueAt: slaDueAt("RECEIVED") } : {}),
         },
       });
       await tx.orderStatusEvent.create({ data: { orderId: order.id, fromStatus: order.status, toStatus: to, actorId: user.id } });
     });
     if (free) await this.events.emitAsync(EVENTS.orderStatusChanged, { orderId: order.id, from: order.status, to, actorId: user.id, customerNote: null } satisfies OrderStatusChangedEvent);
     return this.view(user, id);
-  }
-
-  /** First human review is promised within working hours; Phase 6 refines SLAs per status. */
-  private slaFrom(start: Date) {
-    return new Date(start.getTime() + 24 * 3_600_000);
   }
 
   /** Payment confirmed → RECEIVED. Idempotent: only a PENDING_PAYMENT order moves, once. */
@@ -289,7 +284,7 @@ export class OrdersService {
       return;
     }
     const moved = await this.prisma.$transaction(async (tx) => {
-      const { count } = await tx.order.updateMany({ where: { id: order.id, status: "PENDING_PAYMENT" }, data: { status: "RECEIVED", slaDueAt: this.slaFrom(new Date()) } });
+      const { count } = await tx.order.updateMany({ where: { id: order.id, status: "PENDING_PAYMENT" }, data: { status: "RECEIVED", slaDueAt: slaDueAt("RECEIVED") } });
       if (count === 0) return false;
       await tx.orderStatusEvent.create({ data: { orderId: order.id, fromStatus: "PENDING_PAYMENT", toStatus: "RECEIVED", actorId: null } });
       if (order.couponId) {
@@ -325,7 +320,7 @@ export class OrdersService {
     if (order.status !== "ACTION_REQUIRED") throw Problem.conflict("order_not_waiting", "This order isn't waiting for you.");
     if (!documentsComplete(order, { excludeRejected: true })) throw new Problem(HttpStatus.UNPROCESSABLE_ENTITY, "documents_incomplete", "Replace every rejected document first.");
     const moved = await this.prisma.$transaction(async (tx) => {
-      const { count } = await tx.order.updateMany({ where: { id: order.id, status: "ACTION_REQUIRED" }, data: { status: "DOCUMENTS_REVIEW", slaDueAt: this.slaFrom(new Date()) } });
+      const { count } = await tx.order.updateMany({ where: { id: order.id, status: "ACTION_REQUIRED" }, data: { status: "DOCUMENTS_REVIEW", slaDueAt: slaDueAt("DOCUMENTS_REVIEW") } });
       if (count === 0) return false;
       await tx.orderStatusEvent.create({ data: { orderId: order.id, fromStatus: "ACTION_REQUIRED", toStatus: "DOCUMENTS_REVIEW", actorId: user.id } });
       return true;

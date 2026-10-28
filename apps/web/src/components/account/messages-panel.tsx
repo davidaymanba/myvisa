@@ -31,7 +31,11 @@ async function uploadAttachment(file: File): Promise<string> {
   throw new Error("scan timeout");
 }
 
-export function MessagesPanel({ orderId, className }: { orderId: string; className?: string }) {
+/**
+ * The order conversation. Customers see it in their account; staff see the same thread from the other side
+ * (`viewer="STAFF"`, no attachments: files from the team go through the order itself).
+ */
+export function MessagesPanel({ orderId, className, viewer = "CUSTOMER" }: { orderId: string; className?: string; viewer?: "CUSTOMER" | "STAFF" }) {
   const t = useTranslations("account.messages");
   const format = useFormatter();
   const locale = useLocale();
@@ -52,8 +56,8 @@ export function MessagesPanel({ orderId, className }: { orderId: string; classNa
 
   // Reading the thread marks staff replies read; refresh the badges.
   useEffect(() => {
-    if (messages.dataUpdatedAt) void queryClient.invalidateQueries({ queryKey: accountKeys.summary });
-  }, [messages.dataUpdatedAt, queryClient]);
+    if (messages.dataUpdatedAt && viewer === "CUSTOMER") void queryClient.invalidateQueries({ queryKey: accountKeys.summary });
+  }, [messages.dataUpdatedAt, queryClient, viewer]);
 
   const send = useMutation({
     mutationFn: async (input: { body: string; file: File | null }) => {
@@ -92,7 +96,7 @@ export function MessagesPanel({ orderId, className }: { orderId: string; classNa
         </span>
         <div className="relative flex flex-col">
           <h2 className="font-display text-title">{t("title")}</h2>
-          <p className="text-caption text-foreground/70">{t("hours")}</p>
+          <p className="text-caption text-foreground/70">{viewer === "STAFF" ? t("staffLead") : t("hours")}</p>
         </div>
       </header>
 
@@ -110,12 +114,12 @@ export function MessagesPanel({ orderId, className }: { orderId: string; classNa
           <div className="m-auto flex max-w-xs flex-col items-center gap-2 text-center">
             <MessagesSquare className="size-8 text-secondary-text" aria-hidden />
             <p className="font-medium">{t("empty")}</p>
-            <p className="text-body-sm text-muted-foreground">{t("emptyLead")}</p>
+            <p className="text-body-sm text-muted-foreground">{viewer === "STAFF" ? t("staffEmpty") : t("emptyLead")}</p>
           </div>
         ) : (
           <AnimatePresence initial={false}>
             {messages.data!.map((m, i, arr) => {
-              const mine = m.sender === "CUSTOMER";
+              const mine = viewer === "STAFF" ? m.sender === "STAFF" : m.sender === "CUSTOMER";
               const newDay = i === 0 || dayKey(arr[i - 1]!.createdAt) !== dayKey(m.createdAt);
               return (
                 <motion.div key={m.id} layout initial={{ opacity: 0, y: 12, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 380, damping: 30 }} className="flex flex-col">
@@ -126,7 +130,7 @@ export function MessagesPanel({ orderId, className }: { orderId: string; classNa
                     {!mine && (
                       <span className="flex items-center gap-1 px-1 text-caption font-medium text-secondary-text">
                         {m.sender === "SYSTEM" && <Sparkles className="size-3" aria-hidden />}
-                        {m.sender === "SYSTEM" ? t("system") : (m.senderName ?? t("team"))}
+                        {m.sender === "SYSTEM" ? t("system") : m.sender === "CUSTOMER" ? t("customer") : (m.senderName ?? t("team"))}
                       </span>
                     )}
                     <div className={cn("whitespace-pre-wrap break-words px-4 py-2.5 text-body-sm shadow-xs", mine ? "rounded-2xl rounded-ee-md bg-foreground text-background" : "rounded-2xl rounded-ss-md border border-border bg-surface")} dir="auto">
@@ -171,7 +175,7 @@ export function MessagesPanel({ orderId, className }: { orderId: string; classNa
           )}
         </AnimatePresence>
         <div className="flex items-end gap-2">
-          <button type="button" onClick={() => fileInput.current?.click()} className="grid size-11 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label={t("attach")}>
+          <button type="button" hidden={viewer === "STAFF"} onClick={() => fileInput.current?.click()} className="grid size-11 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label={t("attach")}>
             <Paperclip className="size-5" aria-hidden />
           </button>
           <input ref={fileInput} type="file" accept={ATTACH_MIME.join(",")} className="hidden" onChange={(e) => (setFile(e.target.files?.[0] ?? null), (e.target.value = ""))} />

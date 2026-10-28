@@ -116,15 +116,15 @@ export default function DestinationPage({ params }: { params: Promise<{ locale: 
               <span className="eyebrow text-gold-300">{tc(`regions.${d.region}`)}</span>
             </FadeIn>
             <SplitReveal as="h1" trigger="mount" delay={0.4} className="text-[clamp(3.5rem,1.5rem+9vw,10rem)] font-medium leading-[0.92] tracking-[-0.04em] [:lang(ar)_&]:leading-[1.15]" lines={[{ text: d.name[l] }]} />
-            <FadeIn delay={0.8}>
+            <FadeIn lcp y={14}>
               <p className="max-w-xl text-body-lg text-foreground/80">{d.tagline[l]}</p>
             </FadeIn>
           </div>
-          <FadeIn delay={1} className="hidden justify-end lg:col-span-4 lg:flex">
+          <FadeIn delay={0.6} className="hidden justify-end lg:col-span-4 lg:flex">
             <PassportStamp animated shape="circle" tone="gold" top={d.name.en.toUpperCase()} bottom="MYVISA" code={d.iata} caption="FROM RUH" rotate={-12} className="w-44 [&_svg]:mix-blend-normal [&_svg]:[color:var(--color-gold-300)]" />
           </FadeIn>
         </div>
-        <FadeIn delay={1.1}>
+        <FadeIn delay={0.5}>
           <dl className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 backdrop-blur-xl sm:grid-cols-4">
             <HeroFact icon={<Banknote />} label={tc("from")} value={from ? (from.total === 0 ? tc("free") : formatMoney(from.total, l)) : "—"} />
             <HeroFact icon={<Plane className="flip-rtl" />} label={t("flight")} value={t("hours", { count: d.flightHours })} />

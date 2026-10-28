@@ -16,9 +16,10 @@ export function DestinationHero({ image, alt, children }: { image: string; alt: 
   return (
     <section ref={ref} data-surface="dark" className="dark relative isolate flex min-h-[100svh] flex-col justify-end overflow-hidden bg-ink-950 text-foreground">
       <motion.div className="absolute inset-0 -z-20" style={{ scale, y }}>
-        <motion.div className="size-full" initial={reduce ? false : { scale: 1.2, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}>
+        {/* CSS entrance: the photo starts revealing with the first paint, not after hydration. */}
+        <div className="size-full animate-hero-in">
           <Image src={image} alt={alt} fill priority sizes="100vw" className="object-cover" />
-        </motion.div>
+        </div>
       </motion.div>
       <div aria-hidden className="absolute inset-0 -z-10 bg-gradient-to-t from-ink-950 via-ink-950/55 to-ink-950/30" />
       <motion.div style={{ opacity: fade }} className="container-page pb-10 pt-40 sm:pb-14">

@@ -29,7 +29,8 @@ myvisa/
 │   │       │       ├── account/          ✅ P5  login (OTP, passport-cover opening) · (dashboard)/ overview,
 │   │       │       │                            orders, orders/[id] (timeline, action panel, chat), travelers,
 │   │       │       │                            documents (vault), notifications, invoices, invoices/[id], profile
-│   │       │       └── admin/            ⏳ P6  dashboard, orders (kanban/table), documents review,
+│   │       │       └── admin/            ✅ P6  orders (kanban/table) + order desk, customers, coupons, team & roles,
+│   │       │                                    reports, invoices/[id] · earlier plan:  dashboard, orders (kanban/table), documents review,
 │   │       │                                    catalog (countries, services, price rules, requirements),
 │   │       │                                    coupons, customers, content, staff & roles, audit log
 │   │       │                                    ✅ P3 already: login (OTP), overview, destinations + visa/price/
@@ -61,7 +62,8 @@ myvisa/
 │       │                                        contact, consents, audit, revalidate, health · ✅ P4: orders,
 │       │                                        documents (presign + scan worker), payments, notifications · ✅ P5:
 │       │                                        account (profile, summary, family), vault, messages, tracking,
-│       │                                        invoices (ZATCA) · ⏳ the rest
+│       │                                        invoices (ZATCA) · ✅ P6: admin-orders (queue, desk, state machine,
+│       │                                        review, refunds), coupons, customers, staff, reports
 │       ├── src/
 │       │   ├── main.ts                   helmet, CORS, cookie-parser, global ValidationPipe, versioning
 │       │   ├── app.module.ts
@@ -95,7 +97,9 @@ myvisa/
 │
 ├── docs/                                 ✅ ARCHITECTURE.md · DESIGN.md
 ├── ✅ docker-compose.yml                  postgres 17, redis 7, mailpit, S3 (SeaweedFS), clamav (profile "scan")
-├── ⏳ .github/workflows/ci.yml            P7  lint · typecheck · test · build · playwright
+├── ✅ .github/workflows/ci.yml            P7  lint · typecheck · tests · audit · build · API e2e · Playwright · Docker
+├── ✅ e2e/ + playwright.config.ts          P7  browser tests
+├── ✅ render.yaml · apps/*/Dockerfile      P7  deployment (see docs/DEPLOYMENT.md)
 └── turbo.json · pnpm-workspace.yaml · tsconfig.base.json
 ```
 
@@ -119,5 +123,9 @@ myvisa/
 | **Direct-to-storage uploads** | Files never pass through the API: it signs a PUT bound to the exact type and size, verifies the object, then a queue worker hashes and virus-scans it. Keeps the API small and uploads fast on phones. |
 | **Domain events between orders, payments and notifications** | Payments only report what happened; orders own the state machine; notifications react to status changes. Each can change without touching the others. |
 | **Invoices issued under a Postgres advisory lock** | ZATCA's invoice counter (ICV) and previous-invoice-hash chain must never fork, even with several API instances; one lock serialises issuing and the order's invoice is idempotent. |
+| **The state machine is shared and enforced twice** | `staffTransitions()` drives the admin buttons and drag targets *and* the API's refusal; the UI can't offer a move the API would reject. Optimistic `updateMany … where status = from` makes two agents racing on one order safe. |
+| **CSS for first-paint motion, JS for the rest** | Entrances above the fold are CSS keyframes, so content paints before hydration (LCP); scroll-driven and interactive motion stays in Framer Motion. |
+| **CSP without third-party scripts** | No analytics/tag managers in the page; inline scripts are Next's own bootstrap. Uploads may only go to the configured storage origin. |
+| **Refunds produce credit notes, never edits** | ZATCA forbids changing an issued invoice: each refund gets a 381 credit note on the same hash chain, referencing the original. |
 | **Public tracking never confirms an order exists** | A wrong number/phone pair answers exactly like a right one but sends no SMS; a successful check returns a read-only token scoped to one order, with no names, documents or prices. |
 | **Webhook bodies are hints, not truth** | Every payment webhook is stored once and then confirmed by asking the gateway's API, so a forged or replayed webhook can't mark an order paid. |

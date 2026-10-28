@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../zod";
 import { saudiMobileSchema } from "../phone";
 import type { Permission, UserRole } from "../rbac";
 

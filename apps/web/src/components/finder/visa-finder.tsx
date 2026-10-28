@@ -32,31 +32,45 @@ export interface FinderDestination {
 const PURPOSES: TravelPurpose[] = ["TOURISM", "BUSINESS", "STUDY", "MEDICAL", "FAMILY_VISIT"];
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-export function VisaFinder({
-  destinations,
-  nationalities,
-  whatsapp,
-}: {
+interface FinderProps {
   destinations: FinderDestination[];
   nationalities: { iso2: string; name: string }[];
   whatsapp: string;
-}) {
+}
+
+/** Reads the shareable query (?to=&purpose=&as=&nat=). Needs a Suspense boundary (useSearchParams). */
+export function VisaFinder(props: FinderProps) {
+  return <FinderView {...props} params={useSearchParams()} />;
+}
+
+/**
+ * The same finder with default choices, server-rendered as the Suspense fallback: the page ships complete
+ * HTML of the same height, so nothing jumps when the query-aware version takes over.
+ */
+export function VisaFinderFallback(props: FinderProps) {
+  return <FinderView {...props} params={null} />;
+}
+
+function FinderView({ destinations, nationalities, whatsapp, params }: FinderProps & { params: Pick<URLSearchParams, "get"> | null }) {
   const t = useTranslations("finder");
   const tc = useTranslations("common");
-  const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const [applicant, setApplicant] = useState<ApplicantType>(params.get("as") === "RESIDENT" ? "RESIDENT" : "SAUDI_CITIZEN");
-  const [nationality, setNationality] = useState(params.get("nat") ?? nationalities[0]?.iso2 ?? "EG");
-  const [slug, setSlug] = useState(destinations.some((d) => d.slug === params.get("to")) ? (params.get("to") as string) : (destinations[0]?.slug ?? ""));
-  const [purpose, setPurpose] = useState<TravelPurpose>(PURPOSES.includes(params.get("purpose") as TravelPurpose) ? (params.get("purpose") as TravelPurpose) : "TOURISM");
+  const q = (key: string) => params?.get(key) ?? null;
+  const [applicant, setApplicant] = useState<ApplicantType>(q("as") === "RESIDENT" ? "RESIDENT" : "SAUDI_CITIZEN");
+  const [nationality, setNationality] = useState(q("nat") ?? nationalities[0]?.iso2 ?? "EG");
+  const [slug, setSlug] = useState(destinations.some((d) => d.slug === q("to")) ? (q("to") as string) : (destinations[0]?.slug ?? ""));
+  const [purpose, setPurpose] = useState<TravelPurpose>(PURPOSES.includes(q("purpose") as TravelPurpose) ? (q("purpose") as TravelPurpose) : "TOURISM");
 
   // Keep the URL shareable without adding history entries.
+  // A boolean, not `params` itself: every replace below yields a new params object and would loop.
+  const live = params !== null;
   useEffect(() => {
-    const q = new URLSearchParams({ to: slug, purpose, as: applicant, ...(applicant === "RESIDENT" ? { nat: nationality } : {}) });
-    router.replace(`${pathname}?${q.toString()}`, { scroll: false });
-  }, [slug, purpose, applicant, nationality, router, pathname]);
+    if (!live) return;
+    const query = new URLSearchParams({ to: slug, purpose, as: applicant, ...(applicant === "RESIDENT" ? { nat: nationality } : {}) });
+    router.replace(`${pathname}?${query.toString()}`, { scroll: false });
+  }, [slug, purpose, applicant, nationality, router, pathname, live]);
 
   const destination = destinations.find((d) => d.slug === slug) ?? destinations[0];
   const result = useMemo(() => {

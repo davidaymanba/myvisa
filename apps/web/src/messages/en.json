@@ -438,7 +438,8 @@
     "menu": "Open menu",
     "close": "Close menu",
     "track": "Track order",
-    "account": "My account"
+    "account": "My account",
+    "blog": "Travel guides"
   },
   "footer": {
     "label": "Site links",
@@ -843,5 +844,34 @@
     "title": "This page travelled without a visa.",
     "body": "We couldn't find what you were looking for, but your journey isn't over.",
     "cta": "Back to home"
+  },
+  "blog": {
+    "meta": {
+      "title": "Travel guides",
+      "description": "Practical guides to visa files, photos, timing and documents — from the myvisa team."
+    },
+    "eyebrow": "Travel guides",
+    "title": "Read before you apply",
+    "lead": "Short, practical guides from our team that save you rejected appointments and missing documents.",
+    "featured": "Latest",
+    "all": "All",
+    "minutes": "{count, plural, one {# min read} other {# min read}}",
+    "read": "Read the guide",
+    "empty": "No guides yet",
+    "emptyLead": "We're writing our first guides now.",
+    "back": "All guides",
+    "by": "By {name}",
+    "published": "Published {date}",
+    "toc": "In this guide",
+    "share": "Share this guide",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "related": "More guides",
+    "cta": {
+      "title": "Ready to apply?",
+      "lead": "We check your file page by page before the appointment, and you follow every step from your phone.",
+      "button": "Start your application"
+    },
+    "arabicOnly": "This guide is only available in Arabic for now."
   }
 }

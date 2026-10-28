@@ -2,7 +2,7 @@
 
 import type { Permission } from "@myvisa/shared";
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowUpRight, Globe2, Inbox, LayoutGrid, Languages, LogOut, Menu, MessageSquareQuote, ScrollText, Settings2, X } from "lucide-react";
+import { ArrowUpRight, BarChart3, Globe2, Newspaper, Inbox, LayoutGrid, Languages, LogOut, Menu, MessageSquareQuote, ScrollText, Settings2, ShieldCheck, Ticket, TicketPercent, Users, X } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState, type ReactNode } from "react";
@@ -15,12 +15,18 @@ import { api, setUnauthorizedHandler } from "@/lib/api/client";
 import { cn } from "@/lib/utils";
 import { useMe } from "./use-admin";
 
-const NAV: { href: string; key: "overview" | "destinations" | "testimonials" | "settings" | "inbox" | "audit"; icon: typeof LayoutGrid; permission: Permission }[] = [
+const NAV: { href: string; key: "overview" | "orders" | "customers" | "reports" | "destinations" | "coupons" | "blog" | "testimonials" | "settings" | "inbox" | "staff" | "audit"; icon: typeof LayoutGrid; permission: Permission }[] = [
   { href: "/admin", key: "overview", icon: LayoutGrid, permission: "admin:access" },
+  { href: "/admin/orders", key: "orders", icon: Ticket, permission: "orders:read" },
+  { href: "/admin/customers", key: "customers", icon: Users, permission: "orders:read" },
+  { href: "/admin/reports", key: "reports", icon: BarChart3, permission: "finance:read" },
   { href: "/admin/destinations", key: "destinations", icon: Globe2, permission: "catalog:read" },
+  { href: "/admin/coupons", key: "coupons", icon: TicketPercent, permission: "catalog:read" },
   { href: "/admin/inbox", key: "inbox", icon: Inbox, permission: "contact:read" },
+  { href: "/admin/blog", key: "blog", icon: Newspaper, permission: "content:read" },
   { href: "/admin/testimonials", key: "testimonials", icon: MessageSquareQuote, permission: "content:read" },
   { href: "/admin/settings", key: "settings", icon: Settings2, permission: "settings:read" },
+  { href: "/admin/staff", key: "staff", icon: ShieldCheck, permission: "staff:manage" },
   { href: "/admin/audit", key: "audit", icon: ScrollText, permission: "audit:read" },
 ];
 
@@ -108,7 +114,7 @@ function Rail({ pathname, onClose }: { pathname: string; onClose?: () => void })
         )}
       </div>
 
-      <nav aria-label={t("nav.label")} className="mt-10 flex flex-col gap-1">
+      <nav aria-label={t("nav.label")} data-lenis-prevent className="-mx-1 mt-8 flex min-h-0 flex-col gap-0.5 overflow-y-auto px-1">
         {NAV.filter((item) => !me || can(item.permission)).map((item, i) => {
           const active = isActive(pathname, item.href);
           const Icon = item.icon;
@@ -117,7 +123,7 @@ function Rail({ pathname, onClose }: { pathname: string; onClose?: () => void })
               <Link
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={cn("group relative flex items-center gap-3 rounded-2xl px-4 py-3 text-body-sm font-medium transition-colors", active ? "text-ink-950" : "text-foreground/70 hover:text-foreground")}
+                className={cn("group relative flex items-center gap-3 rounded-2xl px-4 py-2.5 text-body-sm font-medium transition-colors", active ? "text-ink-950" : "text-foreground/70 hover:text-foreground")}
               >
                 {active && (
                   <motion.span
@@ -137,7 +143,7 @@ function Rail({ pathname, onClose }: { pathname: string; onClose?: () => void })
         })}
       </nav>
 
-      <div className="mt-auto flex flex-col gap-4">
+      <div className="mt-auto flex flex-col gap-4 pt-4">
         <div className="flex items-center justify-between gap-2">
           <ThemeToggle className="border-white/10 bg-white/5" />
           <Link href={pathname} locale={locale === "ar" ? "en" : "ar"} className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 text-caption font-medium hover:bg-white/10">

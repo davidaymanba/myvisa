@@ -123,6 +123,11 @@
   --animate-drift: drift 18s ease-in-out infinite alternate;
   --animate-spin-slow: spin 24s linear infinite;
   --animate-scroll-cue: scroll-cue 2.2s var(--ease-in-out-quart) infinite;
+  /* First-paint entrances: pure CSS so they start before hydration and never hold back LCP. */
+  --animate-rise-in: rise-in 0.9s var(--ease-out-expo) both;
+  --animate-word-in: word-in 1s var(--ease-out-expo) both;
+  --animate-hero-in: hero-in 1.8s var(--ease-out-expo) both;
+  --animate-settle-in: settle-in 0.9s var(--ease-out-expo) both;
 
   @keyframes shimmer {
     from {
@@ -197,6 +202,28 @@
   @keyframes sheet-out {
     to {
       transform: translateY(100%);
+    }
+  }
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--rise-y, 20px));
+    }
+  }
+  /* Visible from the first frame (it's the page's main content): only the movement is animated. */
+  @keyframes hero-in {
+    from {
+      transform: scale(1.2);
+    }
+  }
+  @keyframes settle-in {
+    from {
+      transform: translateY(var(--rise-y, 12px));
+    }
+  }
+  @keyframes word-in {
+    from {
+      transform: translateY(110%) rotate(4deg);
     }
   }
   @keyframes pop-in {
@@ -484,6 +511,7 @@
     ::before,
     ::after {
       animation-duration: 0.01ms !important;
+      animation-delay: 0s !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;

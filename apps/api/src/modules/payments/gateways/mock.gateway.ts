@@ -1,4 +1,5 @@
-import { type CheckoutRequest, type GatewayPayment, type PaymentGateway, WebhookRejected } from "./gateway";
+import { randomUUID } from "node:crypto";
+import { type CheckoutRequest, type GatewayPayment, type GatewayRefund, type PaymentGateway, WebhookRejected } from "./gateway";
 
 /**
  * Local fake gateway for development and tests. The "hosted page" is our own /pay/mock screen;
@@ -17,6 +18,10 @@ export class MockGateway implements PaymentGateway {
   /** The mock keeps no remote state; outcomes are supplied by completeMock. */
   async fetch(): Promise<GatewayPayment> {
     return { status: "PENDING", amountHalalas: 0, method: null, cardLast4: null, failureReason: null, raw: null };
+  }
+
+  async refund(): Promise<GatewayRefund> {
+    return { providerRefundId: `mock_rf_${randomUUID()}`, status: "COMPLETED", raw: null };
   }
 
   parseWebhook(): never {

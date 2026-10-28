@@ -58,3 +58,40 @@ export const ORDER_TRANSITIONS: Record<OrderStatus, readonly OrderStatus[]> = {
 export function canTransition(from: OrderStatus, to: OrderStatus): boolean {
   return ORDER_TRANSITIONS[from].includes(to);
 }
+
+/** Moves only the customer or the payment flow may make; staff never set these by hand. */
+const NOT_BY_STAFF: readonly OrderStatus[] = ["DRAFT", "PENDING_PAYMENT", "RECEIVED"];
+
+/** Where staff may take an order next. Paid orders only (drafts belong to the customer). */
+export function staffTransitions(from: OrderStatus): OrderStatus[] {
+  if (from === "DRAFT" || from === "PENDING_PAYMENT") return [];
+  return ORDER_TRANSITIONS[from].filter((s) => !NOT_BY_STAFF.includes(s));
+}
+
+/** Statuses where the next move is ours (the SLA clock runs); elsewhere we wait on the customer, a centre or an embassy. */
+export const OUR_TURN: readonly OrderStatus[] = ["RECEIVED", "DOCUMENTS_REVIEW", "DECISION_ISSUED"];
+
+/**
+ * SLA per status, in hours from entering it. `null` = no SLA (the customer, the visa centre or the
+ * embassy holds the order). RECEIVED honours the "first review within 2 working hours" promise with slack.
+ */
+export const SLA_HOURS: Record<OrderStatus, number | null> = {
+  DRAFT: null,
+  PENDING_PAYMENT: null,
+  RECEIVED: 4,
+  DOCUMENTS_REVIEW: 24,
+  ACTION_REQUIRED: null,
+  APPOINTMENT_BOOKED: null,
+  SUBMITTED_TO_EMBASSY: null,
+  DECISION_ISSUED: 72,
+  DELIVERED: null,
+  CANCELLED: null,
+  REFUNDED: null,
+};
+
+export function slaDueAt(status: OrderStatus, from: Date = new Date()): Date | null {
+  const hours = SLA_HOURS[status];
+  return hours === null ? null : new Date(from.getTime() + hours * 3_600_000);
+}
+
+export const CLOSED_STATUSES: readonly OrderStatus[] = ["DELIVERED", "CANCELLED", "REFUNDED"];

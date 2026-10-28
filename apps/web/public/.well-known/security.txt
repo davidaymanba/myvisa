@@ -1,0 +1,6 @@
+# PLACEHOLDER contact — confirm the mailbox exists before launch (see docs/HANDOFF.md).
+Contact: mailto:security@myvisa.sa
+Expires: 2027-10-28T00:00:00.000Z
+Preferred-Languages: ar, en
+Canonical: https://myvisa.sa/.well-known/security.txt
+Policy: https://myvisa.sa/privacy

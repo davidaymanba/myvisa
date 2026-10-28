@@ -30,7 +30,7 @@ function ZatcaQr({ payload, className }: { payload: string; className?: string }
 }
 
 /** The tax invoice as a printable document (print → "Save as PDF"), bilingual like Saudi invoices. */
-export function InvoiceDocument({ id }: { id: string }) {
+export function InvoiceDocument({ id, backHref = "/account/invoices" }: { id: string; backHref?: string }) {
   const t = useTranslations("account.invoices");
   const tb = useTranslations("ui.boardingPass");
   const locale = useLocale() as AppLocale;
@@ -57,7 +57,7 @@ export function InvoiceDocument({ id }: { id: string }) {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
-        <Link href="/account/invoices" className="group inline-flex items-center gap-2 text-body-sm font-medium text-muted-foreground hover:text-foreground">
+        <Link href={backHref} className="group inline-flex items-center gap-2 text-body-sm font-medium text-muted-foreground hover:text-foreground">
           <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1" aria-hidden />
           {t("back")}
         </Link>
@@ -86,9 +86,9 @@ export function InvoiceDocument({ id }: { id: string }) {
           <div className="flex flex-col gap-4">
             <Logo className="text-ink-900" />
             <div>
-              <h1 className="font-display text-display-md leading-tight">{t("taxInvoice")}</h1>
+              <h1 className="font-display text-display-md leading-tight">{inv.type === "CREDIT_NOTE" ? t("creditNote") : t("taxInvoice")}</h1>
               <p className="text-body-sm text-ink-500" lang={locale === "ar" ? "en" : "ar"}>
-                {t("taxInvoiceEn")}
+                {inv.type === "CREDIT_NOTE" ? t("creditNoteEn") : t("taxInvoiceEn")}
               </p>
             </div>
             <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-body-sm">

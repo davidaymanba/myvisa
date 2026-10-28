@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
-import { TrackExperience } from "@/components/track/track-experience";
+import { TrackExperience, TrackExperienceFallback } from "@/components/track/track-experience";
 import type { Locale } from "@/i18n/routing";
 import { pageMetadata } from "@/lib/seo";
 
@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function TrackPage({ params }: { params: Promise<{ locale: string }> }) {
   setRequestLocale((await params).locale as Locale);
   return (
-    <Suspense>
+    <Suspense fallback={<TrackExperienceFallback />}>
       <TrackExperience />
     </Suspense>
   );

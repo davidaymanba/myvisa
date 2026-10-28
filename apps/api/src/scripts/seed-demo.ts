@@ -44,6 +44,14 @@ async function main() {
   const notifications = app.get(NotificationsService);
 
   try {
+    // Demo promotions (idempotent by code): one live, one fixed-amount, one already over.
+    const coupons = [
+      { code: "WINTER25", kind: "PERCENT" as const, value: 25, maxDiscountHalalas: 15_000, endsAt: new Date(Date.now() + 60 * DAY), maxRedemptions: 200 },
+      { code: "WELCOME50", kind: "FIXED" as const, value: 5_000, maxDiscountHalalas: null, endsAt: null, maxRedemptions: null },
+      { code: "SUMMER10", kind: "PERCENT" as const, value: 10, maxDiscountHalalas: null, endsAt: ago(20), maxRedemptions: 500 },
+    ];
+    for (const c of coupons) await prisma.coupon.upsert({ where: { code: c.code }, create: { ...c, startsAt: ago(90) }, update: {} });
+
     const existing = await prisma.user.findUnique({ where: { phone: CUSTOMER_PHONE }, include: { _count: { select: { orders: true } } } });
     if (existing && existing._count.orders > 0) {
       console.log(`demo customer ${CUSTOMER_PHONE} already has orders — nothing to do`);

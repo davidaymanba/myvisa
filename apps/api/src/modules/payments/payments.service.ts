@@ -205,4 +205,36 @@ export class PaymentsService {
     const { count } = await this.prisma.payment.updateMany({ where: { id: paymentId, status: "INITIATED" }, data: { ...common, status: "FAILED", failureReason: reason.slice(0, 300) } });
     if (count === 1) await this.events.emitAsync(EVENTS.paymentFailed, { orderId, paymentId, reason } satisfies PaymentFailedEvent);
   }
+
+  /**
+   * Refunds part or all of a captured payment through the gateway that took it. The Refund row is written
+   * first (REQUESTED) so a gateway failure is still on record; the payment becomes PARTIALLY_REFUNDED or
+   * REFUNDED once the gateway accepts. Credit notes and the order status are the caller's business.
+   */
+  async refund(input: { orderId: string; paymentId: string; amountHalalas: number; reason: string; issuedById: string }) {
+    const payment = await this.prisma.payment.findFirst({ where: { id: input.paymentId, orderId: input.orderId }, include: { refunds: true } });
+    if (!payment) throw Problem.notFound("Payment");
+    if (payment.status !== "PAID" && payment.status !== "PARTIALLY_REFUNDED") throw Problem.conflict("payment_not_refundable", "Only captured payments can be refunded.");
+    if (payment.provider !== this.provider || !payment.providerPaymentId) throw Problem.conflict("provider_mismatch", "This payment was taken by another gateway; refund it from that gateway's dashboard.");
+    const already = payment.refunds.filter((r) => r.status === "COMPLETED" || r.status === "PROCESSING").reduce((sum, r) => sum + r.amountHalalas, 0);
+    const refundable = payment.amountHalalas - already;
+    if (input.amountHalalas > refundable) throw new Problem(HttpStatus.UNPROCESSABLE_ENTITY, "refund_exceeds", "That's more than what is left to refund.", { refundableHalalas: refundable });
+
+    const refund = await this.prisma.refund.create({ data: { paymentId: payment.id, amountHalalas: input.amountHalalas, reason: input.reason, issuedById: input.issuedById } });
+    try {
+      const result = await this.gateway.refund(payment.providerPaymentId, input.amountHalalas, input.reason);
+      const done = await this.prisma.refund.update({ where: { id: refund.id }, data: { status: result.status, providerRefundId: result.providerRefundId } });
+      if (result.status !== "FAILED") {
+        const full = already + input.amountHalalas >= payment.amountHalalas;
+        await this.prisma.payment.update({ where: { id: payment.id }, data: { status: full ? "REFUNDED" : "PARTIALLY_REFUNDED" } });
+        return { refund: done, fullyRefunded: full };
+      }
+      throw new Error("gateway refused the refund");
+    } catch (err) {
+      this.logger.error(`refund ${refund.id} via ${this.gateway.name} failed: ${(err as Error).message}`);
+      Sentry.captureException(err);
+      await this.prisma.refund.update({ where: { id: refund.id }, data: { status: "FAILED" } });
+      throw new Problem(HttpStatus.BAD_GATEWAY, "refund_failed", "The gateway didn't accept the refund. Nothing was refunded.");
+    }
+  }
 }

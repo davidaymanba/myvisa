@@ -101,3 +101,31 @@ describe("gateway factory", () => {
     expect(createPaymentGateway(envSchema.parse({ ...base, PAYMENT_PROVIDER: "tap", TAP_SECRET_KEY: "sk" }))).toBeInstanceOf(TapGateway);
   });
 });
+
+describe("refunds", () => {
+  it("Moyasar refunds the invoice's captured payment, in halalas", async () => {
+    const calls: [string, RequestInit | undefined][] = [];
+    const fetchImpl = vi.fn(async (u: string | URL | Request, init?: RequestInit) => {
+      calls.push([String(u), init]);
+      return String(u).endsWith("/invoices/inv_1") ? json({ id: "inv_1", status: "paid", amount: 71_385, payments: [{ id: "pay_9", status: "paid", amount: 71_385 }] }) : json({ id: "pay_9", status: "refunded", amount: 71_385 });
+    });
+    const gw = new MoyasarGateway("sk", "w", fetchImpl as typeof fetch);
+    const refund = await gw.refund("inv_1", 30_000);
+    expect(calls[1]![0]).toBe("https://api.moyasar.com/v1/payments/pay_9/refund");
+    expect(JSON.parse(String(calls[1]![1]!.body))).toEqual({ amount: 30_000 });
+    expect(refund.status).toBe("COMPLETED");
+  });
+
+  it("Tap refunds the charge in SAR and reports pending refunds as processing", async () => {
+    const fetchImpl = vi.fn(async (_u: string | URL | Request, _i?: RequestInit) => json({ id: "re_1", status: "PENDING" }));
+    const refund = await new TapGateway("sk", fetchImpl as typeof fetch).refund("chg_1", 30_050, "customer cancelled");
+    const [url, init] = fetchImpl.mock.calls[0]!;
+    expect(String(url)).toBe("https://api.tap.company/v2/refunds");
+    expect(JSON.parse(String(init!.body))).toMatchObject({ charge_id: "chg_1", amount: 300.5, currency: "SAR" });
+    expect(refund).toMatchObject({ providerRefundId: "re_1", status: "PROCESSING" });
+  });
+
+  it("the mock settles immediately", async () => {
+    expect((await new MockGateway("http://x").refund()).status).toBe("COMPLETED");
+  });
+});

@@ -79,4 +79,12 @@ describe("stampInvoice", () => {
     expect(xml).toContain("<cbc:ID>ICV</cbc:ID><cbc:UUID>1</cbc:UUID>");
     expect(xml).toContain('name="0200000"');
   });
+
+  it("credit notes are type 381, reference the original invoice and carry the reason", () => {
+    const xml = invoiceBodyXml({ ...invoice, kind: "credit", number: "CN-2026-000002", billingReference: "INV-2026-000001", reason: "Cancelled before review" });
+    expect(xml).toContain(">381</cbc:InvoiceTypeCode>");
+    expect(xml).toContain("<cac:BillingReference><cac:InvoiceDocumentReference><cbc:ID>INV-2026-000001</cbc:ID>");
+    expect(xml).toContain("<cbc:InstructionNote>Cancelled before review</cbc:InstructionNote>");
+    expect(invoiceBodyXml(invoice)).not.toContain("BillingReference");
+  });
 });

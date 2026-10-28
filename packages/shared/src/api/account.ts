@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../zod";
 import type { OrderStatus } from "../order-status";
 import { saudiMobileSchema } from "../phone";
 import { APPLICANT_TYPES, DOCUMENT_TYPES } from "./catalog-admin";

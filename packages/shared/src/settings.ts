@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "./zod";
 import type { L10n } from "./catalog/types";
 import { LEGAL_DOCUMENTS } from "./content/legal";
 

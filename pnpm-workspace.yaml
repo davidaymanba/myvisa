@@ -19,3 +19,7 @@ minimumReleaseAgeExclude:
   - motion-dom@14.7.1
   - motion-utils@14.7.0
   - motion@14.7.1
+overrides:
+  # Security: patched releases of transitive dependencies (see `pnpm audit --prod`).
+  postcss@<8.5.23: ^8.5.23
+  multer@<2.5.0: ^2.5.0

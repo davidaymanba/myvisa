@@ -25,7 +25,8 @@ export function pageMetadata({ locale, path, title, description, image }: { loca
       siteName: locale === "ar" ? "ماي فيزا" : "myvisa",
       locale: locale === "ar" ? "ar_SA" : "en_SA",
       type: "website",
-      ...(image ? { images: [{ url: image, width: 1200, height: 630 }] } : {}),
+      // A page's own openGraph replaces the parent's, so the default share card has to be named here.
+      images: [image ? { url: image, width: 1200, height: 630 } : { url: `${localePath(locale, "/") === "/" ? "" : localePath(locale, "/")}/opengraph-image`, width: 1200, height: 630, alt: "myvisa" }],
     },
     twitter: { card: "summary_large_image", title, description },
   };

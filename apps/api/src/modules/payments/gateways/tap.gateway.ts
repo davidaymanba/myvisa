@@ -1,7 +1,7 @@
 import { createHmac } from "node:crypto";
 import type { PaymentMethod } from "@myvisa/db";
 import { safeEqual } from "../../../common/crypto";
-import { type CheckoutRequest, type GatewayPayment, type PaymentGateway, WebhookRejected } from "./gateway";
+import { type CheckoutRequest, type GatewayPayment, type GatewayRefund, type PaymentGateway, WebhookRejected } from "./gateway";
 
 interface TapCharge {
   id: string;
@@ -86,6 +86,14 @@ export class TapGateway implements PaymentGateway {
       failureReason: status === "FAILED" ? (charge.response?.message ?? charge.status) : null,
       raw: charge,
     };
+  }
+
+  async refund(chargeId: string, amountHalalas: number, reason: string): Promise<GatewayRefund> {
+    const refund = await this.call<{ id: string; status: string }>("/refunds", {
+      method: "POST",
+      body: JSON.stringify({ charge_id: chargeId, amount: toSar(amountHalalas), currency: "SAR", reason: reason.slice(0, 255) }),
+    });
+    return { providerRefundId: refund.id, status: refund.status === "REFUNDED" ? "COMPLETED" : refund.status === "FAILED" ? "FAILED" : "PROCESSING", raw: refund };
   }
 
   /** Verifies the `hashstring` header; the charge is still re-fetched before anything is trusted. */

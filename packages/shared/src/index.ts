@@ -10,3 +10,4 @@ export * from "./content/legal-types";
 export * from "./content/legal";
 export * from "./api";
 export * from "./content/testimonials";
+export * from "./content/blog";

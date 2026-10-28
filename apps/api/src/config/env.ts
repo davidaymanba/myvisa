@@ -60,6 +60,8 @@ export const envSchema = z
       .refine((v) => Buffer.from(v, "base64").length === 32, "must be 32 bytes, base64 (openssl rand -base64 32)"),
     BLIND_INDEX_KEY: z.string().min(16),
     QUEUE_WORKERS: bool.default(true),
+    /** Serve Swagger UI at /docs. Defaults to on, except in production (the API map is not public). */
+    API_DOCS: bool.optional(),
 
     PAYMENT_PROVIDER: z.enum(["mock", "moyasar", "tap"]).default("mock"),
     MOYASAR_SECRET_KEY: optionalString,
@@ -91,6 +93,7 @@ export const envSchema = z
       if (env.PAYMENT_PROVIDER === "mock") ctx.addIssue({ code: "custom", path: ["PAYMENT_PROVIDER"], message: "the mock gateway is for development only" });
       if (env.S3_AUTO_CREATE_BUCKET) ctx.addIssue({ code: "custom", path: ["S3_AUTO_CREATE_BUCKET"], message: "create buckets with infrastructure, not at runtime" });
       if (!env.CLAMAV_HOST) ctx.addIssue({ code: "custom", path: ["CLAMAV_HOST"], message: "uploads must be virus-scanned in production" });
+      if (!env.WEB_URL.startsWith("https://")) ctx.addIssue({ code: "custom", path: ["WEB_URL"], message: "the site must be served over https in production" });
     }
     if (env.SMS_PROVIDER === "unifonic" && !env.UNIFONIC_APP_SID) ctx.addIssue({ code: "custom", path: ["UNIFONIC_APP_SID"], message: "required for unifonic" });
     if (env.PAYMENT_PROVIDER === "moyasar" && (!env.MOYASAR_SECRET_KEY || !env.MOYASAR_WEBHOOK_SECRET)) ctx.addIssue({ code: "custom", path: ["MOYASAR_SECRET_KEY"], message: "secret key and webhook secret required for moyasar" });

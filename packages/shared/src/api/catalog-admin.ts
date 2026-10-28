@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../zod";
 import { cuidSchema, halalasSchema, nullableText, requiredText, slugSchema, sortOrderSchema } from "./fields";
 
 /**

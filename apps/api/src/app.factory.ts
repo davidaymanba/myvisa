@@ -14,6 +14,8 @@ import type { Env } from "./config/env";
 export async function createApp(env: Env, options: { logger?: boolean } = {}): Promise<NestExpressApplication> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule.forRoot(env), { bufferLogs: true, logger: options.logger === false ? false : undefined });
   if (options.logger !== false) app.useLogger(app.get(Logger));
+  // Long-form content (travel guides) can exceed Express's 100 KB default; files never come through here.
+  app.useBodyParser("json", { limit: "512kb" });
 
   app.set("trust proxy", env.TRUST_PROXY ? 1 : false);
   app.disable("x-powered-by");
@@ -33,6 +35,13 @@ export async function createApp(env: Env, options: { logger?: boolean } = {}): P
   app.setGlobalPrefix("api", { exclude: [{ path: "health", method: RequestMethod.GET }, { path: "health/live", method: RequestMethod.GET }] });
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: "1" });
 
+  if (env.API_DOCS ?? env.NODE_ENV !== "production") setupDocs(app);
+
+  app.enableShutdownHooks();
+  return app;
+}
+
+function setupDocs(app: NestExpressApplication) {
   const config = new DocumentBuilder()
     .setTitle("myvisa API")
     .setDescription(
@@ -50,7 +59,4 @@ export async function createApp(env: Env, options: { logger?: boolean } = {}): P
     jsonDocumentUrl: "docs/openapi.json",
     swaggerOptions: { persistAuthorization: true, withCredentials: true },
   });
-
-  app.enableShutdownHooks();
-  return app;
 }

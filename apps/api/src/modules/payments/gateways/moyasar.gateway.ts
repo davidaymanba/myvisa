@@ -1,6 +1,6 @@
 import type { PaymentMethod } from "@myvisa/db";
 import { safeEqual } from "../../../common/crypto";
-import { type CheckoutRequest, type GatewayPayment, type PaymentGateway, WebhookRejected, lastFour } from "./gateway";
+import { type CheckoutRequest, type GatewayPayment, type GatewayRefund, type PaymentGateway, WebhookRejected, lastFour } from "./gateway";
 
 interface MoyasarSource {
   type?: string;
@@ -77,6 +77,15 @@ export class MoyasarGateway implements PaymentGateway {
     });
     if (!invoice.url) throw new Error("moyasar: invoice has no checkout url");
     return { providerPaymentId: invoice.id, redirectUrl: invoice.url };
+  }
+
+  /** Our payment id is the invoice; the refund goes to the invoice's captured payment. */
+  async refund(invoiceId: string, amountHalalas: number): Promise<GatewayRefund> {
+    const invoice = await this.call<MoyasarInvoice>(`/invoices/${encodeURIComponent(invoiceId)}`);
+    const paid = invoice.payments?.find((p) => p.status === "paid" || p.status === "refunded");
+    if (!paid) throw new Error("moyasar: invoice has no captured payment");
+    const payment = await this.call<MoyasarPayment>(`/payments/${encodeURIComponent(paid.id)}/refund`, { method: "POST", body: JSON.stringify({ amount: amountHalalas }) });
+    return { providerRefundId: `${payment.id}:${amountHalalas}:${Date.now()}`, status: payment.status === "refunded" ? "COMPLETED" : "PROCESSING", raw: payment };
   }
 
   async fetch(invoiceId: string): Promise<GatewayPayment> {

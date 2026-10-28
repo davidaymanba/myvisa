@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense, use } from "react";
 import type { VisaTabData } from "@/components/destinations/visa-tabs";
-import { VisaFinder, type FinderDestination } from "@/components/finder/visa-finder";
+import { VisaFinder, VisaFinderFallback, type FinderDestination } from "@/components/finder/visa-finder";
 import { PageHero } from "@/components/layout/page-hero";
 import type { Locale } from "@/i18n/routing";
 import { getCatalog, getSettings } from "@/lib/api/server";
@@ -53,12 +53,14 @@ export default function VisaFinderPage({ params }: { params: Promise<{ locale: L
     ),
   }));
 
+  const finderProps = { destinations, nationalities: catalog.nationalities.map((n) => ({ iso2: n.iso2, name: n.name[l] })), whatsapp: support.whatsapp };
+
   return (
     <>
       <PageHero eyebrow={t("eyebrow")} title={t("title")} accent={t("titleAccent")} crumbs={[{ label: t("eyebrow") }]} />
       <section className="container-page py-14 sm:py-20">
-        <Suspense>
-          <VisaFinder destinations={destinations} nationalities={catalog.nationalities.map((n) => ({ iso2: n.iso2, name: n.name[l] }))} whatsapp={support.whatsapp} />
+        <Suspense fallback={<VisaFinderFallback {...finderProps} />}>
+          <VisaFinder {...finderProps} />
         </Suspense>
       </section>
     </>

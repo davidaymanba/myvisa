@@ -1,0 +1,70 @@
+# Render Blueprint for the API side (the website deploys to Vercel — see docs/DEPLOYMENT.md).
+# Secrets marked `sync: false` are entered in the Render dashboard; never commit them.
+databases:
+  - name: myvisa-db
+    plan: basic-1gb
+    region: frankfurt
+    postgresMajorVersion: "17"
+
+services:
+  - type: keyvalue
+    name: myvisa-redis
+    plan: starter
+    region: frankfurt
+    ipAllowList: []
+    maxmemoryPolicy: noeviction # BullMQ needs every job to survive
+
+  - type: web
+    name: myvisa-api
+    runtime: docker
+    region: frankfurt
+    plan: standard
+    dockerfilePath: apps/api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    preDeployCommand: cd db && node_modules/.bin/prisma migrate deploy
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PORT
+        value: "4100"
+      - key: TRUST_PROXY
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase: { name: myvisa-db, property: connectionString }
+      - key: REDIS_URL
+        fromService: { type: keyvalue, name: myvisa-redis, property: connectionString }
+      - { key: WEB_URL, value: "https://myvisa.sa" }
+      - { key: API_PUBLIC_URL, value: "https://api.myvisa.sa" }
+      - { key: CORS_ORIGINS, value: "https://myvisa.sa,https://www.myvisa.sa" }
+      - { key: COOKIE_DOMAIN, value: .myvisa.sa }
+      - { key: JWT_ACCESS_SECRET, sync: false }
+      - { key: HASH_PEPPER, sync: false }
+      - { key: DATA_ENCRYPTION_KEY, sync: false }
+      - { key: BLIND_INDEX_KEY, sync: false }
+      - { key: REVALIDATE_SECRET, sync: false }
+      - { key: WEB_REVALIDATE_URL, value: "https://myvisa.sa/api/revalidate" }
+      - { key: SMS_PROVIDER, sync: false }
+      - { key: UNIFONIC_APP_SID, sync: false }
+      - { key: TAQNYAT_BEARER_TOKEN, sync: false }
+      - { key: PAYMENT_PROVIDER, sync: false }
+      - { key: MOYASAR_SECRET_KEY, sync: false }
+      - { key: MOYASAR_WEBHOOK_SECRET, sync: false }
+      - { key: TAP_SECRET_KEY, sync: false }
+      - { key: EMAIL_PROVIDER, value: resend }
+      - { key: RESEND_API_KEY, sync: false }
+      - { key: WHATSAPP_PROVIDER, sync: false }
+      - { key: WHATSAPP_TOKEN, sync: false }
+      - { key: WHATSAPP_PHONE_NUMBER_ID, sync: false }
+      - { key: S3_ENDPOINT, sync: false }
+      - { key: S3_REGION, value: auto }
+      - { key: S3_BUCKET, value: myvisa-documents }
+      - { key: S3_ACCESS_KEY, sync: false }
+      - { key: S3_SECRET_KEY, sync: false }
+      - { key: S3_FORCE_PATH_STYLE, value: "false" }
+      - { key: S3_SSE, value: none } # R2 encrypts at rest; use AES256 on AWS S3
+      - { key: S3_AUTO_CREATE_BUCKET, value: "false" }
+      - { key: CLAMAV_HOST, sync: false }
+      - { key: ZATCA_EGS_PRIVATE_KEY, sync: false }
+      - { key: ZATCA_EGS_CERTIFICATE, sync: false }
+      - { key: SENTRY_DSN, sync: false }

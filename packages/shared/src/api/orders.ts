@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../zod";
 import type { PriceBreakdown } from "../pricing";
 import type { OrderStatus } from "../order-status";
 import { APPLICANT_TYPES, DOCUMENT_TYPES, TRAVEL_PURPOSES, VISA_KINDS } from "./catalog-admin";

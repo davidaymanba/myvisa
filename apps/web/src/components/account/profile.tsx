@@ -99,7 +99,7 @@ function ProfileEditor({ profile }: { profile: ProfileView }) {
             render={({ field }) => (
               <div role="radiogroup" className="flex w-fit gap-1 rounded-full bg-muted p-1">
                 {(["ar", "en"] as const).map((l) => (
-                  <button key={l} type="button" role="radio" aria-checked={field.value === l} onClick={() => field.onChange(l)} className={cn("relative rounded-full px-5 py-2 text-body-sm font-medium transition-colors", field.value === l ? "text-background" : "text-muted-foreground")}>
+                  <button key={l} type="button" role="radio" aria-checked={field.value === l} onClick={() => field.onChange(l)} className={cn("relative isolate rounded-full px-5 py-2 text-body-sm font-medium transition-colors", field.value === l ? "text-background" : "text-muted-foreground")}>
                     {field.value === l && <motion.span layoutId="profile-locale" className="absolute inset-0 -z-10 rounded-full bg-foreground" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
                     <span lang={l}>{t(`locales.${l}`)}</span>
                   </button>

@@ -79,7 +79,6 @@ export class InvoicesService implements OnModuleInit {
     if (order.invoices[0]) return order.invoices[0].id;
     if (order.totalHalalas <= 0) return null;
 
-    const company = await this.settings.get("company");
     const n = order.travelers.length;
     const where = order.destination ? { ar: order.destination.nameAr, en: order.destination.nameEn } : { ar: order.service.nameAr, en: order.service.nameEn };
     const serviceNet = order.serviceFeesHalalas - order.discountHalalas;
@@ -108,34 +107,82 @@ export class InvoicesService implements OnModuleInit {
     const subtotal = order.governmentFeesHalalas + serviceNet;
     const lead = order.travelers[0];
     const buyerName = order.customer.fullNameAr ?? order.customer.fullNameEn ?? (lead ? `${lead.givenNameEn} ${lead.surnameEn}` : null);
-    const postalCode = /\b\d{5}\b/.exec(company.address.en)?.[0] ?? "00000";
+    return this.chain({ orderId: order.id, type: "SIMPLIFIED", prefix: "INV", buyerName, lines, subtotal, vat: order.vatHalalas, total: order.totalHalalas, logLabel: order.number });
+  }
 
+  /**
+   * Credit note for a refund (ZATCA type 381, linked to the order's invoice). The refunded amount is spread
+   * over the original lines in proportion, so VAT is credited only on the part that carried VAT.
+   */
+  async issueCreditNote(refundId: string, reason: string): Promise<string | null> {
+    const refund = await this.prisma.refund.findUnique({ where: { id: refundId }, include: { creditNote: { select: { id: true } }, payment: { select: { orderId: true } } } });
+    if (!refund) return null;
+    if (refund.creditNote) return refund.creditNote.id;
+    const original = await this.prisma.invoice.findFirst({ where: { orderId: refund.payment.orderId, type: "SIMPLIFIED" }, include: { lines: { orderBy: { id: "asc" } } } });
+    if (!original) return null;
+    const amount = Math.min(refund.amountHalalas, original.totalHalalas);
+    let remaining = amount;
+    const lines = original.lines.map((l, i, all) => {
+      const gross = i === all.length - 1 ? remaining : Math.round((l.lineTotalHalalas * amount) / original.totalHalalas);
+      remaining -= gross;
+      const vat = l.vatCategory === "S" ? Math.round((gross * l.vatRate) / (1 + l.vatRate)) : 0;
+      return { descriptionAr: l.descriptionAr, descriptionEn: l.descriptionEn, quantity: 1, unitPriceHalalas: gross - vat, vatCategory: l.vatCategory, vatRate: l.vatRate, vatHalalas: vat, lineTotalHalalas: gross };
+    });
+    const vat = lines.reduce((s, l) => s + l.vatHalalas, 0);
+    return this.chain({ orderId: refund.payment.orderId, type: "CREDIT_NOTE", prefix: "CN", buyerName: original.buyerName, lines, subtotal: amount - vat, vat, total: amount, refundId: refund.id, billingReference: original.number, reason, logLabel: original.number });
+  }
+
+  /** Issues the next document in the hash chain (invoice or credit note), serialised by the advisory lock. */
+  private async chain(doc: {
+    orderId: string;
+    type: "SIMPLIFIED" | "CREDIT_NOTE";
+    prefix: "INV" | "CN";
+    buyerName: string | null;
+    lines: { descriptionAr: string; descriptionEn: string; quantity: number; unitPriceHalalas: number; vatCategory: "S" | "O"; vatRate: number; vatHalalas: number; lineTotalHalalas: number }[];
+    subtotal: number;
+    vat: number;
+    total: number;
+    refundId?: string;
+    billingReference?: string;
+    reason?: string;
+    logLabel: string;
+  }): Promise<string> {
+    const company = await this.settings.get("company");
+    const postalCode = /\b\d{5}\b/.exec(company.address.en)?.[0] ?? "00000";
     return this.prisma.$transaction(
       async (tx) => {
         await tx.$queryRaw`SELECT 1 AS locked FROM (SELECT pg_advisory_xact_lock(${CHAIN_LOCK})) AS l`;
-        const again = await tx.invoice.findFirst({ where: { orderId: order.id, type: "SIMPLIFIED" }, select: { id: true } });
-        if (again) return again.id;
+        if (doc.type === "SIMPLIFIED") {
+          const again = await tx.invoice.findFirst({ where: { orderId: doc.orderId, type: "SIMPLIFIED" }, select: { id: true } });
+          if (again) return again.id;
+        } else if (doc.refundId) {
+          const again = await tx.invoice.findUnique({ where: { refundId: doc.refundId }, select: { id: true } });
+          if (again) return again.id;
+        }
 
         const last = await tx.invoice.findFirst({ orderBy: { icv: "desc" }, select: { icv: true, invoiceHash: true } });
         const icv = (last?.icv ?? 0) + 1;
         const issuedAt = new Date();
-        const number = `INV-${issuedAt.getUTCFullYear()}-${String(icv).padStart(6, "0")}`;
+        const number = `${doc.prefix}-${issuedAt.getUTCFullYear()}-${String(icv).padStart(6, "0")}`;
         const uuid = randomUUID();
         const previousInvoiceHash = last?.invoiceHash ?? INITIAL_PIH;
 
         const stamped = stampInvoice(
           {
+            kind: doc.type === "CREDIT_NOTE" ? "credit" : "invoice",
+            billingReference: doc.billingReference,
+            reason: doc.reason,
             number,
             uuid,
             icv,
             issuedAt,
             previousInvoiceHash,
             seller: { name: company.legalName.ar, vatNumber: company.vatNumber, crNumber: company.crNumber, street: company.address.en.split(",")[0] ?? company.address.en, city: "Riyadh", postalCode },
-            buyerName,
-            lines: lines.map((l, i) => ({ id: i + 1, name: l.descriptionAr, quantity: l.quantity, unitPriceHalalas: l.unitPriceHalalas, vatCategory: l.vatCategory, vatRate: l.vatRate, vatHalalas: l.vatHalalas, lineExtensionHalalas: l.unitPriceHalalas * l.quantity })),
-            subtotalHalalas: subtotal,
-            vatHalalas: order.vatHalalas,
-            totalHalalas: order.totalHalalas,
+            buyerName: doc.buyerName,
+            lines: doc.lines.map((l, i) => ({ id: i + 1, name: l.descriptionAr, quantity: l.quantity, unitPriceHalalas: l.unitPriceHalalas, vatCategory: l.vatCategory, vatRate: l.vatRate, vatHalalas: l.vatHalalas, lineExtensionHalalas: l.unitPriceHalalas * l.quantity })),
+            subtotalHalalas: doc.subtotal,
+            vatHalalas: doc.vat,
+            totalHalalas: doc.total,
           },
           this.keys,
         );
@@ -147,21 +194,22 @@ export class InvoicesService implements OnModuleInit {
             number,
             uuid,
             icv,
-            type: "SIMPLIFIED",
-            orderId: order.id,
+            type: doc.type,
+            orderId: doc.orderId,
+            refundId: doc.refundId ?? null,
             issuedAt,
-            buyerName,
-            subtotalHalalas: subtotal,
-            vatHalalas: order.vatHalalas,
-            totalHalalas: order.totalHalalas,
+            buyerName: doc.buyerName,
+            subtotalHalalas: doc.subtotal,
+            vatHalalas: doc.vat,
+            totalHalalas: doc.total,
             previousInvoiceHash,
             invoiceHash: stamped.invoiceHash,
             qrPayload: stamped.qrPayload,
             xmlStorageKey,
-            lines: { create: lines },
+            lines: { create: doc.lines },
           },
         });
-        this.logger.log(`issued ${number} for order ${order.number}`);
+        this.logger.log(`issued ${number} for ${doc.logLabel}`);
         return invoice.id;
       },
       { timeout: 20_000 },

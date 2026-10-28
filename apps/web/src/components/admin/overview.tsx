@@ -1,6 +1,6 @@
 "use client";
 
-import type { AuditLogRecord, ContactMessageRecord, CountryListItem, Paginated } from "@myvisa/shared";
+import type { AuditLogRecord, ContactMessageRecord, CountryListItem, Paginated, ReportOverview } from "@myvisa/shared";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight, Globe2, Inbox, Stamp, TriangleAlert, Users } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -14,6 +14,7 @@ import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/api/client";
 import { AuditFeed } from "./audit-feed";
 import { AdminPageHeader } from "./page-header";
+import { LiveStrip } from "./reports/reports-view";
 import { adminKeys, useCan, useMe } from "./use-admin";
 
 export function AdminOverview() {
@@ -24,6 +25,7 @@ export function AdminOverview() {
   const countries = useQuery({ queryKey: adminKeys.countries, queryFn: () => api<CountryListItem[]>("/admin/countries") });
   const nationalityList = useQuery({ queryKey: adminKeys.nationalities, queryFn: () => api<CountryListItem[]>("/admin/countries?kind=nationality") });
   const audit = useQuery({ queryKey: [...adminKeys.audit, "recent"], queryFn: () => api<Paginated<AuditLogRecord>>("/admin/audit-logs?take=6"), enabled: can("audit:read") });
+  const ops = useQuery({ queryKey: ["admin", "reports", "live"], queryFn: () => api<ReportOverview["live"]>("/admin/reports/live"), enabled: can("orders:read"), refetchInterval: 60_000 });
   const inbox = useQuery({ queryKey: adminKeys.inbox("open"), queryFn: () => api<Paginated<ContactMessageRecord>>("/admin/contact-messages?status=open&take=100"), enabled: can("contact:read") });
 
   const live = countries.data?.filter((c) => c.isDestination && c.isActive) ?? [];
@@ -33,6 +35,8 @@ export function AdminOverview() {
   return (
     <>
       <AdminPageHeader index="01" eyebrow={t("eyebrow")} title={t("greeting")} accent={name || " "} lead={t("lead")} />
+
+      {can("orders:read") && <div className="mb-8">{ops.data ? <LiveStrip live={ops.data} /> : <Skeleton className="h-44 rounded-[1.75rem]" />}</div>}
 
       <Stagger className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4" stagger={0.08}>
         <Stat icon={<Globe2 />} label={t("destinations")} value={countries.data ? live.length : undefined} tone="gold" />

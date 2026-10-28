@@ -21,11 +21,23 @@ if (res.status() === 429) {
 res = await ctx.request.post(`${base}/api/v1/auth/otp/verify`, { data: { phone, code } });
 if (!res.ok()) throw new Error(`login failed: ${res.status()} ${await res.text()}`);
 
-const pages = process.env.PAGES?.split(",") ?? ["/admin", "/admin/destinations", "/admin/settings", "/admin/inbox", "/admin/audit"];
+// ":order" / ":customer" in a path become the most urgent open order and its customer.
+const queue = await (await ctx.request.get(`${base}/api/v1/admin/orders?view=all&pageSize=50`)).json().catch(() => ({ items: [] }));
+const urgent = queue.items?.find((o) => o.status === "ACTION_REQUIRED") ?? queue.items?.find((o) => o.status === "APPOINTMENT_BOOKED") ?? queue.items?.[0];
+const pages = (process.env.PAGES?.split(",") ?? ["/admin", "/admin/orders", "/admin/orders/:order", "/admin/customers", "/admin/customers/:customer", "/admin/reports", "/admin/coupons", "/admin/staff", "/admin/destinations", "/admin/settings", "/admin/inbox", "/admin/audit"]).map((path) =>
+  path.replace(":order", urgent?.id ?? "none").replace(":customer", urgent?.customer.id ?? "none"),
+);
 for (const path of pages) {
   await p.goto(`${base}${path}`, { waitUntil: "networkidle" });
-  await p.waitForTimeout(2200);
-  const name = path.replace(/^\/(en\/)?admin\/?/, "").replace(/\//g, "_") || "overview";
+  await p.waitForTimeout(1500);
+  // Let scroll-triggered sections reveal themselves before a full-page capture.
+  if (process.env.FULL === "1") {
+    const h = await p.evaluate(() => document.documentElement.scrollHeight);
+    for (let y = 0; y < h; y += 500) await p.evaluate((top) => window.scrollTo(0, top), y).then(() => p.waitForTimeout(100));
+    await p.evaluate(() => window.scrollTo(0, 0));
+  }
+  await p.waitForTimeout(900);
+  const name = path.replace(/^\/(en\/)?admin\/?/, "").replace(/\//g, "_").replace(/_[a-z0-9]{20,}$/, "_detail") || "overview";
   await p.screenshot({ path: `${out}/${scheme}-${width}-${name}.png`, fullPage: process.env.FULL === "1" });
   const overflow = await p.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   console.log(path, "overflow", overflow);

@@ -36,10 +36,19 @@ export interface WebhookNotice {
   type: string;
 }
 
+export interface GatewayRefund {
+  providerRefundId: string;
+  /** Some gateways settle refunds asynchronously. */
+  status: "COMPLETED" | "PROCESSING" | "FAILED";
+  raw: unknown;
+}
+
 export interface PaymentGateway {
   readonly name: "mock" | "moyasar" | "tap";
   createCheckout(req: CheckoutRequest): Promise<CheckoutResult>;
   fetch(providerPaymentId: string): Promise<GatewayPayment>;
+  /** Refunds part or all of a captured payment back to the original method. */
+  refund(providerPaymentId: string, amountHalalas: number, reason: string): Promise<GatewayRefund>;
   /** Verifies authenticity and extracts the event. Throws `WebhookRejected` when it can't be trusted. */
   parseWebhook(headers: Record<string, string | string[] | undefined>, body: unknown): WebhookNotice;
 }

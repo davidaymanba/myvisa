@@ -5,6 +5,7 @@ import {
   NATIONALITIES,
   PLACEHOLDER_TESTIMONIALS,
   SERVICE_CATEGORIES,
+  STARTER_POSTS,
   SETTING_KEYS,
   type Destination,
   type InsurancePlanId,
@@ -238,6 +239,26 @@ export async function seedDatabase(prisma: PrismaClient, options: SeedOptions = 
             isPlaceholder: true,
             status: "PUBLISHED",
             sortOrder: i,
+          })),
+        });
+      }
+
+      // Starter travel guides, only into an empty blog (never over the team's own posts).
+      if ((await tx.blogPost.count()) === 0) {
+        await tx.blogPost.createMany({
+          data: STARTER_POSTS.map((p) => ({
+            slug: p.slug,
+            titleAr: p.title.ar,
+            titleEn: p.title.en,
+            excerptAr: p.excerpt.ar,
+            excerptEn: p.excerpt.en,
+            bodyAr: p.body.ar,
+            bodyEn: p.body.en,
+            coverUrl: p.coverImageId,
+            coverAlt: p.coverAlt,
+            tags: p.tags,
+            status: "PUBLISHED",
+            publishedAt: new Date(p.publishedAt),
           })),
         });
       }

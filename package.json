@@ -24,11 +24,13 @@
     "test:e2e": "pnpm --filter @myvisa/api test:e2e",
     "admin-tour": "node scripts/admin-tour.mjs",
     "apply-tour": "node scripts/apply-tour.mjs",
-    "account-tour": "node scripts/account-tour.mjs"
+    "account-tour": "node scripts/account-tour.mjs",
+    "test:browser": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "playwright-core": "^1.64.1",
     "turbo": "^2.11.10",
-    "typescript": "^5.9.3",
-    "playwright-core": "^1.64.1"
+    "typescript": "^5.9.3"
   }
 }

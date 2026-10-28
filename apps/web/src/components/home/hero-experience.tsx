@@ -15,7 +15,7 @@ import { ArrowUpRight, CalendarClock, DoorOpen, Hourglass, Info, Sparkles } from
 import { AnimatePresence, motion } from "motion/react";
 import dynamic from "next/dynamic";
 import { useLocale, useTranslations } from "next-intl";
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { Flag } from "@/components/brand/flag";
 import { PassportStamp } from "@/components/brand/passport-stamp";
 import type { GlobePoint } from "@/components/globe/globe";
@@ -109,12 +109,8 @@ export function HeroExperience({
         <div className="flex max-w-2xl flex-col lg:max-w-[50%]">
           {intro}
       {/* Smart search */}
-      <motion.div
-        className="relative mt-10 w-full"
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: EASE, delay: 0.9 }}
-      >
+      {/* CSS entrance (not motion): it must show with the first paint, before hydration. */}
+      <div className="relative mt-10 w-full animate-rise-in" style={{ animationDelay: "0.6s", "--rise-y": "40px" } as CSSProperties}>
         <div className="rounded-[1.75rem] border border-white/10 bg-white/[0.06] p-2 shadow-[0_30px_80px_-20px_rgb(0_0_0/0.6)] backdrop-blur-2xl">
           <div className="rounded-[1.4rem] border border-white/[0.06] bg-ink-950/50 p-5 sm:p-6">
             <p className="eyebrow mb-4 flex items-center gap-2 text-muted-foreground">
@@ -257,7 +253,7 @@ export function HeroExperience({
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
           {outro}
         </div>
       </div>

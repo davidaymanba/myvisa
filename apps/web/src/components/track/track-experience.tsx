@@ -60,12 +60,21 @@ function loadSession(): TrackSession | null {
   }
 }
 
+/** Prefills the order number from ?order=. Needs a Suspense boundary (useSearchParams). */
 export function TrackExperience() {
+  return <TrackView initialOrder={useSearchParams().get("order")} />;
+}
+
+/** Server-rendered fallback: the same page without the query, so nothing shifts when it hydrates. */
+export function TrackExperienceFallback() {
+  return <TrackView initialOrder={null} />;
+}
+
+function TrackView({ initialOrder }: { initialOrder: string | null }) {
   const t = useTranslations("track");
-  const params = useSearchParams();
   const [session, setSession] = useState<TrackSession | null>(null);
   const [step, setStep] = useState<"form" | "code" | "result">("form");
-  const [orderNumber, setOrderNumber] = useState(() => (params.get("order") ?? "").toUpperCase().slice(0, 14));
+  const [orderNumber, setOrderNumber] = useState(() => (initialOrder ?? "").toUpperCase().slice(0, 14));
 
   useEffect(() => {
     const saved = loadSession();

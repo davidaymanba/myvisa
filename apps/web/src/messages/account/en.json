@@ -189,7 +189,10 @@
     "seen": "Seen",
     "sent": "Sent",
     "failed": "Not sent. Try again.",
-    "hours": "We usually reply within 2 hours during working hours (9 am – 9 pm)."
+    "hours": "We usually reply within 2 hours during working hours (9 am – 9 pm).",
+    "customer": "Customer",
+    "staffLead": "Your replies reach the customer on WhatsApp and in their account.",
+    "staffEmpty": "The customer hasn't written yet. Start the conversation if you need something."
   },
   "travelers": {
     "eyebrow": "Family",
@@ -323,7 +326,9 @@
       "CLEARED": "Cleared",
       "REJECTED": "Rejected"
     },
-    "footer": "Government and embassy fees are collected on the customer's behalf and paid to the authorities as they are; they are outside the scope of VAT."
+    "footer": "Government and embassy fees are collected on the customer's behalf and paid to the authorities as they are; they are outside the scope of VAT.",
+    "creditNote": "Credit Note",
+    "creditNoteEn": "إشعار دائن"
   },
   "profile": {
     "eyebrow": "Profile",

@@ -3,7 +3,7 @@ import { ENV, type Env } from "../../config/env";
 import { RedisService } from "../../infra/redis.service";
 
 /** Cache tags shared with the web app (`fetch(..., { next: { tags } })`). */
-export type CacheTag = "catalog" | "settings" | "testimonials";
+export type CacheTag = "catalog" | "settings" | "testimonials" | "blog";
 
 /**
  * After an admin edit: drop the API's Redis copy and ask Next.js to revalidate pages tagged with it,

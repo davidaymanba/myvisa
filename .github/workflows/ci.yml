@@ -1,0 +1,129 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # The web build must not depend on a running API: it falls back to the bundled catalog.
+  NEXT_TELEMETRY_DISABLED: "1"
+  NEXT_PUBLIC_SITE_URL: http://localhost:3100
+
+jobs:
+  checks:
+    name: Lint · typecheck · unit tests · build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm db:validate
+      - run: pnpm test
+      - run: pnpm audit --prod --audit-level high
+      - name: Build
+        run: |
+          cp apps/web/.env.example apps/web/.env.local
+          pnpm build
+
+  api-e2e:
+    name: API e2e (Postgres · Redis · S3)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Environment
+        run: |
+          cp .env.example .env
+          sed -i "s|^DATA_ENCRYPTION_KEY=.*|DATA_ENCRYPTION_KEY=$(openssl rand -base64 32)|" .env
+      - name: Infrastructure (docker compose)
+        run: docker compose up -d --wait postgres redis s3
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:deploy
+      - run: pnpm test:e2e
+
+  browser-e2e:
+    name: Browser e2e (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Environment
+        run: |
+          cp .env.example .env
+          sed -i "s|^DATA_ENCRYPTION_KEY=.*|DATA_ENCRYPTION_KEY=$(openssl rand -base64 32)|" .env
+          cp apps/web/.env.example apps/web/.env.local
+          echo "NEXT_PUBLIC_SITE_URL=http://localhost:3100" >> apps/web/.env.local
+      - run: docker compose up -d --wait postgres redis mailpit s3
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:deploy && pnpm db:seed
+      - run: pnpm build
+      - name: Start API and web
+        run: |
+          nohup node apps/api/dist/main.js > api.log 2>&1 &
+          (cd apps/web && nohup npx next start -p 3100 > ../../web.log 2>&1 &)
+          npx --yes wait-on@8 -t 120000 http://localhost:4100/health http://localhost:3100
+      - run: npx playwright install --with-deps chromium
+      - run: pnpm test:browser
+      - name: Logs and report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright
+          path: |
+            playwright-report
+            test-results
+            api.log
+            web.log
+          retention-days: 7
+
+  docker:
+    name: Docker images build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: false
+          tags: myvisa-api:ci
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
+      - name: Web image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: false
+          tags: myvisa-web:ci
+          build-args: |
+            API_URL=http://api:4100
+            NEXT_PUBLIC_SITE_URL=https://myvisa.sa
+            UPLOAD_ORIGIN=https://storage.example.com
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web

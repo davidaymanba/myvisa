@@ -37,7 +37,34 @@ export function SplitReveal({
   let index = 0;
   const label = lines.map((l) => l.text).join(" ");
 
-  const play = trigger === "mount" ? { animate: "visible" } : { whileInView: "visible", viewport: { once: true, margin: "0px 0px -10% 0px" } };
+  const play = { whileInView: "visible", viewport: { once: true, margin: "0px 0px -10% 0px" } };
+
+  // Above the fold: CSS-only, so the headline animates from the first paint, before hydration.
+  if (trigger === "mount") {
+    return (
+      <Tag className={className} aria-label={label}>
+        <span className="block" aria-hidden>
+          {lines.map((line, li) => (
+            <span key={li} className={cn("block", line.className)}>
+              {line.text.split(" ").map((word, wi, arr) => {
+                const i = index++;
+                return (
+                  <Fragment key={wi}>
+                    <span className="inline-block overflow-hidden pb-[0.12em] align-top -mb-[0.12em]">
+                      <span className={cn("inline-block animate-word-in", line.wordClassName)} style={{ animationDelay: `${delay + i * stagger}s` }}>
+                        {word}
+                      </span>
+                    </span>
+                    {wi < arr.length - 1 && " "}
+                  </Fragment>
+                );
+              })}
+            </span>
+          ))}
+        </span>
+      </Tag>
+    );
+  }
 
   return (
     <Tag className={className} aria-label={label}>

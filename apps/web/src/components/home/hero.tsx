@@ -74,7 +74,7 @@ export function Hero() {
                 { text: t("line2"), className: "ltr:italic", wordClassName: "bg-gradient-to-l from-gold-200 via-gold-400 to-gold-300 bg-clip-text text-transparent pe-[0.06em]" },
               ]}
             />
-            <FadeIn delay={0.7} className="mt-6 max-w-xl">
+            <FadeIn lcp y={14} className="mt-6 max-w-xl">
               <p className="text-body-lg text-foreground/70">{t("lead")}</p>
             </FadeIn>
           </>

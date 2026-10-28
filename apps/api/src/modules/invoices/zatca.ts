@@ -25,6 +25,12 @@ export interface ZatcaLine {
 }
 
 export interface ZatcaInvoice {
+  /** "invoice" = simplified tax invoice (388); "credit" = credit note (381) against `billingReference`. */
+  kind?: "invoice" | "credit";
+  /** Original invoice number (credit notes only). */
+  billingReference?: string;
+  /** Why the credit note was issued (KSA-10, credit notes only). */
+  reason?: string;
   number: string;
   uuid: string;
   icv: number;
@@ -114,15 +120,16 @@ export function invoiceBodyXml(inv: ZatcaInvoice): string {
     `<cbc:UUID>${inv.uuid}</cbc:UUID>`,
     `<cbc:IssueDate>${date}</cbc:IssueDate>`,
     `<cbc:IssueTime>${time}</cbc:IssueTime>`,
-    // 388 = tax invoice; name code 0200000 = simplified (B2C).
-    `<cbc:InvoiceTypeCode name="0200000">388</cbc:InvoiceTypeCode>`,
+    // 388 = tax invoice, 381 = credit note; name code 0200000 = simplified (B2C).
+    `<cbc:InvoiceTypeCode name="0200000">${inv.kind === "credit" ? 381 : 388}</cbc:InvoiceTypeCode>`,
     `<cbc:DocumentCurrencyCode>SAR</cbc:DocumentCurrencyCode>`,
     `<cbc:TaxCurrencyCode>SAR</cbc:TaxCurrencyCode>`,
+    inv.kind === "credit" && inv.billingReference ? `<cac:BillingReference><cac:InvoiceDocumentReference><cbc:ID>${esc(inv.billingReference)}</cbc:ID></cac:InvoiceDocumentReference></cac:BillingReference>` : "",
     `<cac:AdditionalDocumentReference><cbc:ID>ICV</cbc:ID><cbc:UUID>${inv.icv}</cbc:UUID></cac:AdditionalDocumentReference>`,
     `<cac:AdditionalDocumentReference><cbc:ID>PIH</cbc:ID><cac:Attachment><cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain">${inv.previousInvoiceHash}</cbc:EmbeddedDocumentBinaryObject></cac:Attachment></cac:AdditionalDocumentReference>`,
     `<cac:AccountingSupplierParty><cac:Party><cac:PartyIdentification><cbc:ID schemeID="CRN">${esc(inv.seller.crNumber)}</cbc:ID></cac:PartyIdentification><cac:PostalAddress><cbc:StreetName>${esc(inv.seller.street)}</cbc:StreetName><cbc:CityName>${esc(inv.seller.city)}</cbc:CityName><cbc:PostalZone>${esc(inv.seller.postalCode)}</cbc:PostalZone><cac:Country><cbc:IdentificationCode>SA</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyTaxScheme><cbc:CompanyID>${esc(inv.seller.vatNumber)}</cbc:CompanyID><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme><cac:PartyLegalEntity><cbc:RegistrationName>${esc(inv.seller.name)}</cbc:RegistrationName></cac:PartyLegalEntity></cac:Party></cac:AccountingSupplierParty>`,
     `<cac:AccountingCustomerParty><cac:Party>${inv.buyerName ? `<cac:PartyLegalEntity><cbc:RegistrationName>${esc(inv.buyerName)}</cbc:RegistrationName></cac:PartyLegalEntity>` : ""}</cac:Party></cac:AccountingCustomerParty>`,
-    `<cac:PaymentMeans><cbc:PaymentMeansCode>48</cbc:PaymentMeansCode></cac:PaymentMeans>`,
+    `<cac:PaymentMeans><cbc:PaymentMeansCode>48</cbc:PaymentMeansCode>${inv.kind === "credit" && inv.reason ? `<cbc:InstructionNote>${esc(inv.reason)}</cbc:InstructionNote>` : ""}</cac:PaymentMeans>`,
     `<cac:TaxTotal><cbc:TaxAmount currencyID="SAR">${sar(inv.vatHalalas)}</cbc:TaxAmount></cac:TaxTotal>`,
     `<cac:TaxTotal><cbc:TaxAmount currencyID="SAR">${sar(inv.vatHalalas)}</cbc:TaxAmount>${vatGroups}</cac:TaxTotal>`,
     `<cac:LegalMonetaryTotal><cbc:LineExtensionAmount currencyID="SAR">${sar(inv.subtotalHalalas)}</cbc:LineExtensionAmount><cbc:TaxExclusiveAmount currencyID="SAR">${sar(inv.subtotalHalalas)}</cbc:TaxExclusiveAmount><cbc:TaxInclusiveAmount currencyID="SAR">${sar(inv.totalHalalas)}</cbc:TaxInclusiveAmount><cbc:PayableAmount currencyID="SAR">${sar(inv.totalHalalas)}</cbc:PayableAmount></cac:LegalMonetaryTotal>`,

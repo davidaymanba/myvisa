@@ -161,7 +161,7 @@ export function SiteHeader() {
             <div className="pointer-events-none absolute -start-20 bottom-0 size-80 rounded-full bg-gold-400/20 blur-3xl" aria-hidden />
             <nav aria-label={t("label")} className="relative">
               <ul className="flex flex-col gap-1">
-                {[{ href: "/", key: "home" as const }, ...NAV_LINKS, { href: "/track", key: "track" as const }, { href: "/account", key: "account" as const }].map((link, i) => (
+                {[{ href: "/", key: "home" as const }, ...NAV_LINKS, { href: "/blog", key: "blog" as const }, { href: "/track", key: "track" as const }, { href: "/account", key: "account" as const }].map((link, i) => (
                   <li key={link.href} className="overflow-hidden">
                     <motion.div
                       initial={{ y: "110%" }}

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "../zod";
 
 /** Optional free text: trims, and stores an empty string as null so "cleared in the form" means "no value". */
 export const nullableText = (max = 2000) =>
