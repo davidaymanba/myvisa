@@ -52,6 +52,8 @@ export const envSchema = z
     S3_FORCE_PATH_STYLE: bool.default(false),
     S3_SSE: z.enum(["none", "AES256"]).default("none"),
     S3_AUTO_CREATE_BUCKET: bool.default(false),
+    /** Demo hosts with no object storage: keep files on local disk, served by signed /api/v1/files links. */
+    STORAGE_DIR: optionalString,
     CLAMAV_HOST: optionalString,
     CLAMAV_PORT: z.coerce.number().int().default(3310),
 
@@ -92,6 +94,7 @@ export const envSchema = z
       if (env.BLIND_INDEX_KEY.includes("change-me")) ctx.addIssue({ code: "custom", path: ["BLIND_INDEX_KEY"], message: "set a real key" });
       if (env.PAYMENT_PROVIDER === "mock") ctx.addIssue({ code: "custom", path: ["PAYMENT_PROVIDER"], message: "the mock gateway is for development only" });
       if (env.S3_AUTO_CREATE_BUCKET) ctx.addIssue({ code: "custom", path: ["S3_AUTO_CREATE_BUCKET"], message: "create buckets with infrastructure, not at runtime" });
+      if (env.STORAGE_DIR) ctx.addIssue({ code: "custom", path: ["STORAGE_DIR"], message: "local-disk storage is for demo hosts only" });
       if (!env.CLAMAV_HOST) ctx.addIssue({ code: "custom", path: ["CLAMAV_HOST"], message: "uploads must be virus-scanned in production" });
       if (!env.WEB_URL.startsWith("https://")) ctx.addIssue({ code: "custom", path: ["WEB_URL"], message: "the site must be served over https in production" });
     }

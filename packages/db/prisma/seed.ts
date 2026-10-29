@@ -1,5 +1,5 @@
 import { normalizeSaudiMobile } from "@myvisa/shared";
-import { createPrismaClient } from "../src/index";
+import { closePglite, createPrismaClient, migratePglite, PGLITE_SCHEME } from "../src/index";
 import { seedDatabase } from "../src/seed/catalog";
 
 const url = process.env.DATABASE_URL;
@@ -8,6 +8,11 @@ if (!url) throw new Error("DATABASE_URL is not set (copy .env.example to .env at
 const adminPhone = process.env.SEED_ADMIN_PHONE ? normalizeSaudiMobile(process.env.SEED_ADMIN_PHONE) : null;
 if (process.env.SEED_ADMIN_PHONE && !adminPhone) throw new Error("SEED_ADMIN_PHONE must be a Saudi mobile, e.g. +966500000001");
 
+// Demo hosts run an embedded PGlite database: create its schema first (prisma migrate can't reach it).
+if (url.startsWith(PGLITE_SCHEME)) {
+  const applied = await migratePglite(url);
+  if (applied.length) console.log(`PGlite: applied ${applied.length} migrations.`);
+}
 const prisma = createPrismaClient(url);
 const started = Date.now();
 try {
@@ -21,4 +26,5 @@ try {
   }
 } finally {
   await prisma.$disconnect();
+  await closePglite(url);
 }

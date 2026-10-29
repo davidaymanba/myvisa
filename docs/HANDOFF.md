@@ -16,7 +16,7 @@ Read this first in a new session, then `visa-platform-prompt.md` (the brief), `d
 
 Green as of handoff: `pnpm typecheck`, `pnpm lint`, `pnpm test` (68 shared + 56 API unit), `pnpm test:e2e` (75 API e2e on a disposable DB + S3 bucket), `pnpm test:browser` (8 Playwright tests: apply → pay → account → track, admin desk, public/SEO/headers, desktop + mobile), `pnpm build`, `pnpm db:validate`. Browser walkthroughs: `pnpm apply-tour`, `pnpm admin-tour` (now every Phase 6 screen, `FULL=1` for full pages), and `pnpm account-tour` (dashboard + tracking; ar/en, 1440/390, light/dark — no page errors, no horizontal overflow).
 
-Git: the client created a repo with one commit ("add files") during Phase 3. Phase 3–7 work is **uncommitted**; ask before committing.
+Git: all work through the demo deploy is committed on `main`; ask before committing new work.
 
 ## Running it locally
 
@@ -99,7 +99,7 @@ Dashboard: http://localhost:3100/account with `0500000002` + `000000` (after `db
 - **Brand colours + logo:** palette remapped to the client's logo (turquoise `#34C1C3`, royal blue `#2B4FA1`); see `docs/DESIGN.md`. Logo PNGs in `apps/web/src/assets/brand/`.
 - **Phone/iPhone pass over every screen** (public, apply, pay, account, admin): layout-only fixes behind `max-sm:`/base classes, desktop unchanged. Main cause was grid/flex children without `min-w-0` blowing out and being silently cut by `overflow-x: clip`. Admin and account tables become stacked cards on phones; inputs are ≥16px on phones (iOS zoom); Arabic dates in server-rendered client components go through `calendarDate()` (Safari's ICU adds a comma → hydration error). Contact map works again (`frame-src https://www.openstreetmap.org`).
 - **Responsive audit:** `node scripts/responsive-audit.mjs <base> <out-dir> [chromium|webkit]` visits every screen at 320/375/390/430 in ar/en and reports content sticking out, clipped text, tiny tap targets, iOS-zoom inputs and page errors (`SHOTS=1` for screenshots, `ONLY=` for paths). Run it on port 3100 — the API's CSRF only trusts that origin.
-- **Demo deploy:** website only, on Hostinger shared hosting at https://myvisa.codexai.systems (no API there).
+- **Demo deploy:** full stack (website + API on `/api`) on Hostinger shared hosting at https://myvisa.codexai.systems. The host has no Postgres/Redis/S3, so the API runs in demo mode: `DATABASE_URL=pglite://…` (embedded Postgres, one process only), `REDIS_URL=memory://` (in-process Redis + queues), `STORAGE_DIR` (files on disk behind signed `/api/v1/files` links; refused in production). Demo only — the real launch goes on the client's server. Steps: `docs/DEPLOYMENT.md` → "Demo host". Logins `0500000001`–`0500000005`, OTP `000000`.
 
 ## After launch (not built, by decision)
 

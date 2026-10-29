@@ -1,5 +1,6 @@
 import { Inject, Injectable, Logger, type OnModuleDestroy } from "@nestjs/common";
 import { Redis } from "ioredis";
+import RedisMock from "ioredis-mock";
 import { ENV, type Env } from "../config/env";
 
 @Injectable()
@@ -24,4 +25,18 @@ export class RedisService extends Redis implements OnModuleDestroy {
     }
     return { count, ttl };
   }
+}
+
+/** `REDIS_URL=memory://` — demo hosts without a Redis server. */
+export const isMemoryRedis = (url: string) => url.startsWith("memory:");
+
+/**
+ * The app's Redis: a real connection, or (demo only) an in-process stand-in with the same command API.
+ * In-memory state (OTP codes, rate-limit counters, cache) is per process and lost on restart.
+ */
+export function createRedis(env: Env): RedisService {
+  if (!isMemoryRedis(env.REDIS_URL)) return new RedisService(env);
+  const memory = new RedisMock() as unknown as RedisService;
+  memory.hit = RedisService.prototype.hit;
+  return memory;
 }

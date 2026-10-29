@@ -9,6 +9,7 @@ import { cleanupOpenApiDoc } from "nestjs-zod";
 import { AUTH_COOKIES, CSRF_HEADER } from "@myvisa/shared";
 import { AppModule } from "./app.module";
 import type { Env } from "./config/env";
+import { LOCAL_FILES_PATH, StorageService } from "./infra/storage.service";
 
 /** Builds the configured app. Shared by main.ts and the e2e suite so tests exercise the real pipeline. */
 export async function createApp(env: Env, options: { logger?: boolean } = {}): Promise<NestExpressApplication> {
@@ -31,6 +32,10 @@ export async function createApp(env: Env, options: { logger?: boolean } = {}): P
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     maxAge: 600,
   });
+
+  // Demo hosts keep files on disk: the signed-link route stands in for S3 presigned URLs (see StorageService).
+  const storage = app.get(StorageService);
+  if (storage.isLocal) app.use(LOCAL_FILES_PATH, (req: never, res: never) => void storage.serveLocal(req, res));
 
   app.setGlobalPrefix("api", { exclude: [{ path: "health", method: RequestMethod.GET }, { path: "health/live", method: RequestMethod.GET }] });
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: "1" });

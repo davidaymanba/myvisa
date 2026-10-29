@@ -107,3 +107,24 @@ R2 encrypts data at rest, so use `S3_SSE=none` there. On AWS S3, use `S3_SSE=AES
 - **Staff:** add staff in Admin → Team & roles, by phone number. Switching someone off ends their sessions and returns their open orders to the queue.
 - **API docs:** Swagger is off in production. Set `API_DOCS=true` only on a staging API.
 - **Key rotation:** rotating `JWT_ACCESS_SECRET` signs everyone out, and must be changed on the API and the web at the same time. Do **not** rotate `DATA_ENCRYPTION_KEY` or `BLIND_INDEX_KEY` without a re-encryption migration.
+
+## Demo host (shared hosting, no database/Redis/S3 servers)
+
+For client previews only — never for real customers. The demo at https://myvisa.codexai.systems runs on Hostinger shared hosting, which has no PostgreSQL, Redis, object storage or long-running processes. Three demo-only switches make the API self-contained:
+
+| Setting | Effect |
+|---|---|
+| `DATABASE_URL=pglite:///abs/dir` | Embedded Postgres (PGlite) in the API process, stored in that directory. `pnpm db:seed` creates the schema from the migrations first. One process only — never open the directory twice. |
+| `REDIS_URL=memory://` | In-process Redis stand-in (`ioredis-mock`); queue jobs run in-process with the same retries. OTP codes and rate limits are lost on restart. |
+| `STORAGE_DIR=/abs/dir` | Files on local disk behind HMAC-signed `/api/v1/files/…` links instead of S3 presigned URLs. Refused when `NODE_ENV=production`. |
+
+The API runs with `NODE_ENV=development` there (dev OTP `000000`, mock payments, console SMS/email), which production refuses by design.
+
+Layout on the host (`ssh -p 65002 u960306846@178.16.128.8`):
+
+- `~/apps/myvisa` — website (Next standalone under `app/`, `server.js` wrapper). Served by `public_html/.htaccess` (LiteSpeed Passenger, Node 22).
+- `~/apps/myvisa-api` — API (`pnpm --filter @myvisa/api deploy --prod`, plus `dist/` and the `server.cjs` wrapper that sets the demo env). Served on `/api` by `public_html/api/.htaccess`.
+- `~/apps/myvisa-data` — PGlite database and files (kept across redeploys).
+- `~/apps/myvisa-secrets.env` (mode 600) — JWT/pepper/encryption keys shared by both apps. The seeded data is encrypted with these keys: re-seed if they change.
+
+Build the demo data locally with the same secrets (`pnpm db:seed` then `node apps/api/dist/scripts/seed-demo.js`, both with `DATABASE_URL=pglite://…`), upload it, and restart with `touch ~/apps/<app>/tmp/restart.txt`. Stop the API with SIGTERM before replacing its data directory so PGlite closes cleanly. The website is built with `API_URL`, `NEXT_PUBLIC_SITE_URL` and `UPLOAD_ORIGIN` set to the demo origin, and `sharp`'s macOS binaries swapped for `@img/sharp-linux-x64` + `@img/sharp-libvips-linux-x64`.

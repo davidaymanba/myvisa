@@ -36,6 +36,16 @@ import { SettingsModule } from "./modules/settings/settings.module";
 import { StaffModule } from "./modules/staff/staff.module";
 import { TrackingModule } from "./modules/tracking/tracking.module";
 
+/** pino-pretty is a dev dependency: absent from production installs, including demo hosts that run NODE_ENV=development. */
+const prettyLogs = (() => {
+  try {
+    import.meta.resolve("pino-pretty");
+    return true;
+  } catch {
+    return false;
+  }
+})();
+
 @Module({})
 export class AppModule {
   static forRoot(env: Env): DynamicModule {
@@ -46,7 +56,7 @@ export class AppModule {
         LoggerModule.forRoot({
           pinoHttp: {
             level: env.LOG_LEVEL,
-            ...(env.NODE_ENV === "development" ? { transport: { target: "pino-pretty", options: { singleLine: true, ignore: "pid,hostname,req,res" } } } : {}),
+            ...(env.NODE_ENV === "development" && prettyLogs ? { transport: { target: "pino-pretty", options: { singleLine: true, ignore: "pid,hostname,req,res" } } } : {}),
             redact: ["req.headers.cookie", "req.headers.authorization", 'req.headers["x-csrf-token"]', 'res.headers["set-cookie"]'],
             autoLogging: { ignore: (req) => req.url?.startsWith("/health") ?? false },
             customLogLevel: (_req, res, err) => (err || res.statusCode >= 500 ? "error" : res.statusCode >= 400 ? "warn" : "info"),

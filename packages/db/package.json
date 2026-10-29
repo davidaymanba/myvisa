@@ -27,9 +27,11 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@electric-sql/pglite": "^0.5.12",
     "@myvisa/shared": "workspace:*",
     "@prisma/adapter-pg": "7.10.1",
     "@prisma/client": "7.10.1",
-    "pg": "^8.23.1"
+    "pg": "^8.23.1",
+    "pglite-prisma-adapter": "^0.7.2"
   }
 }
